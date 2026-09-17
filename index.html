@@ -2225,6 +2225,7 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 const SUPABASE_URL = 'https://aqekcxftnfhgbdpdszgi.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxZWtjeGZ0bmZoZ2JkcGRzemdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2NTIzNjksImV4cCI6MjEwNTIyODM2OX0.FVK1qGg3-Le3Ba6ESYz7IIhpnBjL61MqMPjP2Dic84I';
 const SB_HEADERS = {apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json'};
+const LASTPUSH_KEY = 'vicoba-os-lastpush';
 let cloudSynced = false;
 let pushTimer = null;
 
@@ -2247,6 +2248,7 @@ async function cloudPut() {
         body: JSON.stringify({id: 'main', data: state, updated_at: new Date().toISOString()})
     });
     if (!r.ok) throw new Error('PUT ' + r.status);
+    try { localStorage.setItem(LASTPUSH_KEY, state._rev || new Date().toISOString()); } catch (e) {}
 }
 
 function cloudPushNow() {
@@ -2263,19 +2265,23 @@ function schedulePush() {
 async function initCloud() {
     try {
         const row = await cloudGet();
-        const localRev = state._rev || '';
-        if (row && row.data) {
-            if (String(row.updated_at || '') > localRev) {
-                // cloud is newer — adopt it
+        if (row && row.data && row.data.members) {
+            // Did this device change anything the cloud never received
+            // (e.g., work done offline)? If not, adopt the cloud version.
+            const lastPush = localStorage.getItem(LASTPUSH_KEY) || '';
+            const localRev = state._rev || '';
+            if (lastPush && localRev > lastPush) {
+                cloudSynced = true;
+                cloudPushNow();
+            } else {
                 try { localStorage.setItem(STORAGE_KEY, JSON.stringify(row.data)); } catch (e) {}
+                try { localStorage.setItem(LASTPUSH_KEY, row.updated_at || ''); } catch (e) {}
                 state = loadState();
+                state._rev = row.updated_at || state._rev;
                 runReminders();
                 save();
                 if (!document.getElementById('page-dashboard').classList.contains('hidden')) renderDashboard();
                 else updateBell();
-            } else {
-                cloudSynced = true; // local is newer — push it
-                cloudPushNow();
             }
         } else {
             cloudSynced = true; // seed the cloud with local state
