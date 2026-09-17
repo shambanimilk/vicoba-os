@@ -1,11 +1,12 @@
 -- ============================================================
--- VICOBA OS — Supabase schema
+-- VICOBA OS — Supabase schema (v2)
 -- Enforces the same rules as the front-end prototype:
 --   * every member belongs to exactly one group
 --   * users only see rows belonging to their group
 --   * loans require 3 referees + cap = LEAST(3*shares_value, SUM(referee contributions))
 --   * Jamii claims: death/illness for member|parent|child|in-law; wedding member only
 --   * expenses, audit log, reminders — all group-scoped
+-- Idempotent: safe to re-run.
 -- ============================================================
 
 create extension if not exists "pgcrypto";
@@ -49,10 +50,11 @@ create table if not exists members (
   kin_relation text,
   kin_phone    text,
   role         text not null default 'member'
-               check (role in ('member','chairperson','secretary','treasurer','auditor')),
+               check (role in ('member','chairperson','secretary','treasurer','auditor','admin')),
   status       text not null default 'active',
   savings      numeric not null default 0,
   shares       int     not null default 0,
+  auth_user_id uuid references auth.users(id),      -- set when wiring Supabase Auth
   created_at   timestamptz not null default now(),
   unique (group_id, member_code)
 );
@@ -70,7 +72,7 @@ create table if not exists transactions (
   tx_date     date not null default current_date,
   created_at  timestamptz not null default now()
 );
-create index on transactions (group_id, tx_date desc);
+create index if not exists idx_tx_group_date on transactions (group_id, tx_date desc);
 
 -- ---------- loan applications (3 referees + consent) ----------
 create table if not exists loan_applications (
@@ -96,23 +98,36 @@ create table if not exists loan_referees (
 );
 
 -- ---------- loans ----------
+-- NOTE: balance defaults to amount via trigger below (Postgres does not allow
+-- column references in DEFAULT expressions).
 create table if not exists loans (
   id            uuid primary key default gen_random_uuid(),
   group_id      uuid not null references groups(id) on delete cascade,
   member_id     uuid not null references members(id),
   loan_code     text not null,                      -- LN-042
   amount        numeric not null check (amount > 0),
-  balance       numeric not null default amount check (balance >= 0),
+  balance       numeric check (balance >= 0),       -- filled by trg_loans_balance
   interest_pct  numeric not null default 10,
   due_date      date not null,
   penalty_flag  boolean not null default false,
   penalty_amt   numeric not null default 0,
   created_at    timestamptz not null default now()
 );
-create index on loans (group_id, due_date);
+create index if not exists idx_loans_group_due on loans (group_id, due_date);
 
--- Loan cap rule: application amount must not exceed LEAST(3 x shares, referee contributions).
--- Enforced by trigger below.
+create or replace function set_loan_balance() returns trigger as $$
+begin
+  if NEW.balance is null then NEW.balance := NEW.amount; end if;
+  return NEW;
+end $$ language plpgsql;
+
+drop trigger if exists trg_loans_balance on loans;
+create trigger trg_loans_balance before insert on loans
+  for each row execute function set_loan_balance();
+
+-- Loan cap rule: amount must not exceed LEAST(3 x shares, referee contributions).
+-- Checked when an application moves to 'awaiting_approval' (after all referees
+-- have been added — they FK the application, so they cannot exist before it).
 create or replace function check_loan_cap() returns trigger as $$
 declare
   borrower_shares int;
@@ -120,27 +135,30 @@ declare
   multiplier int;
   shares_cap numeric;
   refs_cap numeric;
+  n_refs int;
 begin
-  select m.shares into borrower_shares from members m where m.id = NEW.member_id;
-  select s.share_value, s.loan_multiplier into share_value, multiplier
-    from group_settings s where s.group_id = NEW.group_id;
-  shares_cap := borrower_shares * share_value * multiplier;
+  if NEW.status = 'awaiting_approval' and OLD.status is distinct from 'awaiting_approval' then
+    select m.shares into borrower_shares from members m where m.id = NEW.member_id;
+    select s.share_value, s.loan_multiplier into share_value, multiplier
+      from group_settings s where s.group_id = NEW.group_id;
+    shares_cap := coalesce(borrower_shares,0) * coalesce(share_value,75000) * coalesce(multiplier,3);
 
-  select coalesce(sum(r.contribution_snapshot), 0) into refs_cap
-    from loan_referees r where r.application_id = NEW.id;
+    select coalesce(sum(r.contribution_snapshot), 0), count(*)
+      into refs_cap, n_refs
+      from loan_referees r where r.application_id = NEW.id;
 
-  if (select count(*) from loan_referees r where r.application_id = NEW.id) < 3 then
-    raise exception 'Loan application needs at least 3 referees';
-  end if;
-
-  if NEW.amount > least(shares_cap, refs_cap) then
-    raise exception 'Loan % exceeds cap: amount > LEAST(%, %)', NEW.ref_code, shares_cap, refs_cap;
+    if n_refs < 3 then
+      raise exception 'Loan % needs at least 3 referees (has %)', NEW.ref_code, n_refs;
+    end if;
+    if NEW.amount > least(shares_cap, refs_cap) then
+      raise exception 'Loan % exceeds cap: amount > LEAST(%, %)', NEW.ref_code, shares_cap, refs_cap;
+    end if;
   end if;
   return NEW;
 end $$ language plpgsql;
 
 drop trigger if exists trg_loan_cap on loan_applications;
-create trigger trg_loan_cap before insert or update on loan_applications
+create trigger trg_loan_cap before update on loan_applications
   for each row execute function check_loan_cap();
 
 -- ---------- repayments ----------
@@ -261,13 +279,14 @@ create table if not exists audit_log (
   created_at timestamptz not null default now()
 );
 -- append-only audit log
+drop rule if exists audit_no_update on audit_log;
 create rule audit_no_update as on update to audit_log do instead nothing;
+drop rule if exists audit_no_delete on audit_log;
 create rule audit_no_delete as on delete to audit_log do instead nothing;
 
 -- ============================================================
 -- Row Level Security: a signed-in member sees only their group.
--- Assumes auth.uid() maps to members.auth_user_id; add the column
--- and claim mapping when wiring Supabase Auth (see README).
+-- Assumes auth.uid() maps to members.auth_user_id (Supabase Auth).
 -- ============================================================
 alter table groups                  enable row level security;
 alter table group_settings          enable row level security;
@@ -285,22 +304,50 @@ alter table reminders               enable row level security;
 alter table notifications           enable row level security;
 alter table audit_log               enable row level security;
 
--- helper: the caller's group
+-- helper: the caller's group (NULL = not a member)
 create or replace function my_group_id() returns uuid as $$
   select group_id from members where auth_user_id = auth.uid() limit 1;
 $$ language sql security definer stable;
 
--- Example policy set (apply the same pattern to every group-scoped table):
-create policy grp_read_own   on groups     for select using (id = my_group_id() or exists (select 1 from members m where m.auth_user_id = auth.uid() and m.role = 'admin'));
-create policy mem_read_own   on members    for select using (group_id = my_group_id());
-create policy mem_write_own  on members    for all    using (group_id = my_group_id()) with check (group_id = my_group_id());
-create policy tx_group       on transactions for all using (group_id = my_group_id()) with check (group_id = my_group_id());
-create policy loans_group    on loans      for all using (group_id = my_group_id()) with check (group_id = my_group_id());
-create policy jamii_group    on jamii_claims for all using (group_id = my_group_id()) with check (group_id = my_group_id());
-create policy exp_group      on expenses   for all using (group_id = my_group_id()) with check (group_id = my_group_id());
-create policy audit_read     on audit_log  for select using (group_id = my_group_id());
-create policy notif_group    on notifications for all using (group_id = my_group_id()) with check (group_id = my_group_id());
+-- helper: is the caller a platform admin?
+create or replace function is_admin() returns boolean as $$
+  select exists (select 1 from members m where m.auth_user_id = auth.uid() and m.role = 'admin');
+$$ language sql security definer stable;
 
--- NOTE: add column members.auth_user_id uuid references auth.users(id)
--- when connecting Supabase Auth, then replace the demo policies above with
--- role-aware ones (officer-only writes for approvals, etc.).
+-- Example policy set (apply the same pattern to every group-scoped table).
+-- All are drop-if-exists first so the script can be re-run safely.
+drop policy if exists grp_read_own on groups;
+create policy grp_read_own on groups for select
+  using (id = my_group_id() or is_admin());
+
+drop policy if exists mem_read_own on members;
+create policy mem_read_own on members for select
+  using (group_id = my_group_id() or is_admin());
+
+drop policy if exists mem_write_own on members;
+create policy mem_write_own on members for all
+  using (group_id = my_group_id()) with check (group_id = my_group_id());
+
+drop policy if exists tx_group on transactions;
+create policy tx_group on transactions for all
+  using (group_id = my_group_id()) with check (group_id = my_group_id());
+
+drop policy if exists loans_group on loans;
+create policy loans_group on loans for all
+  using (group_id = my_group_id()) with check (group_id = my_group_id());
+
+drop policy if exists jamii_group on jamii_claims;
+create policy jamii_group on jamii_claims for all
+  using (group_id = my_group_id()) with check (group_id = my_group_id());
+
+drop policy if exists exp_group on expenses;
+create policy exp_group on expenses for all
+  using (group_id = my_group_id()) with check (group_id = my_group_id());
+
+drop policy if exists audit_read on audit_log;
+create policy audit_read on audit_log for select
+  using (group_id = my_group_id() or is_admin());
+
+drop policy if exists notif_group on notifications;
+create policy notif_group on notifications for all
+  using (group_id = my_group_id()) with check (group_id = my_group_id());
