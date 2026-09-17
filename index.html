@@ -2278,6 +2278,7 @@ async function initCloud() {
                 try { localStorage.setItem(LASTPUSH_KEY, row.updated_at || ''); } catch (e) {}
                 state = loadState();
                 state._rev = row.updated_at || state._rev;
+                cloudSynced = true;
                 runReminders();
                 save();
                 if (!document.getElementById('page-dashboard').classList.contains('hidden')) renderDashboard();
