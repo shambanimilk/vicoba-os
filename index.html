@@ -1,0 +1,2235 @@
+<!doctype html>
+<html lang="sw"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VICOBA OS</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+        * { font-family: 'DM Sans', sans-serif; }
+        :root {
+            --deep: #062e1b;
+            --emerald: #059669;
+            --emerald-dark: #047857;
+            --gold: #d97706;
+            --charcoal: #111827;
+        }
+        .sidebar-link { transition: all 0.15s; border-radius: 8px; }
+        .sidebar-link:hover { background: #ecfdf5; color: #059669; }
+        .sidebar-link.active { background: #059669; color: #fff; }
+        .sidebar-link.active i { color: #fff; }
+        .card-hover { transition: transform 0.15s, box-shadow 0.15s; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .fade-in { animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        .chart-bar { transition: height 0.4s cubic-bezier(0.4,0,0.2,1); border-radius: 4px 4px 0 0; }
+        .bottom-nav { box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
+        .stat-card { border-left: 4px solid transparent; }
+        .stat-card-emerald { border-left-color: #059669; }
+        .stat-card-amber { border-left-color: #d97706; }
+        .stat-card-blue { border-left-color: #2563eb; }
+        .stat-card-red { border-left-color: #dc2626; }
+        .stat-card-purple { border-left-color: #7c3aed; }
+        .gradient-hero { background: linear-gradient(135deg, #062e1b 0%, #0d4a2e 50%, #065f46 100%); }
+        .glass-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); }
+        section[id] { scroll-margin-top: 72px; }
+    </style>
+ </head>
+ <body class="min-h-screen bg-gray-50">
+  <div id="app"><!-- ========== LANDING PAGE ========== -->
+   <div id="page-landing" class="page-view">
+    <nav class="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-2.5 cursor-pointer select-none" onclick="goHome()" title="Nyumbani">
+       <div class="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center shadow-sm"><span class="text-white font-extrabold text-sm tracking-tight">V</span>
+       </div><span class="font-bold text-base text-gray-900">VICOBA OS</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600"><a href="#huduma" onclick="scrollToSection('huduma'); return false;" class="hover:text-emerald-600 transition-colors">Huduma</a> <a href="#bei" onclick="scrollToSection('bei'); return false;" class="hover:text-emerald-600 transition-colors">Bei</a> <a href="#kuhusu" onclick="scrollToSection('kuhusu'); return false;" class="hover:text-emerald-600 transition-colors">Kuhusu</a>
+      </div>
+      <div class="flex items-center gap-2.5"><button onclick="showPage('login')" class="hidden sm:inline-flex text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors">Ingia</button> <button onclick="showPage('login')" class="hidden md:inline-flex text-sm font-medium text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-lg hover:bg-emerald-50 transition-colors">Omba Mkopo</button> <button onclick="showPage('join')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm">Jiunge Sasa</button>
+      </div>
+     </div>
+    </nav><!-- Hero -->
+    <section class="gradient-hero relative overflow-hidden">
+     <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, rgba(5,150,105,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(217,119,6,0.2) 0%, transparent 40%);"></div>
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24 lg:py-28 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+       <div>
+        <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur text-emerald-200 text-xs font-medium px-3.5 py-1.5 rounded-full mb-6 border border-white/10"><span>🇹🇿</span> Kwa VICOBA, Kikoba, SACCOS &amp; MFIs • Changia kutoka mtandao wowote
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.1] mb-5">Mfumo Kamili wa Kifedha kwa VICOBA na Kikoba</h1>
+        <p class="text-base sm:text-lg text-emerald-100/80 mb-8 max-w-lg">Simamia akiba, mikopo, gawio, na ripoti za kikundi chako — kwa urahisi, uwazi, na usalama. Teknolojia ya kisasa kwa jamii za kifedha Tanzania.</p>
+        <div class="flex flex-wrap gap-3 mb-10"><button onclick="showPage('login')" class="bg-white text-emerald-800 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-emerald-50 transition-colors shadow-lg">Anza Sasa — Bure</button> <button onclick="doLogin('member')" class="glass-card text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-white/15 transition-colors">▶ Angalia Demo</button>
+        </div>
+        <div class="grid grid-cols-3 gap-4 max-w-sm">
+         <div class="text-center">
+          <p class="text-2xl font-bold text-white">2,400+</p>
+          <p class="text-xs text-emerald-200/70">Vikundi</p>
+         </div>
+         <div class="text-center">
+          <p class="text-2xl font-bold text-white">85K+</p>
+          <p class="text-xs text-emerald-200/70">Wanachama</p>
+         </div>
+         <div class="text-center">
+          <p class="text-2xl font-bold text-white">4.2B</p>
+          <p class="text-xs text-emerald-200/70">TSh Inayosimamiwa</p>
+         </div>
+        </div>
+       </div>
+       <div class="relative hidden lg:block">
+        <div class="absolute -inset-4 bg-gradient-to-br from-emerald-400/20 to-amber-400/10 rounded-3xl blur-2xl"></div><img class="relative w-full rounded-2xl shadow-2xl" loading="lazy" src="https://images.pexels.com/photos/7433325/pexels-photo-7433325.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1280" alt="Mwanamke anayetumia simu yake kwa makini.">
+       </div>
+      </div>
+     </div>
+    </section><!-- Social proof images -->
+    <section id="huduma" class="py-16 bg-white">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-12">
+       <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Huduma Zetu Kuu</h2>
+       <p class="text-gray-500 max-w-2xl mx-auto">Zana za kisasa zilizoundwa mahususi kwa vikundi vya kifedha vya jamii Tanzania.</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+       <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+        <div class="w-11 h-11 bg-emerald-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="wallet" class="text-emerald-600" style="width:20px;height:20px"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Akiba &amp; Hisa</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">Fuatilia michango, hisa, na salio la kila mwanachama kwa wakati halisi. Ripoti za kiotomatiki kila wiki.</p>
+       </div>
+       <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+        <div class="w-11 h-11 bg-amber-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="banknote" class="text-amber-600" style="width:20px;height:20px"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Mikopo &amp; Wadhamini</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">Mfumo kamili wa maombi, idhini, wadhamini, malipo, na adhabu. Riba inayoonekana wazi.</p>
+       </div>
+       <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+        <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="shield-check" class="text-blue-600" style="width:20px;height:20px"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Ukaguzi &amp; Usalama</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">Kila shughuli ina kumbukumbu. Hakuna kufuta — marekebisho tu. Uwazi kamili kwa wanachama wote.</p>
+       </div>
+       <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+        <div class="w-11 h-11 bg-purple-100 rounded-xl flex items-center justify-center mb-4"><i data-lucide="smartphone" class="text-purple-600" style="width:20px;height:20px"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Mtandao Wowote</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">Changia kwa M-Pesa, Mixx by Yas, Airtel Money, HaloPesa, benki au kadi — bila kufungwa na mtandao mmoja.</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- Trust section with images -->
+    <section class="py-16 bg-gray-50">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="grid md:grid-cols-3 gap-6">
+       <div class="rounded-2xl overflow-hidden relative group"><img class="w-full h-56 object-cover" loading="lazy" src="https://images.pexels.com/photos/32809721/pexels-photo-32809721.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Kiongozi wa jamii anazungumza na kikundi.cha nje.">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <p class="absolute bottom-4 left-4 text-white font-semibold text-sm">Vikundi vya Jamii</p>
+       </div>
+       <div class="rounded-2xl overflow-hidden relative group"><img class="w-full h-56 object-cover" loading="lazy" src="https://images.pexels.com/photos/36007432/pexels-photo-36007432.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Muuzaji kijana Tanzania akipanga mboga sokoni.">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <p class="absolute bottom-4 left-4 text-white font-semibold text-sm">Wajasiriamali Wadogo</p>
+       </div>
+       <div class="rounded-2xl overflow-hidden relative group"><img class="w-full h-56 object-cover" loading="lazy" src="https://images.pexels.com/photos/30688593/pexels-photo-30688593.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Wataalamu katika mkutano wa kawaida ofisini.">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <p class="absolute bottom-4 left-4 text-white font-semibold text-sm">Usimamizi wa Kitaalamu</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- About (Kuhusu) -->
+    <section id="kuhusu" class="py-16 bg-white">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+       <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Kuhusu VICOBA OS</h2>
+        <p class="text-sm text-gray-600 leading-relaxed mb-4">VICOBA OS imeundwa mahususi kwa vikundi vya kifedha vya jamii Tanzania — VICOBA, Vikoba, SACCOS na MFIs. Tunaamini kila kikundi kinastahili teknolojia ya kisasa yenye uwazi na udhibiti wa kikundi chenyewe — bila kufungwa na mtandao mmoja wa simu.</p>
+        <p class="text-sm text-gray-600 leading-relaxed mb-6">Tofauti na mifumo mingine iliyofungwa kwa mtandao mmoja, VICOBA OS inakubali michango kutoka mtandao <strong>wowote</strong> — na kila kikundi kina data zake zinazojitegemea, zilizo na kumbukumbu za ukaguzi zisizofutika.</p>
+        <div class="grid sm:grid-cols-3 gap-3">
+         <div class="bg-gray-50 rounded-xl p-4 border border-gray-100"><i data-lucide="eye" class="text-emerald-600 mb-2" style="width:18px;height:18px"></i><p class="text-xs font-semibold text-gray-900">Uwazi Kamili</p><p class="text-[11px] text-gray-500 mt-1">Kila shughuli ina kumbukumbu isiyofutika.</p></div>
+         <div class="bg-gray-50 rounded-xl p-4 border border-gray-100"><i data-lucide="shield" class="text-emerald-600 mb-2" style="width:18px;height:18px"></i><p class="text-xs font-semibold text-gray-900">Faragha ya Kikundi</p><p class="text-[11px] text-gray-500 mt-1">Hakuna kikundi kinachoona takwimu za kingine.</p></div>
+         <div class="bg-gray-50 rounded-xl p-4 border border-gray-100"><i data-lucide="users" class="text-emerald-600 mb-2" style="width:18px;height:18px"></i><p class="text-xs font-semibold text-gray-900">Ujumuishaji</p><p class="text-[11px] text-gray-500 mt-1">Kuanzia mwanachama hadi Super Admin.</p></div>
+        </div>
+       </div>
+       <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+        <h3 class="font-semibold text-gray-900 text-sm mb-4">Kwa nini VICOBA OS?</h3>
+        <div class="space-y-3 text-[13px] text-gray-700">
+         <p class="flex items-start gap-2.5"><i data-lucide="check-circle" class="text-emerald-500 flex-shrink-0" style="width:16px;height:16px"></i> Michango kutoka mtandao wowote — M-Pesa, Mixx by Yas, Airtel Money, Halopesa, benki au kadi</p>
+         <p class="flex items-start gap-2.5"><i data-lucide="check-circle" class="text-emerald-500 flex-shrink-0" style="width:16px;height:16px"></i> Kikoa cha kila kikundi — data za kikundi hazipiti kwa kikundi kingine</p>
+         <p class="flex items-start gap-2.5"><i data-lucide="check-circle" class="text-emerald-500 flex-shrink-0" style="width:16px;height:16px"></i> Mikopo yenye wadhamini 3 na makubaliano yao kabla ya idhini</p>
+         <p class="flex items-start gap-2.5"><i data-lucide="check-circle" class="text-emerald-500 flex-shrink-0" style="width:16px;height:16px"></i> Mfuko wa Jamii wenye masharti — msiba, ugonjwa mkali, na harusi ya mwanachama</p>
+         <p class="flex items-start gap-2.5"><i data-lucide="check-circle" class="text-emerald-500 flex-shrink-0" style="width:16px;height:16px"></i> Kumbusho otomatiki kupunguza adhabu na kuchelewa kulipa</p>
+         <p class="flex items-start gap-2.5"><i data-lucide="check-circle" class="text-emerald-500 flex-shrink-0" style="width:16px;height:16px"></i> Usajili kamili — picha, NIDA, simu na mtuo wa karibu</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Pricing -->
+    <section id="bei" class="py-16 bg-gray-50">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-10">Bei Rahisi, Thamani Kubwa</h2>
+      <div class="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+       <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+        <h3 class="font-semibold text-gray-900">Msingi</h3>
+        <p class="text-3xl font-bold text-gray-900 mt-2">TSh 0<span class="text-sm font-normal text-gray-500">/mwezi</span></p>
+        <p class="text-sm text-gray-500 mt-1">Hadi wanachama 30</p>
+        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> Akiba &amp; Mikopo</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> Ripoti za msingi</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> SMS 50/mwezi</li>
+        </ul><button onclick="showPage('login')" class="mt-6 w-full py-2.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Anza Bure</button>
+       </div>
+       <div class="bg-emerald-600 rounded-2xl p-6 text-white relative shadow-xl shadow-emerald-600/20"><span class="absolute -top-3 right-4 bg-amber-400 text-amber-900 text-xs font-bold px-2.5 py-1 rounded-full">Maarufu</span>
+        <h3 class="font-semibold">Biashara</h3>
+        <p class="text-3xl font-bold mt-2">TSh 25,000<span class="text-sm font-normal text-emerald-200">/mwezi</span></p>
+        <p class="text-sm text-emerald-200 mt-1">Hadi wanachama 200</p>
+        <ul class="mt-4 space-y-2 text-sm text-emerald-100">
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-300"></i> Moduli zote</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-300"></i> Chati &amp; Ripoti kamili</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-300"></i> SMS 500/mwezi</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-300"></i> WhatsApp Bot</li>
+        </ul><button onclick="showPage('login')" class="mt-6 w-full py-2.5 rounded-lg bg-white text-emerald-700 text-sm font-semibold hover:bg-emerald-50 transition">Chagua Mpango</button>
+       </div>
+       <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+        <h3 class="font-semibold text-gray-900">Taasisi</h3>
+        <p class="text-3xl font-bold text-gray-900 mt-2">Wasiliana</p>
+        <p class="text-sm text-gray-500 mt-1">Vikundi visivyo na kikomo</p>
+        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> Multi-tenancy</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> API Access</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> Msaada wa Kipaumbele</li>
+        </ul><button onclick="showPage('login')" class="mt-6 w-full py-2.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 transition">Wasiliana Nasi</button>
+       </div>
+      </div>
+     </div>
+    </section><!-- Footer -->
+    <footer class="bg-gray-900 py-10">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+      <div class="flex items-center justify-center gap-2 mb-3 cursor-pointer select-none" onclick="goHome()" title="Nyumbani">
+       <div class="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center">
+        <span class="text-white font-bold text-xs">V</span>
+       </div><span class="text-white font-bold">VICOBA OS</span>
+      </div>
+      <p class="text-sm text-gray-400">© 2026 VICOBA OS — Teknolojia ya Fedha kwa Jamii za Tanzania</p>
+      <p class="text-xs text-gray-500 mt-2">Dar es Salaam, Tanzania | support@vicoba-os.co.tz</p>
+     </div>
+    </footer>
+   </div><!-- ========== LOGIN PAGE ========== -->
+   <div id="page-login" class="page-view hidden">
+    <div class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg, #062e1b 0%, #0d4a2e 60%, #065f46 100%);">
+     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-7 fade-in">
+      <div class="text-center mb-6">
+       <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-600/20"><span class="text-white font-extrabold text-lg">V</span>
+       </div>
+       <h2 class="text-xl font-bold text-gray-900">Karibu Tena</h2>
+       <p class="text-sm text-gray-500 mt-1">Ingia kwenye akaunti yako ya VICOBA OS</p>
+      </div>
+      <form onsubmit="event.preventDefault(); doPhoneLogin()"><label for="phone" class="text-xs font-medium text-gray-600 uppercase tracking-wide">Nambari ya Simu</label> <input id="phone" type="tel" placeholder="+255 7XX XXX XXX" class="w-full mt-1.5 mb-3.5 px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"> <label for="pin" class="text-xs font-medium text-gray-600 uppercase tracking-wide">PIN</label> <input id="pin" type="password" placeholder="••••••" class="w-full mt-1.5 mb-2 px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+       <p id="login-error" class="text-xs text-red-600 mb-2 hidden"></p>
+       <div class="flex items-center justify-between mb-5 text-xs"><label class="flex items-center gap-1.5 text-gray-500"><input type="checkbox" class="rounded border-gray-300"> Kumbuka</label> <a href="#" onclick="event.preventDefault()" class="text-emerald-600 hover:underline font-medium">Umesahau PIN?</a>
+       </div><button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition shadow-sm">Ingia</button>
+      </form>
+      <div class="mt-5 pt-5 border-t border-gray-100">
+       <p class="text-xs text-gray-400 text-center mb-3 font-medium uppercase tracking-wide">Demo — Chagua Jukumu</p>
+       <div class="grid grid-cols-3 gap-1.5"><button onclick="doLogin('admin')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Super Admin</button> <button onclick="doLogin('chairperson')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwenyekiti</button> <button onclick="doLogin('treasurer')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mweka Hazina</button> <button onclick="doLogin('secretary')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Katibu</button> <button onclick="doLogin('member')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwanachama</button> <button onclick="doLogin('auditor')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mkaguzi</button>
+       </div>
+      </div><button onclick="showPage('join')" class="mt-3 w-full text-center text-xs text-emerald-600 hover:underline font-medium">Sio mwanachama? Jiunge na kikundi →</button><button onclick="showPage('landing')" class="mt-4 w-full text-center text-xs text-gray-400 hover:text-gray-600">← Rudi Nyumbani</button>
+     </div>
+    </div>
+   </div><!-- ========== DASHBOARD ========== -->
+   <div id="page-dashboard" class="page-view hidden">
+    <div class="flex min-h-screen"><!-- Sidebar (desktop) -->
+     <aside id="sidebar" class="w-60 bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-200 flex flex-col">
+      <div class="p-4 border-b border-gray-100 flex items-center gap-2.5 cursor-pointer select-none" onclick="goHome()" title="Nyumbani">
+       <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center"><span class="text-white font-bold text-xs">V</span>
+       </div><span class="font-bold text-gray-900 text-sm">VICOBA OS</span>
+      </div>
+      <nav class="flex-1 p-3 space-y-0.5 text-sm overflow-y-auto" id="sidebar-nav"></nav>
+      <div class="p-3 border-t border-gray-100">
+       <div class="flex items-center gap-2 text-xs text-gray-400 mb-2 px-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> <span id="sync-status">Synced • Offline-ready</span>
+       </div><button onclick="doLogout()" class="w-full text-left px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 flex items-center gap-2 text-sm font-medium transition"> <i data-lucide="log-out" style="width:15px;height:15px"></i> Toka </button>
+      </div>
+     </aside><!-- Main -->
+     <div class="flex-1 md:ml-60 pb-16 md:pb-0"><!-- Top bar -->
+      <header class="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30 px-4 sm:px-6 py-3 flex items-center justify-between">
+       <div class="flex items-center gap-3"><button onclick="toggleSidebar()" class="md:hidden p-1"><i data-lucide="menu" style="width:20px;height:20px" class="text-gray-700"></i></button>
+        <h2 id="page-heading" class="font-semibold text-gray-900 text-sm sm:text-base">Dashibodi</h2>
+       </div>
+       <div class="flex items-center gap-3"><button onclick="navigateTo('notifications')" class="relative p-1.5 rounded-lg hover:bg-gray-100 transition"> <i data-lucide="bell" style="width:18px;height:18px" class="text-gray-500"></i> <span id="bell-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-[9px] font-bold min-w-[14px] h-[14px] px-0.5 rounded-full flex items-center justify-center">0</span> </button> <span id="role-badge" class="hidden sm:inline-flex text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-medium border border-emerald-100"></span>
+        <span id="group-badge" class="hidden md:inline-flex text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium border border-gray-200"></span>
+        <select id="group-switch" onchange="switchGroup(this.value)" class="hidden text-xs bg-gray-100 text-gray-700 px-2 py-1.5 rounded-lg border border-gray-200 font-medium outline-none"></select>
+        <div id="user-avatar" class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+         JM
+        </div>
+       </div>
+      </header><!-- Content -->
+      <main class="p-4 sm:p-6" id="main-content"></main>
+     </div>
+    </div><!-- Mobile bottom nav -->
+    <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 bottom-nav">
+     <div id="bottom-nav-items" class="flex justify-around py-2"></div>
+    </nav>
+   </div><!-- ========== PUBLIC JOIN (INVITE) ========== -->
+   <div id="page-join" class="page-view hidden">
+    <div class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-7 fade-in">
+      <div class="text-center mb-5">
+       <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3"><span class="text-2xl">🤝</span></div>
+       <h2 class="text-xl font-bold text-gray-900">Jiunge na Kikundi</h2>
+       <p class="text-sm text-gray-500 mt-1">Uanachama unapatikana kwa mwaliko (msimbo wa kikundi)</p>
+      </div>
+      <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Msimbo wa Mwaliko</label>
+      <input id="join-code" type="text" placeholder="mf. UMOJA-7K2Q" oninput="checkInvite(this.value)" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-2 text-sm font-mono uppercase focus:ring-2 focus:ring-emerald-500 outline-none">
+      <p id="join-group" class="text-xs mb-3 min-h-[16px]"></p>
+      <div id="join-fields" class="hidden">
+       <div class="flex items-center gap-3 mb-3">
+        <img id="join-photo-preview" class="w-14 h-14 rounded-full object-cover border border-gray-200 hidden" alt="">
+        <div class="flex-1">
+         <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Picha ya Pasipoti (mpya)</label>
+         <input id="join-photo" type="file" accept="image/*" onchange="pickPhoto('join-photo','join-photo-preview')" class="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700">
+        </div>
+       </div>
+       <div class="grid grid-cols-2 gap-2 mb-3">
+        <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jina Kamili</label>
+        <input id="join-name" type="text" placeholder="mf. Maria John" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+        <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Simu</label>
+        <input id="join-phone" type="tel" placeholder="+255 7XX XXX XXX" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+       </div>
+       <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kitambulisho cha Taifa (NIDA)</label>
+       <input id="join-nida" type="text" placeholder="Tarakimu 20" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500">
+       <p class="text-[11px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Mtuo wa Karibu (Next of Kin)</p>
+       <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="col-span-2"><label class="text-[11px] text-gray-500 block mb-1">Jina kamili</label>
+        <input id="join-kin-name" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+        <div><label class="text-[11px] text-gray-500 block mb-1">Uhusiano</label>
+        <input id="join-kin-rel" type="text" placeholder="Mke / Baba ..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+        <div><label class="text-[11px] text-gray-500 block mb-1">Simu ya mtuo</label>
+        <input id="join-kin-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+       </div>
+       <p id="join-error" class="text-xs text-red-600 mb-2 hidden"></p>
+       <button onclick="submitJoin()" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition shadow-sm">Wasilisha Maombi</button>
+      </div>
+      <div id="join-done" class="hidden text-center">
+       <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check" style="width:28px;height:28px" class="text-emerald-600"></i></div>
+       <h3 class="text-lg font-bold text-gray-900">Maombi Yamewasilishwa!</h3>
+       <p class="text-sm text-gray-500 mt-2">Viongozi wa kikundi watapokea maombi yako na kuyakubali.</p>
+       <button onclick="showPage('landing')" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Nyumbani</button>
+      </div>
+      <div class="mt-4 pt-4 border-t border-gray-100 text-center text-xs">
+       <button onclick="showPage('landing')" class="text-gray-400 hover:text-gray-600">← Nyumbani</button>
+      </div>
+     </div>
+    </div>
+   </div><!-- ========== MODAL ========== -->
+   <div id="modal-overlay" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" style="background:rgba(0,0,0,0.5)">
+    <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto p-6 fade-in"></div>
+   </div>
+  </div>
+  <script>
+// ================= STATE & PERSISTENCE =================
+const STORAGE_KEY = 'vicoba-os-state-v1';
+
+function defaultState() {
+    return {
+        members: [
+            {id:'M001',name:'Juma Mwalimu',phone:'+255712345678',savings:850000,shares:12,loan:500000,status:'Active',groupId:'G1',role:'secretary',photo:null,nationalId:'19900112151234000123',kinName:'Anna Mwalimu',kinRelation:'Mke',kinPhone:'+255712111222'},
+            {id:'M002',name:'Fatma Hassan',phone:'+255713456789',savings:1200000,shares:18,loan:0,status:'Active',groupId:'G1',role:'chairperson',photo:null,nationalId:'19920324567890100234',kinName:'Mwajuma Hassan',kinRelation:'Mama',kinPhone:'+255713222333'},
+            {id:'M003',name:'Peter Kimaro',phone:'+255714567890',savings:650000,shares:8,loan:300000,status:'Active',groupId:'G1',role:'auditor',photo:null,nationalId:'19881110765432100345',kinName:'Joseph Kimaro',kinRelation:'Baba',kinPhone:'+255714333444'},
+            {id:'M004',name:'Amina Salum',phone:'+255715678901',savings:980000,shares:15,loan:0,status:'Active',groupId:'G1',role:'treasurer',photo:null,nationalId:'19950622334455110456',kinName:'Bi Salum',kinRelation:'Mama',kinPhone:'+255715444555'},
+            {id:'M005',name:'Baraka Ngowi',phone:'+255716789012',savings:420000,shares:6,loan:200000,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'19970905887766510567',kinName:'Isaya Ngowi',kinRelation:'Baba',kinPhone:'+255716555666'},
+            {id:'M006',name:'Grace Mushi',phone:'+255717890123',savings:1500000,shares:22,loan:800000,status:'Active',groupId:'G2',role:'chairperson',photo:null,nationalId:'19910418990011220678',kinName:'Joseph Mushi',kinRelation:'Baba',kinPhone:'+255717666777'},
+            {id:'M007',name:'Hassan Omary',phone:'+255718901234',savings:750000,shares:10,loan:0,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'19920226778899030789',kinName:'Rukia Omary',kinRelation:'Mama',kinPhone:'+255718777888'},
+            {id:'M008',name:'Neema Joseph',phone:'+255719012345',savings:380000,shares:5,loan:150000,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'20000113123456740890',kinName:'Josephine Nkya',kinRelation:'Mama',kinPhone:'+255719888999'},
+        ],
+        groups: [
+            {id:'G1',name:'Umoja wa Wanawake',members:45,savings:18500000,loans:12000000,location:'Kinondoni',invite:'UMOJA-7K2Q',social:1250000},
+            {id:'G2',name:'Vijana Nguvu',members:32,savings:8200000,loans:5500000,location:'Ilala',invite:'VIJANA-3M8X',social:640000},
+            {id:'G3',name:'Tumaini VICOBA',members:28,savings:6800000,loans:4200000,location:'Temeke',invite:'TUMAINI-9P4D',social:520000},
+            {id:'G4',name:'Mwanga Kikoba',members:50,savings:22000000,loans:15000000,location:'Dodoma',invite:'MWANGA-5T6B',social:980000},
+            {id:'G5',name:'Amani Group',members:38,savings:11500000,loans:7800000,location:'Arusha',invite:'AMANI-8R2F',social:710000}
+        ],
+        loans: [
+            {id:'LN-042',memberId:'M003',amount:300000,balance:220000,rate:10,due:'2026-11-01'},
+            {id:'LN-041',memberId:'M006',amount:800000,balance:600000,rate:10,due:'2026-12-15'},
+            {id:'LN-040',memberId:'M005',amount:200000,balance:80000,rate:10,due:'2026-09-12',referees:[{memberId:'M006'},{memberId:'M007'},{memberId:'M008'}]},
+            {id:'LN-039',memberId:'M001',amount:500000,balance:150000,rate:10,due:'2026-07-15',referees:[{memberId:'M002'},{memberId:'M003'},{memberId:'M004'}]},
+            {id:'LN-038',memberId:'M008',amount:150000,balance:0,rate:10,due:'2026-08-01'},
+        ],
+        loanApplications: [
+            {ref:'APP-001',memberId:'M003',amount:300000,reason:'Biashara',date:'2026-09-12',shares:8,score:72,
+             referees:[{memberId:'M001',consent:'agreed'},{memberId:'M002',consent:'agreed'},{memberId:'M004',consent:'agreed'}],status:'awaiting_approval'},
+            {ref:'APP-002',memberId:'M008',amount:150000,reason:'Elimu',date:'2026-09-14',shares:5,score:65,
+             referees:[{memberId:'M005',consent:'agreed'},{memberId:'M006',consent:'agreed'},{memberId:'M007',consent:'agreed'}],status:'awaiting_approval'},
+        ],
+        membershipApplications: [],
+        jamiiClaims: [],
+        expenses: [
+            {id:'EXP-001', groupId:'G1', category:'Posho ya Mkutano', desc:'Posho — mikutano ya Agosti', amount:20000, date:'2026-08-24'},
+            {id:'EXP-002', groupId:'G1', category:'Stationery & Ofisi', desc:'Vitabu vya kumbukumbu', amount:8000, date:'2026-08-10'},
+            {id:'EXP-003', groupId:'G2', category:'Posho ya Mkutano', desc:'Posho — mkutano wa Septemba', amount:15000, date:'2026-09-06'},
+            {id:'EXP-004', groupId:'G2', category:'Utasuluhishi (Grievances)', desc:'Gharama za utatuzi wa mgogoro', amount:12000, date:'2026-08-28'},
+        ],
+        remindersLog: [],
+        transactions: [
+            {id:'TXN-0998',memberId:'M002',type:'Akiba',amount:50000,date:'2026-08-20'},
+            {id:'TXN-0997',memberId:'M003',type:'Akiba',amount:50000,date:'2026-08-19'},
+            {id:'TXN-0996',memberId:'M001',type:'Hisa',amount:75000,date:'2026-08-18'},
+            {id:'TXN-0994',memberId:'M004',type:'Akiba',amount:50000,date:'2026-08-05'},
+            {id:'TXN-0991',memberId:'M007',type:'Akiba',amount:50000,date:'2026-09-02'},
+            {id:'TXN-0992',memberId:'M002',type:'Akiba',amount:50000,date:'2026-09-09'},
+            {id:'TXN-0988',memberId:'M001',type:'Akiba',amount:50000,date:'2026-07-06'},
+            {id:'TXN-0987',memberId:'M003',type:'Akiba',amount:50000,date:'2026-07-13'},
+            {id:'TXN-0986',memberId:'M008',type:'Akiba',amount:50000,date:'2026-07-20'},
+            {id:'TXN-0985',memberId:'M006',type:'Hisa',amount:75000,date:'2026-07-27'},
+            {id:'TXN-0980',memberId:'M002',type:'Akiba',amount:50000,date:'2026-06-01'},
+            {id:'TXN-0979',memberId:'M005',type:'Akiba',amount:50000,date:'2026-06-08'},
+            {id:'TXN-0978',memberId:'M007',type:'Hisa',amount:75000,date:'2026-06-15'},
+            {id:'TXN-0977',memberId:'M004',type:'Akiba',amount:50000,date:'2026-06-22'},
+            {id:'TXN-0972',memberId:'M003',type:'Akiba',amount:50000,date:'2026-05-04'},
+            {id:'TXN-0971',memberId:'M006',type:'Akiba',amount:50000,date:'2026-05-11'},
+            {id:'TXN-0970',memberId:'M001',type:'Hisa',amount:75000,date:'2026-05-18'},
+            {id:'TXN-0965',memberId:'M001',type:'Akiba',amount:50000,date:'2026-04-06'},
+            {id:'TXN-0964',memberId:'M002',type:'Akiba',amount:50000,date:'2026-04-13'},
+            {id:'TXN-0963',memberId:'M004',type:'Akiba',amount:75000,date:'2026-04-20'},
+        ],
+        repayments: [
+            {id:'TXN-0995',memberId:'M005',loanId:'LN-040',amount:45000,interest:4091,date:'2026-08-19'},
+            {id:'TXN-0990',memberId:'M006',loanId:'LN-041',amount:80000,interest:7273,date:'2026-08-15'},
+            {id:'TXN-0982',memberId:'M001',loanId:'LN-039',amount:50000,interest:4545,date:'2026-07-15'},
+            {id:'TXN-0978',memberId:'M004',loanId:'LN-035',amount:100000,interest:9091,date:'2026-06-22'},
+            {id:'TXN-0971',memberId:'M002',loanId:'LN-034',amount:80000,interest:7273,date:'2026-05-11'},
+            {id:'TXN-0975',memberId:'M008',loanId:'LN-038',amount:75000,interest:6818,date:'2026-06-10'},
+        ],
+        socialHelp: [
+            {n:'Baraka Ngowi — Msiba',a:200000,invite:'VIJANA-3M8X'},
+            {n:'Grace Mushi — Hospitali',a:150000,invite:'VIJANA-3M8X'},
+            {n:'Amina Salum — Harusi',a:100000,invite:'UMOJA-7K2Q'},
+        ],
+        audit: [
+            {time:'20/08 14:02',user:'Mweka Hazina',action:'Amerekodi mchango — TXN-0998',ip:'192.168.1.4',groupId:'G1'},
+            {time:'20/08 10:15',user:'Mwenyekiti',action:'Ameidhinisha mkopo LN-042',ip:'192.168.1.2',groupId:'G1'},
+            {time:'19/08 16:30',user:'Mweka Hazina',action:'Amerekodi malipo — TXN-0995',ip:'192.168.1.4',groupId:'G2'},
+            {time:'19/08 09:00',user:'Super Admin',action:'Ameongeza mwanachama — Neema Joseph',ip:'192.168.1.1',groupId:'G2'},
+        ],
+        notifications: [
+            {t:'Mchango wako umekubaliwa',d:'TSh 50,000 — TXN-0998',time:'Saa 2 zilizopita',read:false,groupId:'G1'},
+            {t:'Mkutano — Kumbusho',d:'Jumapili 24/08 saa 10 asubuhi',time:'Saa 5 zilizopita',read:false,groupId:'G1'},
+            {t:'Malipo ya mkopo yanakuja',d:'TSh 50,000 — tarehe 01/09/2026',time:'Jana',read:true,groupId:'G1'},
+            {t:'Mwanachama mpya amejiunga',d:'Neema Joseph',time:'Jana',read:true,groupId:'G2'},
+        ],
+        settings: {
+            weekly: 50000, shareValue: 75000, rate: 10, multiplier: 3,
+            socialMonthly: 5000, penalty: 2,
+            remindLeadDays: 3, contributionDay: 0,
+            jamiiMsiba: 200000, jamiiUgonjwa: 150000, jamiiHarusi: 100000,
+        },
+        txCounter: 1000,
+    };
+}
+
+function loadState() {
+    const base = defaultState();
+    let stored = null;
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) stored = JSON.parse(raw);
+    } catch (e) { stored = null; }
+    if (!stored) return base;
+    const s = Object.assign({}, base, stored);
+    s.settings = Object.assign({}, base.settings, stored.settings || {});
+    if (!Array.isArray(s.loanApplications)) {
+        const old = Array.isArray(stored.pendingLoans) ? stored.pendingLoans : base.loanApplications;
+        s.loanApplications = old.map(p => Object.assign({
+            reason: '—', shares: 0, score: 0,
+            referees: [{memberId:'M002',consent:'agreed'},{memberId:'M004',consent:'agreed'},{memberId:'M006',consent:'agreed'}],
+            status: 'awaiting_approval'
+        }, p));
+        delete s.pendingLoans;
+    }
+    if (!Array.isArray(s.membershipApplications)) s.membershipApplications = [];
+    if (!Array.isArray(s.remindersLog)) s.remindersLog = [];
+    (s.groups || []).forEach((g, i) => {
+        if (!g.id) g.id = 'G' + (i + 1);
+        if (g.social === undefined) g.social = (i === 0 ? (stored.socialBalance || 1250000) : 600000);
+        if (!g.invite) g.invite = (base.groups[i % base.groups.length] || {}).invite || 'KIKUNDI-0000';
+    });
+    (s.members || []).forEach(m => { if (!m.groupId) m.groupId = 'G1'; if (!m.role) m.role = 'member'; if (!m.nationalId) m.nationalId = ''; if (!m.kinName) m.kinName = ''; if (!m.kinPhone) m.kinPhone = ''; if (!m.kinRelation) m.kinRelation = ''; if (!m.photo) m.photo = null; });
+    if (!Array.isArray(s.jamiiClaims)) s.jamiiClaims = [];
+    if (!Array.isArray(s.expenses)) {
+        const old = (stored.settings && stored.settings.expenses) || [];
+        s.expenses = old.map((e, i) => ({id: 'EXP-00' + (i + 1), groupId: 'G1', category: e.label || 'Nyingine', desc: 'Iliyohamishwa (rekodi za zamani)', amount: e.value || 0, date: todayISO()}));
+    }
+    (s.audit || []).forEach(e => { if (!e.groupId) e.groupId = 'G1'; });
+    (s.notifications || []).forEach(n => { if (!n.groupId) n.groupId = 'G1'; });
+    (s.remindersLog || []).forEach(r => { if (!r.groupId) r.groupId = 'G1'; });
+    (s.membershipApplications || []).forEach(a => { if (!Array.isArray(a.approvals)) a.approvals = []; if (!a.status) a.status = 'pending'; });
+    (s.socialHelp || []).forEach(h => { if (!h.invite) h.invite = (s.groups[0] || {}).invite; });
+    return s;
+}
+function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+let state = loadState();
+let currentRole = 'member';
+let currentSection = 'dashboard';
+let sidebarOpen = false;
+let currentMemberId = 'M001';
+let currentGroupId = 'G1';
+
+// ================= HELPERS =================
+const roleLabels = {admin:'Super Admin',chairperson:'Mwenyekiti',treasurer:'Mweka Hazina',secretary:'Katibu',member:'Mwanachama',auditor:'Mkaguzi'};
+const roleIPs = {admin:'192.168.1.1',chairperson:'192.168.1.2',secretary:'192.168.1.3',treasurer:'192.168.1.4',member:'192.168.1.5',auditor:'192.168.1.6'};
+const demoPersonas = {admin:null, chairperson:'M002', treasurer:'M004', secretary:'M001', member:'M005', auditor:'M003'};
+
+function groupById(id) { return state.groups.find(g => g.id === id); }
+function currentGroup() { return groupById(currentGroupId) || state.groups[0]; }
+function groupMembers(gid) { gid = gid || currentGroupId; return state.members.filter(m => m.groupId === gid); }
+function inCurrentGroup(memberId) { const m = memberById(memberId); return !!m && m.groupId === currentGroupId; }
+function scopedLoans() { return state.loans.filter(l => inCurrentGroup(l.memberId)); }
+function scopedTx() { return state.transactions.filter(t => inCurrentGroup(t.memberId)); }
+function scopedRepayments() { return state.repayments.filter(r => inCurrentGroup(r.memberId)); }
+function scopedApps() { return state.loanApplications.filter(a => inCurrentGroup(a.memberId)); }
+function groupStats(g) {
+    const ms = state.members.filter(m => m.groupId === g.id);
+    if (!ms.length) return {members: g.members, savings: g.savings, loans: g.loans};
+    const savings = ms.reduce((s, m) => s + m.savings, 0);
+    const loans = state.loans.filter(l => { const m = memberById(l.memberId); return m && m.groupId === g.id; }).reduce((s, l) => s + l.balance, 0);
+    return {members: ms.length, savings, loans};
+}
+
+function me() { return state.members.find(m => m.id === currentMemberId) || state.members[0]; }
+function memberById(id) { return state.members.find(m => m.id === id); }
+function memberName(id) { const m = memberById(id); return m ? m.name : '—'; }
+function fmt(n) { return 'TSh ' + Number(n).toLocaleString('en'); }
+function pad2(n) { return String(n).padStart(2, '0'); }
+function fmtDate(d) { const dt = new Date(d); return pad2(dt.getDate()) + '/' + pad2(dt.getMonth() + 1) + '/' + dt.getFullYear(); }
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function nowStamp() { const d = new Date(); return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+function genTxId() { state.txCounter++; return 'TXN-' + state.txCounter; }
+function addAudit(action) {
+    state.audit.unshift({time: nowStamp(), user: roleLabels[currentRole] || 'Mwanachama', action, ip: roleIPs[currentRole] || '192.168.1.5', groupId: currentGroupId});
+    state.audit = state.audit.slice(0, 200);
+}
+function notify(t, d, gid) {
+    state.notifications.unshift({t, d, time: 'Sasa', read: false, groupId: gid || currentGroupId});
+    state.notifications = state.notifications.slice(0, 50);
+    updateBell();
+}
+function loanStatus(l) {
+    if (l.balance <= 0) return 'Imelipwa';
+    return new Date(l.due) < new Date() ? 'Chelewa' : 'Hai';
+}
+function activeLoans() { return state.loans.filter(l => l.balance > 0); }
+function overdueLoans() { return state.loans.filter(l => l.balance > 0 && new Date(l.due) < new Date()); }
+function nextLoanId() {
+    let max = 40;
+    state.loans.forEach(l => {
+        const n = parseInt(String(l.id).replace(/[^0-9]/g, ''), 10);
+        if (n > max) max = n;
+    });
+    return 'LN-' + String(max + 1).padStart(3, '0');
+}
+function nextMemberId() {
+    let max = 0;
+    state.members.forEach(m => { const n = parseInt(m.id.replace('M', ''), 10); if (n > max) max = n; });
+    return 'M' + String(max + 1).padStart(3, '0');
+}
+function monthlySeries(entries) {
+    const out = [], now = new Date();
+    for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const prefix = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+        const sum = entries.filter(e => String(e.date).indexOf(prefix) === 0).reduce((s, e) => s + e.amount, 0);
+        out.push({label: d.toLocaleString('en', {month:'short'}), value: sum});
+    }
+    return out;
+}
+function accounting() {
+    const interest = scopedRepayments().reduce((s, r) => s + (r.interest || 0), 0);
+    const penalties = scopedLoans().reduce((s, l) => s + (l.penalty || 0), 0);
+    const expenseList = state.expenses.filter(e => e.groupId === currentGroupId);
+    const expenses = expenseList.reduce((s, e) => s + e.amount, 0);
+    return {interest, penalties, expenses, expenseList, profit: interest + penalties - expenses};
+}
+function nextExpId() { state.expCounter = (state.expCounter || 4) + 1; return 'EXP-' + String(state.expCounter).padStart(3, '0'); }
+function memberTrend(mid) {
+    const now = new Date();
+    const cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 84);
+    const tx = state.transactions.filter(t => t.memberId === mid && t.type !== 'Mfuko wa Jamii' && t.type !== 'Dharura ya Jamii' && new Date(t.date) >= cutoff);
+    const weekly = Math.round(tx.reduce((s, t) => s + t.amount, 0) / 12);
+    const weeksHit = new Set(tx.map(t => {
+        const d = new Date(t.date);
+        return Math.floor((d - cutoff) / (7 * 86400000));
+    })).size;
+    return {weekly, consistency: Math.round(100 * weeksHit / 12), projected6: weekly * 26};
+}
+function refereeExposure(l) {
+    if (!l.referees || !l.referees.length || l.balance <= 0) return null;
+    const today = new Date();
+    const issue = new Date(l.due); issue.setDate(issue.getDate() - 183);
+    const monthsElapsed = Math.max(0.5, (today - issue) / (30.4 * 86400000));
+    const repaid = state.repayments.filter(r => r.loanId === l.id).reduce((s, r) => s + r.amount, 0);
+    const monthlyRate = repaid / monthsElapsed;
+    const required = l.amount * (1 + l.rate / 100) / 6;
+    const monthsLeft = Math.max(0, (new Date(l.due) - today) / (30.4 * 86400000));
+    const projected = Math.round(monthlyRate * monthsLeft);
+    const shortfall = Math.max(0, l.balance - projected) + (l.penalty || 0);
+    if (monthlyRate >= required && shortfall === 0) return null;
+    return {monthlyRate: Math.round(monthlyRate), required: Math.round(required), amount: shortfall, perReferee: Math.ceil(shortfall / l.referees.length)};
+}
+function memberContribution(m) { return (m ? m.savings + m.shares * state.settings.shareValue : 0); }
+function loanCapFor(memberId, refereeIds) {
+    const m = memberById(memberId);
+    if (!m) return {sharesCap: 0, refCap: 0, cap: 0};
+    const sharesCap = m.shares * state.settings.shareValue * state.settings.multiplier;
+    const refCap = refereeIds.reduce((sum, rid) => sum + memberContribution(memberById(rid)), 0);
+    return {sharesCap, refCap, cap: Math.min(sharesCap, refCap)};
+}
+function genPayRef() { state.payCounter = (state.payCounter || 4990) + 1; return 'PAY-' + state.payCounter; }
+function groupByInvite(code) { return state.groups.find(g => g.invite === String(code || '').toUpperCase().trim()); }
+function validPhone(p) { return /^(\+?255|0)[67][0-9]{8}$/.test(String(p || '').replace(/[\s-]/g, '')); }
+function validNida(n) { return /^[0-9]{8,20}$/.test(String(n || '').replace(/[\s-]/g, '')); }
+function avatarHtml(m, cls) {
+    cls = cls || 'w-7 h-7';
+    if (m && m.photo) return `<img src="${m.photo}" class="${cls} rounded-full object-cover inline-block" alt="">`;
+    const init = (m && m.name ? m.name : '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    return `<span class="${cls} rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] font-bold">${init}</span>`;
+}
+let photoDraft = null;
+function pickPhoto(inputId, previewId) {
+    const input = document.getElementById(inputId);
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+            const size = 240, c = document.createElement('canvas');
+            c.width = size; c.height = size;
+            const ctx = c.getContext('2d');
+            const min = Math.min(img.width, img.height);
+            ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, 0, 0, size, size);
+            photoDraft = c.toDataURL('image/jpeg', 0.72);
+            const pv = document.getElementById(previewId);
+            if (pv) { pv.src = photoDraft; pv.classList.remove('hidden'); }
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+function setPhotoData(dataUrl, previewId) {
+    photoDraft = dataUrl;
+    const pv = document.getElementById(previewId);
+    if (pv) { pv.src = dataUrl; pv.classList.remove('hidden'); }
+}
+function memberFormError(name, phone, nida, kinName, photo) {
+    const errs = [];
+    if (!name) errs.push('jina kamili');
+    if (!validPhone(phone)) errs.push('nambari ya simu sahihi (mf. +255712345678)');
+    if (!validNida(nida)) errs.push('NIDA (tarakimu 8-20)');
+    if (!kinName) errs.push('jina la mtuo wa karibu');
+    if (!photo) errs.push('picha ya pasipoti');
+    return errs.length ? 'Inahitaji: ' + errs.join(' • ') : null;
+}
+const JAMII_TYPES = [
+    {id:'msiba', label:'Msiba (Kifo)', beneficiaries:['Mwanachama','Mzazi','Mwana','Mkwe'], amountKey:'jamiiMsiba'},
+    {id:'ugonjwa', label:'Ugonjwa Mkali', beneficiaries:['Mwanachama','Mzazi','Mwana','Mkwe'], amountKey:'jamiiUgonjwa'},
+    {id:'harusi', label:'Harusi', beneficiaries:['Mwanachama'], amountKey:'jamiiHarusi'},
+];
+
+// ================= NAVIGATION =================
+function showPage(page) {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
+    document.getElementById('page-' + page).classList.remove('hidden');
+    if (page === 'dashboard') renderDashboard();
+}
+
+function scrollToSection(id) {
+    showPage('landing');
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function goHome() {
+    showPage('landing');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function doLogin(role) {
+    currentRole = role;
+    const pid = demoPersonas[role];
+    if (pid) {
+        const m = memberById(pid);
+        if (m) { currentMemberId = m.id; currentGroupId = m.groupId; }
+    }
+    showPage('dashboard');
+}
+
+function doPhoneLogin() {
+    const ph = (document.getElementById('phone').value || '').replace(/\s+/g, '');
+    const err = document.getElementById('login-error');
+    const m = state.members.find(x => x.phone === ph);
+    if (!m) {
+        if (err) { err.textContent = 'Hakuna mwanachama wa namba hii. Jiunge kwa msimbo wa mwaliko kwanza.'; err.classList.remove('hidden'); }
+        return;
+    }
+    if (err) err.classList.add('hidden');
+    currentMemberId = m.id;
+    currentRole = (m.role && roleLabels[m.role]) ? m.role : 'member';
+    currentGroupId = m.groupId;
+    showPage('dashboard');
+}
+
+function switchGroup(v) {
+    currentGroupId = v;
+    currentSection = 'dashboard';
+    renderDashboard();
+}
+
+function doLogout() { showPage('landing'); }
+
+function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    sidebarOpen = !sidebarOpen;
+    sb.classList.toggle('-translate-x-full', !sidebarOpen);
+}
+
+const navItems = {
+    admin: [
+        {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'users',label:'Vikundi',section:'groups'},
+        {icon:'user',label:'Wanachama',section:'members'},
+        {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
+        {icon:'wallet',label:'Michango',section:'contributions'},
+        {icon:'banknote',label:'Mikopo',section:'loans'},
+        {icon:'check-circle',label:'Idhini',section:'approvals'},
+        {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'heart',label:'Mfuko Jamii',section:'social'},
+        {icon:'calendar',label:'Mikutano',section:'meetings'},
+        {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
+        {icon:'shield',label:'Ukaguzi',section:'audit'},
+        {icon:'alert-triangle',label:'Hatari',section:'risk'},
+        {icon:'settings',label:'Mipangilio',section:'settings'},
+    ],
+    chairperson: [
+        {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'users',label:'Wanachama',section:'members'},
+        {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
+        {icon:'wallet',label:'Michango',section:'contributions'},
+        {icon:'banknote',label:'Mikopo',section:'loans'},
+        {icon:'check-circle',label:'Idhini',section:'approvals'},
+        {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'calendar',label:'Mikutano',section:'meetings'},
+        {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
+    ],
+    treasurer: [
+        {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'wallet',label:'Michango',section:'contributions'},
+        {icon:'banknote',label:'Mikopo',section:'loans'},
+        {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
+        {icon:'receipt',label:'Malipo',section:'repayments'},
+        {icon:'send',label:'SMS',section:'outbox'},
+        {icon:'calculator',label:'Hesabu',section:'accounting'},
+        {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
+    ],
+    secretary: [
+        {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'users',label:'Wanachama',section:'members'},
+        {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
+        {icon:'calendar',label:'Mikutano',section:'meetings'},
+        {icon:'file-text',label:'Kumbukumbu',section:'audit'},
+        {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'bell',label:'Arifa',section:'notifications'},
+    ],
+    member: [
+        {icon:'layout-dashboard',label:'Dashibodi Yangu',section:'dashboard'},
+        {icon:'wallet',label:'Akiba Yangu',section:'my-savings'},
+        {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
+        {icon:'check-circle',label:'Miamvula',section:'consents'},
+        {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
+        {icon:'heart',label:'Mfuko Jamii',section:'social'},
+        {icon:'bell',label:'Arifa',section:'notifications'},
+    ],
+    auditor: [
+        {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'shield',label:'Ukaguzi',section:'audit'},
+        {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
+        {icon:'alert-triangle',label:'Hatari',section:'risk'},
+        {icon:'user-check',label:'Miamvula',section:'consents'},
+    ],
+};
+
+function buildSidebar() {
+    const nav = document.getElementById('sidebar-nav');
+    const items = navItems[currentRole] || navItems.member;
+    nav.innerHTML = items.map(it => `
+        <button onclick="navigateTo('${it.section}')" class="sidebar-link w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-gray-600 text-[13px] font-medium ${currentSection===it.section?'active':''}">
+            <i data-lucide="${it.icon}" style="width:16px;height:16px"></i> ${it.label}
+        </button>
+    `).join('');
+    const bnav = document.getElementById('bottom-nav-items');
+    const mobileItems = items.slice(0, 5);
+    bnav.innerHTML = mobileItems.map(it => `
+        <button onclick="navigateTo('${it.section}')" class="flex flex-col items-center gap-0.5 px-2 py-1 ${currentSection===it.section?'text-emerald-600':'text-gray-400'}">
+            <i data-lucide="${it.icon}" style="width:18px;height:18px"></i>
+            <span class="text-[10px] font-medium">${it.label.split(' ')[0]}</span>
+        </button>
+    `).join('');
+    lucide.createIcons();
+}
+
+function navigateTo(section) {
+    currentSection = section;
+    buildSidebar();
+    renderSection();
+    if (sidebarOpen) toggleSidebar();
+}
+
+function renderDashboard() {
+    document.getElementById('role-badge').textContent = roleLabels[currentRole] || 'Mwanachama';
+    const who = currentRole === 'member' ? me().name : (roleLabels[currentRole] || '');
+    document.getElementById('user-avatar').textContent = who.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const gb = document.getElementById('group-badge');
+    const gsw = document.getElementById('group-switch');
+    const grp = currentGroup();
+    if (currentRole === 'admin') {
+        gb.classList.add('hidden');
+        gsw.innerHTML = state.groups.map(g => `<option value="${g.id}" ${g.id === currentGroupId ? 'selected' : ''}>${g.name}</option>`).join('');
+        gsw.classList.remove('hidden');
+    } else {
+        gsw.classList.add('hidden');
+        gb.textContent = grp ? grp.name : '';
+        gb.classList.remove('hidden');
+    }
+    currentSection = 'dashboard';
+    buildSidebar();
+    renderSection();
+    runReminders();
+}
+
+function renderSection() {
+    const mc = document.getElementById('main-content');
+    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)'};
+    document.getElementById('page-heading').textContent = titles[currentSection] || 'Dashibodi';
+
+    const renderers = {
+        dashboard: () => currentRole === 'member' ? renderMemberDash() : renderGroupDash(),
+        members: renderMembers, contributions: renderContributions, loans: renderLoans,
+        'my-savings': renderMySavings, 'my-loans': renderMyLoans, groups: renderGroups,
+        approvals: renderApprovals, meetings: renderMeetings, reports: renderReports,
+        audit: renderAudit, social: renderSocial, notifications: renderNotifications,
+        repayments: renderRepayments, accounting: renderAccounting, risk: renderRisk, settings: renderSettings,
+        memberapps: renderMemberApps, consents: renderConsents, outbox: renderOutbox
+    };
+    mc.innerHTML = (renderers[currentSection] || renderGroupDash)();
+    lucide.createIcons();
+    updateBell();
+}
+
+// ================= SHARED UI PIECES =================
+function statCard(label, value, icon, color) {
+    return `<div class="stat-card stat-card-${color} bg-white rounded-xl p-4 border border-gray-100 card-hover">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-9 h-9 rounded-lg bg-${color}-50 flex items-center justify-center">
+                <i data-lucide="${icon}" style="width:16px;height:16px" class="text-${color}-600"></i>
+            </div>
+        </div>
+        <p class="text-xl sm:text-2xl font-bold text-gray-900">${value}</p>
+        <p class="text-xs text-gray-500 mt-0.5">${label}</p>
+    </div>`;
+}
+
+function renderBarChart(series, label, color='emerald') {
+    const max = Math.max(...series.map(s => s.value), 1);
+    const c = color === 'amber' ? 'bg-amber-400' : 'bg-emerald-500';
+    return `<div class="flex items-end gap-1.5 sm:gap-3 h-28">
+        ${series.map(s => `<div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full ${c} chart-bar opacity-90 hover:opacity-100 transition-opacity" style="height:${Math.round((s.value/max)*100)}%"></div>
+            <span class="text-[10px] text-gray-400">${s.label}</span>
+        </div>`).join('')}
+    </div><p class="text-[10px] text-gray-400 mt-1.5 text-right">${label}</p>`;
+}
+
+function updateBell() {
+    const b = document.getElementById('bell-badge');
+    if (!b) return;
+    const n = state.notifications.filter(x => !x.read && x.groupId === currentGroupId).length;
+    b.textContent = n;
+    b.classList.toggle('hidden', n === 0);
+}
+
+// ================= DASHBOARDS =================
+function renderGroupDash() {
+    const g = currentGroup() || state.groups[0];
+    const gs = groupStats(g);
+    const act = scopedLoans().filter(l => l.balance > 0);
+    const tl = act.reduce((s,l)=>s+l.balance,0);
+    const overdue = act.filter(l => new Date(l.due) < new Date()).length;
+    const health = act.length ? Math.round(100 * (1 - overdue / act.length)) : 100;
+    const pendingApps = scopedApps().filter(a => a.status === 'awaiting_referees' || a.status === 'awaiting_approval').length;
+    return `<div class="fade-in space-y-5">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            ${statCard('Akiba Jumla',fmt(gs.savings),'wallet','emerald')}
+            ${statCard('Mikopo Hai',fmt(tl),'banknote','amber')}
+            ${statCard('Fedha Taslimu',fmt(gs.savings-tl),'landmark','blue')}
+            ${statCard('Wanachama',gs.members,'users','purple')}
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            ${currentRole === 'admin' ? statCard('Vikundi',state.groups.length,'layers','emerald') : statCard('Maombi ya Mikopo',pendingApps,'file-text','blue')}
+            ${statCard('Mikopo Chelewa',overdue,'alert-triangle','red')}
+            ${statCard('Riba (Est.)',fmt(Math.round(tl*state.settings.rate/100)),'trending-up','amber')}
+            ${statCard('Afya ya Fedha',health+'%','activity','emerald')}
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-5 border border-gray-100">
+                <h3 class="font-semibold text-gray-900 text-sm mb-4">Mwenendo wa Akiba (Miezi 6)</h3>
+                ${renderBarChart(monthlySeries(scopedTx().filter(t=>t.type==='Akiba')),'Jumla ya michango/mwezi')}
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100">
+                <h3 class="font-semibold text-gray-900 text-sm mb-4">Malipo ya Mikopo (Miezi 6)</h3>
+                ${renderBarChart(monthlySeries(scopedRepayments()),'Jumla ya malipo/mwezi','amber')}
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Shughuli za Hivi Karibuni — ${g.name}</h3>
+            <div class="space-y-2.5 text-sm">${recentActivity()}</div>
+        </div>
+    </div>`;
+}
+
+function recentActivity() {
+    const acts = [];
+    scopedTx().slice(0, 2).forEach(t => acts.push({desc:memberName(t.memberId)+' amelipa mchango ('+t.type+') — '+fmt(t.amount), time:fmtDate(t.date), type:'c'}));
+    scopedApps().slice(0, 1).forEach(p => acts.push({desc:'Ombi la mkopo — '+memberName(p.memberId)+' '+fmt(p.amount), time:fmtDate(p.date), type:'l'}));
+    state.repayments.slice(0, 1).forEach(r => acts.push({desc:'Malipo ya mkopo — '+memberName(r.memberId)+' '+fmt(r.amount), time:fmtDate(r.date), type:'r'}));
+    const colors = {c:'bg-emerald-400',l:'bg-amber-400',r:'bg-blue-400',m:'bg-purple-400'};
+    return acts.map(a=>`<div class="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
+        <div class="w-2 h-2 rounded-full mt-1.5 ${colors[a.type]}"></div>
+        <div class="flex-1"><p class="text-gray-700 text-[13px]">${a.desc}</p><p class="text-[11px] text-gray-400">${a.time}</p></div>
+    </div>`).join('') || '<p class="text-sm text-gray-400">Hakuna shughuli.</p>';
+}
+
+function renderMemberDash() {
+    const m = me();
+    const myLoan = state.loans.filter(l => l.memberId === m.id && l.balance > 0).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
+    const myMfuko = state.transactions.filter(t => t.memberId === m.id && t.type === 'Mfuko wa Jamii').reduce((s,t)=>s+t.amount,0);
+    const score = Math.min(100, Math.round(40 + m.shares * 2 + m.savings / 100000));
+    const loanEstimate = m.shares * state.settings.shareValue * state.settings.multiplier;
+    const trend = memberTrend(m.id);
+    return `<div class="fade-in space-y-5">
+        <div class="bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
+            <p class="text-sm text-emerald-200">Habari, ${m.name.split(' ')[0]}! 👋</p>
+            <p class="text-3xl sm:text-4xl font-bold mt-1">${fmt(m.savings)}</p>
+            <p class="text-sm text-emerald-200 mt-1">Akiba yako ya sasa</p>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            ${statCard('Hisa',m.shares+' hisa','layers','emerald')}
+            ${statCard('Mkopo Hai',m.loan>0?fmt(m.loan):'Hakuna','banknote','amber')}
+            ${statCard('Mfuko Jamii',fmt(myMfuko),'heart','red')}
+            ${statCard('Alama Mkopo',score+'/100','star','purple')}
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-emerald">
+                <p class="text-[11px] text-gray-500 uppercase tracking-wide">Naweza Kuomba (Est.)</p>
+                <p class="text-2xl font-bold text-emerald-600 mt-1">${fmt(loanEstimate)}</p>
+                <p class="text-[11px] text-gray-400 mt-1">3 × hisa zako (${m.shares} × ${fmt(state.settings.shareValue)})</p>
+                <p class="text-[11px] text-gray-500 mt-2">Kikomo halisi = chanya <strong>ndogo</strong> kati ya hii na jumla ya michango ya wadhamini wako 3.</p>
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-blue">
+                <p class="text-[11px] text-gray-500 uppercase tracking-wide">Mwelekeo wa Michango</p>
+                <p class="text-2xl font-bold text-blue-600 mt-1">+${fmt(trend.weekly)} / wiki</p>
+                <p class="text-[11px] text-gray-400 mt-1">wastani wa wiki 12 zilizopita</p>
+                <div class="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-2 bg-blue-500 rounded-full" style="width:${trend.consistency}%"></div></div>
+                <p class="text-[11px] text-gray-500 mt-1.5">Ukiendelea hivi, miezi 6 ijayo utaongeza ~<strong class="text-gray-900">${fmt(trend.projected6)}</strong> (fuatiliaji ${trend.consistency}%).</p>
+            </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-5 border border-gray-100">
+                <h3 class="font-semibold text-gray-900 text-sm mb-3">Vitendo vya Haraka</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="showContributeModal()" class="bg-emerald-50 text-emerald-700 rounded-lg py-3 text-xs font-medium hover:bg-emerald-100 transition">💰 Lipa Mchango</button>
+                    <button onclick="showLoanModal()" class="bg-amber-50 text-amber-700 rounded-lg py-3 text-xs font-medium hover:bg-amber-100 transition">📋 Omba Mkopo</button>
+                    <button onclick="navigateTo('my-savings')" class="bg-blue-50 text-blue-700 rounded-lg py-3 text-xs font-medium hover:bg-blue-100 transition">📊 Taarifa</button>
+                    <button onclick="navigateTo('social')" class="bg-purple-50 text-purple-700 rounded-lg py-3 text-xs font-medium hover:bg-purple-100 transition">🤝 Mfuko</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100">
+                <h3 class="font-semibold text-gray-900 text-sm mb-3">Malipo Yanayokuja</h3>
+                ${myLoan?(() => { const days=Math.ceil((new Date(myLoan.due)-new Date())/86400000); const penalty=Math.round(myLoan.balance*state.settings.penalty/100); const warn=days<=state.settings.remindLeadDays; return `<div class="bg-amber-50 rounded-lg p-3 border ${warn?'border-red-200':'border-amber-100'}">
+                    <p class="text-xs font-medium ${warn?'text-red-700':'text-amber-800'}">Malipo ya Mkopo (${myLoan.id})</p>
+                    <p class="text-lg font-bold text-amber-900 mt-0.5">${fmt(Math.round(myLoan.amount*(1+myLoan.rate/100)/6))}</p>
+                    <p class="text-[11px] text-amber-600 mt-0.5">Mwisho: ${fmtDate(myLoan.due)} (${days<0?'amechelewa siku '+Math.abs(days):'siku '+days})</p>
+                    ${warn?`<p class="text-[11px] text-red-600 font-medium mt-1">⚠ Lipa sasa kuepuka adhabu ya ${fmt(penalty)} (${state.settings.penalty}%)</p>`:''}
+                </div>`;})():'<p class="text-sm text-gray-400">Hakuna malipo yanayosubiri.</p>'}
+            </div>
+        </div>
+    </div>`;
+}
+
+// ================= MEMBERS =================
+function renderMembers() {
+    return `<div class="fade-in space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <input type="text" placeholder="Tafuta mwanachama..." oninput="filterMembers(this.value)" class="border border-gray-200 rounded-lg px-3.5 py-2 text-sm w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 outline-none">
+            <button onclick="showAddMemberModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition whitespace-nowrap">+ Ongeza Mwanachama</button>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Jina</th><th class="px-4 py-3 text-left hidden sm:table-cell">Simu</th><th class="px-4 py-3 text-right">Akiba</th><th class="px-4 py-3 text-right hidden md:table-cell">Hisa</th><th class="px-4 py-3 text-right hidden md:table-cell">Mkopo</th><th class="px-4 py-3 text-center">Hali</th></tr></thead>
+                <tbody id="members-tbody">${groupMembers().map(m=>`<tr onclick="showMemberProfile('${m.id}')" class="border-t border-gray-50 hover:bg-gray-50/50 transition cursor-pointer"><td class="px-4 py-3 font-mono text-xs text-gray-400">${m.id}</td><td class="px-4 py-3 font-medium text-gray-900"><span class="inline-flex items-center gap-2">${avatarHtml(m)} ${m.name}</span></td><td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${m.phone}</td><td class="px-4 py-3 text-right font-medium">${fmt(m.savings)}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.shares}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.loan>0?fmt(m.loan):'—'}</td><td class="px-4 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5 rounded-full font-medium">${m.status}</span></td></tr>`).join('')}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+function filterMembers(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('#members-tbody tr').forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+    });
+}
+
+function showMemberProfile(id) {
+    const m = memberById(id);
+    if (!m) return;
+    const grp = groupById(m.groupId);
+    openModal(`<div class="text-center">
+        ${m.photo ? `<img src="${m.photo}" class="w-20 h-20 rounded-full object-cover mx-auto border-2 border-emerald-100" alt="">` : `<div class="w-20 h-20 rounded-full bg-emerald-600 text-white flex items-center justify-center text-2xl font-bold mx-auto">${m.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}</div>`}
+        <h3 class="text-lg font-bold text-gray-900 mt-3">${m.name}</h3>
+        <p class="text-xs text-gray-400 font-mono">${m.id} • ${grp ? grp.name : ''} • ${roleLabels[m.role] || 'Mwanachama'}</p>
+        <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
+            <p><span class="text-gray-500">Simu:</span> ${m.phone}</p>
+            <p><span class="text-gray-500">NIDA:</span> <span class="font-mono text-[12px]">${m.nationalId || '—'}</span></p>
+            <p class="border-t border-gray-200 pt-1.5 mt-1.5 font-semibold text-gray-700 text-[12px] uppercase tracking-wide">Mtuo wa Karibu</p>
+            <p><span class="text-gray-500">Jina:</span> ${m.kinName || '—'} (${m.kinRelation || '—'})</p>
+            <p><span class="text-gray-500">Simu:</span> ${m.kinPhone || '—'}</p>
+            <p class="border-t border-gray-200 pt-1.5 mt-1.5"><span class="text-gray-500">Akiba:</span> ${fmt(m.savings)} • <span class="text-gray-500">Hisa:</span> ${m.shares} • <span class="text-gray-500">Mkopo:</span> ${m.loan > 0 ? fmt(m.loan) : 'Hakuna'}</p>
+        </div>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
+    </div>`);
+}
+
+function showAddMemberModal() {
+    photoDraft = null;
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Ongeza Mwanachama</h3>
+        <p class="text-[11px] text-gray-400 mb-4">Picha ya pasipoti, simu, NIDA, jina kamili na mtuo wa karibu — vinahitajika vyote.</p>
+        <form onsubmit="event.preventDefault(); processAddMember()">
+            <div class="flex items-center gap-3 mb-3">
+                <img id="member-photo-preview" class="w-14 h-14 rounded-full object-cover border border-gray-200 hidden" alt="">
+                <div class="flex-1">
+                    <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Picha ya Pasipoti (mpya)</label>
+                    <input id="member-photo" type="file" accept="image/*" onchange="pickPhoto('member-photo','member-photo-preview')" class="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jina Kamili</label>
+                <input id="new-member-name" type="text" placeholder="mf. Maria John" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Simu</label>
+                <input id="new-member-phone" type="tel" placeholder="+255 7XX XXX XXX" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1 mt-2">Kitambulisho cha Taifa (NIDA)</label>
+            <input id="new-member-nida" type="text" placeholder="Tarakimu 20" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500">
+            <p class="text-[11px] font-semibold text-gray-600 uppercase tracking-wide mt-3 mb-1">Mtuo wa Karibu (Next of Kin)</p>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="col-span-2"><label class="text-[11px] text-gray-500 block mb-1">Jina kamili</label>
+                <input id="new-kin-name" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 block mb-1">Uhusiano</label>
+                <input id="new-kin-rel" type="text" placeholder="Mke / Baba ..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 block mb-1">Simu ya mtuo</label>
+                <input id="new-kin-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <p id="member-form-error" class="text-xs text-red-600 mt-3 hidden"></p>
+            <div class="flex gap-2 mt-3"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Hifadhi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function processAddMember() {
+    const name = document.getElementById('new-member-name').value.trim();
+    const phone = document.getElementById('new-member-phone').value.trim();
+    const nida = document.getElementById('new-member-nida').value.trim();
+    const kinName = document.getElementById('new-kin-name').value.trim();
+    const kinRelation = document.getElementById('new-kin-rel').value.trim();
+    const kinPhone = document.getElementById('new-kin-phone').value.trim();
+    const err = document.getElementById('member-form-error');
+    const msg = memberFormError(name, phone, nida, kinName, photoDraft);
+    if (msg) { err.textContent = msg; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    const m = {id: nextMemberId(), name, phone, savings: 0, shares: 0, loan: 0, status: 'Active',
+        groupId: currentGroupId, role: 'member', photo: photoDraft, nationalId: nida,
+        kinName, kinRelation: kinRelation || '—', kinPhone: kinPhone || '—'};
+    state.members.push(m);
+    const g = currentGroup(); if (g) g.members += 1;
+    addAudit('Ameongeza mwanachama — ' + name + ' (NIDA ' + nida.slice(-4).padStart(nida.length, '•') + ')');
+    notify('Mwanachama mpya amejiunga', name + (g ? ' → ' + g.name : ''));
+    photoDraft = null;
+    save();
+    closeModal();
+    renderSection();
+}
+
+// ================= GROUPS =================
+function renderGroups() {
+    return `<div class="fade-in space-y-4">
+        <div class="flex items-center justify-between">
+            <p class="text-sm text-gray-500">Vikundi ${state.groups.length}</p>
+            <button onclick="showAddGroupModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Unda Kikundi</button>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${state.groups.map(g=>{const st=groupStats(g);return `<div class="bg-white rounded-xl p-5 border border-gray-100 card-hover">
+                <h4 class="font-semibold text-gray-900 text-sm">${g.name}</h4>
+                <p class="text-[11px] text-gray-500 mt-0.5">${g.location} • ${st.members} wanachama</p>
+                <p class="text-[10px] font-mono text-gray-400 mt-2">Mwaliko: ${g.invite}</p>
+                <button onclick="copyInvite('${g.invite}')" class="text-[10px] text-emerald-600 hover:underline mb-3">📋 Nakili kiitiko cha mwaliko</button>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><p class="text-[11px] text-gray-400">Akiba</p><p class="font-bold text-emerald-600 text-sm">${fmt(st.savings)}</p></div>
+                    <div><p class="text-[11px] text-gray-400">Mikopo</p><p class="font-bold text-amber-600 text-sm">${fmt(st.loans)}</p></div>
+                </div>
+            </div>`;}).join('')}
+        </div>
+    </div>`;
+}
+
+function copyInvite(code) {
+    const url = location.origin + location.pathname + '#invite=' + code;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => alert('Kiitiko cha mwaliko kimenakiliwa:\n' + url), () => alert(url));
+    } else alert(url);
+}
+
+function showAddGroupModal() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Unda Kikundi</h3>
+        <form onsubmit="event.preventDefault(); processAddGroup()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jina la Kikundi</label>
+            <input id="new-group-name" type="text" placeholder="mf. Tushikamane VICOBA" required class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Eneo</label>
+            <input id="new-group-location" type="text" placeholder="mf. Morogoro" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Hifadhi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function processAddGroup() {
+    const name = document.getElementById('new-group-name').value.trim();
+    const loc = document.getElementById('new-group-location').value.trim() || '—';
+    if (!name) return;
+    state.groups.push({name, location: loc, members: 1, savings: 0, loans: 0});
+    addAudit('Ameunda kikundi — ' + name);
+    notify('Kikundi kipya kimeundwa', name + ' • ' + loc);
+    save();
+    closeModal();
+    renderSection();
+}
+
+// ================= CONTRIBUTIONS =================
+function renderContributions() {
+    const netBadge = n => ({'M-Pesa':'bg-green-50 text-green-700','Mixx by Yas':'bg-blue-50 text-blue-700','Airtel Money':'bg-red-50 text-red-600','HaloPesa':'bg-yellow-50 text-yellow-700','Benki':'bg-sky-50 text-sky-700','Kadi':'bg-purple-50 text-purple-700','Taslimu':'bg-gray-100 text-gray-600'}[n] || 'bg-gray-100 text-gray-500');
+    const rows = scopedTx().slice(0, 20).map(t => `<tr class="border-t border-gray-50" data-net="${t.network || ''}">
+        <td class="px-4 py-3 font-mono text-xs text-gray-400">${t.id}</td>
+        <td class="px-4 py-3"><span class="font-mono text-[10px] text-gray-400">${t.memberId}</span> ${memberName(t.memberId)}</td>
+        <td class="px-4 py-3 text-right font-medium">${fmt(t.amount)}</td>
+        <td class="px-4 py-3 hidden sm:table-cell"><span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${t.type === 'Akiba' ? 'bg-emerald-50 text-emerald-700' : t.type === 'Hisa' ? 'bg-amber-50 text-amber-700' : 'bg-purple-50 text-purple-700'}">${t.type}</span></td>
+        <td class="px-4 py-3 hidden lg:table-cell"><span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${netBadge(t.network)}">${t.network || '—'}</span></td>
+        <td class="px-4 py-3 hidden sm:table-cell">${t.ref ? '<span class="font-mono text-[11px] text-gray-400">' + t.ref + '</span><br>' : ''}${fmtDate(t.date)}</td>
+        <td class="px-4 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5 rounded-full">Imethibitishwa</span></td>
+    </tr>`).join('');
+    const chips = ['','M-Pesa','Mixx by Yas','Airtel Money','HaloPesa','Benki','Kadi','Taslimu'].map(n =>
+        `<button onclick="filterTxNet('${n}', this)" data-n="${n}" class="text-[11px] px-2.5 py-1 rounded-full font-medium border ${n===''?'bg-emerald-600 text-white border-emerald-600':'bg-white text-gray-600 border-gray-200'} hover:border-emerald-400 transition">${n || 'Zote'}</button>`).join(' ');
+    return `<div class="fade-in space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-gray-500">Michango ya hivi karibuni (${scopedTx().length} jumla)</p>
+            <button onclick="showContributeModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Rekodi</button>
+        </div>
+        <div class="flex flex-wrap gap-1.5">${chips}</div>
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">TXN</th><th class="px-4 py-3 text-left">Mwanachama</th><th class="px-4 py-3 text-right">Kiasi</th><th class="px-4 py-3 text-left hidden sm:table-cell">Aina</th><th class="px-4 py-3 text-left hidden lg:table-cell">Mtandao</th><th class="px-4 py-3 text-left hidden sm:table-cell">Tarehe</th><th class="px-4 py-3 text-center">Hali</th></tr></thead>
+                <tbody id="tx-tbody">${rows || '<tr><td colspan="7" class="px-4 py-6 text-center text-gray-400 text-sm">Hakuna michango bado.</td></tr>'}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+function filterTxNet(n, btn) {
+    document.querySelectorAll('#tx-tbody tr').forEach(tr => {
+        tr.style.display = (!n || tr.dataset.net === n) ? '' : 'none';
+    });
+    document.querySelectorAll('[data-n]').forEach(b => {
+        const on = b.dataset.n === n;
+        b.className = `text-[11px] px-2.5 py-1 rounded-full font-medium border ${on?'bg-emerald-600 text-white border-emerald-600':'bg-white text-gray-600 border-gray-200'} hover:border-emerald-400 transition`;
+    });
+}
+
+const PAY_CHANNELS = [
+    {id:'M-Pesa', icon:'🟢', hint:'Vodacom • *150*00#'},
+    {id:'Mixx by Yas', icon:'🔵', hint:'Yas (Tigo) • *150*01#'},
+    {id:'Airtel Money', icon:'🔴', hint:'Airtel • *150*60#'},
+    {id:'HaloPesa', icon:'🟡', hint:'Halotel • *150*88#'},
+    {id:'Benki', icon:'🏦', hint:'NMB / CRDB Transfer'},
+    {id:'Kadi', icon:'💳', hint:'Visa / Mastercard'},
+    {id:'Taslimu', icon:'💵', hint:'Ofisini — rekodi moja kwa moja'},
+];
+let payDraft = null;
+
+function showContributeModal(presetType) {
+    const types = ['Akiba','Hisa','Mfuko wa Jamii','Dharura ya Jamii'];
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Lipa Mchango</h3>
+        <form onsubmit="event.preventDefault(); showPaymentStep()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mwanachama</label>
+            <select id="contrib-member" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${groupMembers().map(m=>`<option value="${m.id}" ${m.id===currentMemberId?'selected':''}>${m.name} (${m.id})</option>`).join('')}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Aina</label>
+            <select id="contrib-type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${types.map(t=>`<option ${t===presetType?'selected':''}>${t}</option>`).join('')}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+            <input id="contrib-amount" type="number" value="${state.settings.weekly}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Endelea — Chagua Mtandao →</button>
+        </form>`);
+}
+
+function showPaymentStep() {
+    const mid = document.getElementById('contrib-member').value;
+    const type = document.getElementById('contrib-type').value;
+    const amount = parseInt(document.getElementById('contrib-amount').value, 10) || 0;
+    if (amount <= 0) return;
+    payDraft = {mid, type, amount, ref: genPayRef()};
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Chagua Mtandao wa Malipo</h3>
+        <p class="text-xs text-gray-500 mb-4">${memberName(mid)} • ${type} • ${fmt(amount)} • Ref: <span class="font-mono">${payDraft.ref}</span></p>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+            ${PAY_CHANNELS.map(c=>`<button type="button" onclick="pickChannel('${c.id}')" class="border border-gray-200 rounded-xl p-3 text-left hover:border-emerald-400 hover:bg-emerald-50 transition">
+                <p class="text-sm font-semibold text-gray-900">${c.icon} ${c.id}</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">${c.hint}</p>
+            </button>`).join('')}
+        </div>
+        <div id="pay-instructions"></div>
+        <p class="text-[10px] text-gray-400 mt-3 text-center">Simulation — integration halisi: soma docs/payments-integration-spec.md</p>`);
+}
+
+function pickChannel(id) {
+    const box = document.getElementById('pay-instructions');
+    const c = PAY_CHANNELS.find(x => x.id === id);
+    payDraft.network = id;
+    if (id === 'Taslimu') {
+        box.innerHTML = `<div class="bg-gray-50 rounded-lg p-3.5 border border-gray-100 text-sm text-gray-600">Pesa taslimu ofisini — rekodi moja kwa moja.</div>
+            <button onclick="confirmPayment()" class="mt-3 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Thibitisha</button>`;
+        return;
+    }
+    const ussd = {'M-Pesa':'*150*00#','Mixx by Yas':'*150*01#','Airtel Money':'*150*60#','HaloPesa':'*150*88#'}[id];
+    box.innerHTML = `<div class="bg-blue-50 rounded-lg p-3.5 border border-blue-100 text-[12px] text-blue-800 space-y-1">
+            <p><strong>${c.icon} ${id}</strong> — maelekekezo:</p>
+            ${ussd?`<p>1. Bonyeza <span class="font-mono font-bold">${ussd}</span> kwenye simu yako</p>
+            <p>2. Chagua "Lipa Kikundi" → VICOBA OS</p>`:`<p>1. Hamisha kwa akaunti ya kikundi (NMB/CRDB)</p>`}
+            <p>${ussd?'3.':'2.'} Weka Kumbukumbu/Namba ya Marejeleo: <span class="font-mono font-bold">${payDraft.ref}</span></p>
+            <p>Kiasi: <strong>${fmt(payDraft.amount)}</strong></p>
+        </div>
+        <button onclick="confirmPayment()" class="mt-3 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">✓ Nimepay — Thibitisha</button>`;
+}
+
+function confirmPayment() {
+    if (!payDraft) return;
+    processContribution(payDraft.mid, payDraft.type, payDraft.amount, payDraft.network, payDraft.ref);
+}
+
+function processContribution(mid, type, amount, network, ref) {
+    const member = memberById(mid);
+    if (!member || amount <= 0) return;
+    if (type === 'Akiba') member.savings += amount;
+    else if (type === 'Hisa') member.shares += Math.floor(amount / state.settings.shareValue);
+    else if (type === 'Mfuko wa Jamii' || type === 'Dharura ya Jamii') { const g = currentGroup(); if (g) g.social = (g.social || 0) + amount; }
+
+    const tx = {id: genTxId(), memberId: mid, type, amount, date: todayISO(), network: network || null, ref: ref || null};
+    state.transactions.unshift(tx);
+    addAudit('Amerekodi mchango — ' + tx.id + ' (' + type + ' ' + fmt(amount) + (network ? ' • ' + network : '') + ')');
+    notify('Mchango umekubaliwa', member.name + ' — ' + fmt(amount) + ' (' + type + (network ? ' • ' + network : '') + ')');
+    save();
+    renderSection();
+    openModal(`<div class="text-center">
+        <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check" style="width:28px;height:28px" class="text-emerald-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-900">Mchango Umekubaliwa!</h3>
+        <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
+            <p><span class="text-gray-500">TXN:</span> <span class="font-mono">${tx.id}</span></p>
+            <p><span class="text-gray-500">Mwanachama:</span> ${member.name}</p>
+            <p><span class="text-gray-500">Aina:</span> ${type}</p>
+            <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)}</p>
+            ${network?`<p><span class="text-gray-500">Mtandao:</span> ${network} ${ref?'• <span class="font-mono">'+ref+'</span>':''}</p>`:''}
+            <p><span class="text-gray-500">Hali:</span> <span class="text-emerald-600 font-medium">Imethibitishwa ✓</span></p>
+        </div>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
+    </div>`);
+    lucide.createIcons();
+}
+
+// ================= LOANS =================
+function renderLoans() {
+    const counts = {hai: 0, chelewa: 0, lipwa: 0};
+    scopedLoans().forEach(l => { const s = loanStatus(l); if (s === 'Hai') counts.hai++; else if (s === 'Chelewa') counts.chelewa++; else counts.lipwa++; });
+    return `<div class="fade-in space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex gap-2">
+                <span class="bg-emerald-50 text-emerald-700 text-[11px] px-2.5 py-1 rounded-full font-medium">Hai: ${counts.hai}</span>
+                <span class="bg-red-50 text-red-600 text-[11px] px-2.5 py-1 rounded-full font-medium">Chelewa: ${counts.chelewa}</span>
+                <span class="bg-gray-100 text-gray-600 text-[11px] px-2.5 py-1 rounded-full font-medium">Imelipwa: ${counts.lipwa}</span>
+            </div>
+            <button onclick="showLoanModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Omba Mkopo</button>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Mwanachama</th><th class="px-4 py-3 text-right">Kiasi</th><th class="px-4 py-3 text-right hidden sm:table-cell">Baki</th><th class="px-4 py-3 text-center hidden md:table-cell">Riba</th><th class="px-4 py-3 text-center">Hali</th><th class="px-4 py-3 text-left hidden md:table-cell">Mwisho</th></tr></thead>
+                <tbody>${scopedLoans().map(l=>{const st=loanStatus(l);return `<tr class="border-t border-gray-50 hover:bg-gray-50/50"><td class="px-4 py-3 font-mono text-xs text-gray-400">${l.id}</td><td class="px-4 py-3 font-medium">${memberName(l.memberId)}</td><td class="px-4 py-3 text-right">${fmt(l.amount)}</td><td class="px-4 py-3 text-right hidden sm:table-cell">${l.balance>0?fmt(l.balance):'—'}</td><td class="px-4 py-3 text-center hidden md:table-cell">${l.rate}%</td><td class="px-4 py-3 text-center"><span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${st==='Hai'?'bg-emerald-50 text-emerald-700':st==='Chelewa'?'bg-red-50 text-red-600':'bg-gray-100 text-gray-500'}">${st}</span></td><td class="px-4 py-3 hidden md:table-cell text-gray-500">${fmtDate(l.due)}</td></tr>`}).join('')}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+function loanFormHtml(applicantId, cancelJs) {
+    const others = groupMembers().filter(m => m.id !== applicantId);
+    const opts = `<option value="">— Chagua —</option>` + others.map(m => `<option value="${m.id}">${m.name} — michango ${fmt(memberContribution(m))}</option>`).join('');
+    return `
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+        <input id="loan-amount" type="number" value="300000" oninput="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Sababu</label>
+        <select id="loan-reason" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"><option>Biashara</option><option>Elimu</option><option>Afya</option><option>Nyumba</option></select>
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mdhamini 1</label>
+        <select id="loan-r1" onchange="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${opts}</select>
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mdhamini 2</label>
+        <select id="loan-r2" onchange="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${opts}</select>
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mdhamini 3</label>
+        <select id="loan-r3" onchange="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${opts}</select>
+        <div id="loan-elig" class="bg-blue-50 rounded-lg p-3 mb-4 text-[11px] text-blue-700 border border-blue-100"></div>
+        <div class="flex gap-2"><button type="submit" id="loan-submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Wasilisha</button><button type="button" onclick="${cancelJs}" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>`;
+}
+
+function loanRefereeIds() {
+    return ['loan-r1', 'loan-r2', 'loan-r3'].map(id => document.getElementById(id) ? document.getElementById(id).value : '').filter(Boolean);
+}
+
+function updateLoanElig() {
+    const amountEl = document.getElementById('loan-amount');
+    if (!amountEl) return;
+    const applicantId = amountEl.dataset.applicant;
+    const m = memberById(applicantId);
+    if (!m) return;
+    const refs = loanRefereeIds();
+    const distinct = refs.length === 3 && new Set(refs).size === 3 && !refs.includes(applicantId);
+    const {sharesCap, refCap, cap} = loanCapFor(applicantId, refs);
+    const amount = parseInt(amountEl.value, 10) || 0;
+    const over = amount > cap;
+    const el = document.getElementById('loan-elig');
+    const btn = document.getElementById('loan-submit');
+    if (el) el.innerHTML = `
+        <p><strong>${m.name}:</strong> Hisa ${m.shares} × ${fmt(state.settings.shareValue)} × ${state.settings.multiplier} = <strong>${fmt(sharesCap)}</strong></p>
+        <p>Jumla ya michango ya wadhamini (${refs.length}/3): <strong>${fmt(refCap)}</strong></p>
+        <p class="mt-1 border-t border-blue-100 pt-1">Kikomo halisi (chanya ndogo): <strong>${fmt(cap)}</strong></p>
+        ${!distinct ? '<p class="text-amber-700 font-medium mt-1">⚠ Chagua wadhamini 3 tofauti (si wewe).</p>' : ''}
+        ${distinct && over ? '<p class="text-red-600 font-medium mt-1">✖ Kiasi kinazidi kikomo — punguza hadi ' + fmt(cap) + ' au chagua wadhamini wenye michango zaidi.</p>' : ''}
+        ${distinct && !over && amount > 0 ? '<p class="text-emerald-700 font-medium mt-1">✓ Kiasi kinakubalika.</p>' : ''}`;
+    if (btn) btn.disabled = !(distinct && amount > 0 && !over);
+}
+
+function showLoanModal() {
+    const m = me();
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Omba Mkopo — Wadhamini 3</h3>
+        <form onsubmit="event.preventDefault(); submitLoanApplication('${m.id}')">
+            ${loanFormHtml(m.id, 'closeModal()')}
+        </form>`);
+    const amountEl = document.getElementById('loan-amount');
+    amountEl.dataset.applicant = m.id;
+    updateLoanElig();
+}
+
+function submitLoanApplication(mid) {
+    const amount = parseInt(document.getElementById('loan-amount').value, 10) || 0;
+    const reason = document.getElementById('loan-reason').value;
+    const refs = loanRefereeIds();
+    const distinct = refs.length === 3 && new Set(refs).size === 3 && !refs.includes(mid);
+    const {cap} = loanCapFor(mid, refs);
+    if (!distinct || amount <= 0 || amount > cap) { updateLoanElig(); return; }
+
+    const m = memberById(mid);
+    if (!m || m.groupId !== currentGroupId) return;
+    const ref = genTxId();
+    const score = Math.min(100, Math.round(40 + m.shares * 2 + m.savings / 100000));
+    state.loanApplications.unshift({
+        ref, memberId: mid, amount, reason, date: todayISO(), shares: m.shares, score,
+        referees: refs.map(rid => ({memberId: rid, contribution: memberContribution(memberById(rid)), consent: 'pending'})),
+        status: 'awaiting_referees'
+    });
+    refs.forEach(rid => notify('Ombi la udhamini', m.name + ' ameomba mkopo ' + fmt(amount) + ' (' + ref + '). Jibu kwenye "Miamvula".'));
+    notify('Ombi limewasilishwa', ref + ' — linasubiri makubaliano ya wadhamini 3');
+    addAudit('Ombi la mkopo ' + ref + ' — ' + m.name + ' ' + fmt(amount) + ' (wadhamini 3, kikomo ' + fmt(cap) + ')');
+    save();
+
+    renderSection();
+    openModal(`<div class="text-center">
+        <div class="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="clock" style="width:28px;height:28px" class="text-amber-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-900">Ombi Limewasilishwa</h3>
+        <p class="text-sm text-gray-500 mt-2">Wadhamini wote 3 wamepata arifa. Baada ya makubaliano yote, ombi litaenda kwa idhini ya viongozi wa ${currentGroup().name}.</p>
+        <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
+            <p><span class="text-gray-500">Ref:</span> <span class="font-mono">${ref}</span></p>
+            <p><span class="text-gray-500">Mwombaji:</span> ${m.name}</p>
+            <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)} • Sababu: ${reason}</p>
+            <p><span class="text-gray-500">Wadhamini:</span></p>
+            ${refs.map(rid => `<p class="pl-3">• ${memberName(rid)} — <span class="text-amber-600 font-medium">inasubiri makubaliano</span></p>`).join('')}
+        </div>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
+    </div>`);
+    lucide.createIcons();
+}
+
+// ================= MY SAVINGS / MY LOANS =================
+function renderMySavings() {
+    const m = me();
+    const myTx = state.transactions.filter(t => t.memberId === m.id);
+    const myMfuko = myTx.filter(t => t.type === 'Mfuko wa Jamii').reduce((s,t)=>s+t.amount,0);
+    return `<div class="fade-in space-y-4">
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div><p class="text-xl sm:text-2xl font-bold text-emerald-600">${fmt(m.savings)}</p><p class="text-[11px] text-gray-500 mt-0.5">Akiba</p></div>
+                <div><p class="text-xl sm:text-2xl font-bold text-amber-600">${m.shares}</p><p class="text-[11px] text-gray-500 mt-0.5">Hisa</p></div>
+                <div><p class="text-xl sm:text-2xl font-bold text-blue-600">${fmt(myMfuko)}</p><p class="text-[11px] text-gray-500 mt-0.5">Mfuko Jamii</p></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Historia ya Michango</h3>
+            <div class="space-y-0 text-sm">
+                ${myTx.slice(0,10).map(c=>`<div class="flex justify-between py-2.5 border-b border-gray-50 last:border-0"><span class="text-gray-500 text-[13px]">${fmtDate(c.date)} — ${c.type}</span><span class="font-medium text-emerald-600 text-[13px]">+${fmt(c.amount)}</span></div>`).join('') || '<p class="text-sm text-gray-400">Hakuna michango bado.</p>'}
+            </div>
+        </div>
+    </div>`;
+}
+
+function renderMyLoans() {
+    const m = me();
+    const myLoan = state.loans.filter(l => l.memberId === m.id && l.balance > 0).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
+    let progress = 0, monthly = 0;
+    if (myLoan) {
+        progress = Math.round(100 * (1 - myLoan.balance / myLoan.amount));
+        monthly = Math.round(myLoan.amount * (1 + myLoan.rate / 100) / 6);
+    }
+    return `<div class="fade-in space-y-4">
+        ${myLoan?`<div class="bg-white rounded-xl p-5 border border-gray-100">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-semibold text-gray-900 text-sm">Mkopo Wangu (${myLoan.id})</h3><span class="bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5 rounded-full font-medium">${loanStatus(myLoan)}</span></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><p class="text-[11px] text-gray-500">Kiasi</p><p class="font-bold text-gray-900">${fmt(myLoan.amount)}</p></div>
+                <div><p class="text-[11px] text-gray-500">Baki</p><p class="font-bold text-amber-600">${fmt(myLoan.balance)}</p></div>
+                <div><p class="text-[11px] text-gray-500">Riba</p><p class="font-bold text-gray-900">${myLoan.rate}%</p></div>
+                <div><p class="text-[11px] text-gray-500">Malipo/Mwezi</p><p class="font-bold text-gray-900">${fmt(monthly)}</p></div>
+            </div>
+            <div class="mt-4"><div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-2 bg-emerald-500 rounded-full" style="width:${progress}%"></div></div><p class="text-[11px] text-gray-400 mt-1">${progress}% umelipa • Mwisho: ${fmtDate(myLoan.due)}</p></div>
+        </div>`:'<div class="bg-white rounded-xl p-5 border border-gray-100 text-center"><p class="text-sm text-gray-400">Huna mkopo hai.</p></div>'}
+        <button onclick="showLoanModal()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition">Omba Mkopo Mpya</button>
+    </div>`;
+}
+
+// ================= APPROVALS =================
+function renderApprovals() {
+    const inScope = scopedApps();
+    const awaiting = inScope.filter(a => a.status === 'awaiting_approval');
+    const pendingRefs = inScope.filter(a => a.status === 'awaiting_referees');
+    return `<div class="fade-in space-y-3">
+        <p class="text-sm text-gray-500">Maombi yanayosubiri idhini (${awaiting.length})</p>
+        ${pendingRefs.length ? `<div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-[13px] text-blue-800">⏳ ${pendingRefs.length} maombi yanapasubiri makubaliano ya wadhamini: ${pendingRefs.map(a => memberName(a.memberId) + ' (' + a.ref + ')').join(' • ')}</div>` : ''}
+        ${awaiting.map(l=>`
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <p class="font-medium text-gray-900 text-sm">${memberName(l.memberId)} — Mkopo ${fmt(l.amount)} <span class="text-[11px] text-gray-400 font-normal">• ${l.reason || '—'}</span></p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Ref: <span class="font-mono">${l.ref}</span> • ${fmtDate(l.date)} • Hisa: ${l.shares} • Alama: ${l.score}/100</p>
+                    <p class="text-[11px] text-emerald-700 mt-1">${l.referees.map(r => '✓ ' + memberName(r.memberId)).join(' &nbsp; ')}</p>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="approveLoan('${l.ref}',true)" class="bg-emerald-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">Idhinisha</button>
+                    <button onclick="approveLoan('${l.ref}',false)" class="bg-red-50 text-red-600 px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Kataa</button>
+                </div>
+            </div>
+        </div>`).join('') || '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna maombi yanayosubiri.</div>'}
+    </div>`;
+}
+
+function approveLoan(ref, ok) {
+    const app = state.loanApplications.find(a => a.ref === ref);
+    if (!app) return;
+    if (ok) {
+        app.status = 'approved';
+        const d = new Date(); d.setMonth(d.getMonth() + 6);
+        const loanId = nextLoanId();
+        state.loans.unshift({id: loanId, memberId: app.memberId, amount: app.amount, balance: app.amount, rate: state.settings.rate, due: d.toISOString().slice(0,10),
+            referees: app.referees.map(r => ({memberId: r.memberId, contribution: r.contribution}))});
+        const member = memberById(app.memberId);
+        if (member) member.loan += app.amount;
+        addAudit('Ameidhinisha mkopo ' + loanId + ' — ' + memberName(app.memberId) + ' ' + fmt(app.amount));
+        notify('Mkopo umeidhinishwa', memberName(app.memberId) + ' — ' + fmt(app.amount) + ' (' + loanId + ')');
+    } else {
+        app.status = 'rejected';
+        addAudit('Amekataa ombi la mkopo ' + ref + ' — ' + memberName(app.memberId));
+        notify('Ombi la mkopo limekataliwa', memberName(app.memberId) + ' — ' + fmt(app.amount) + ' (' + ref + ')');
+    }
+    save();
+    renderSection();
+}
+
+// ================= REFEREE CONSENTS =================
+function renderConsents() {
+    const mine = state.loanApplications.filter(a =>
+        a.status === 'awaiting_referees' && inCurrentGroup(a.memberId) &&
+        a.referees.some(r => r.memberId === currentMemberId && r.consent === 'pending'));
+    return `<div class="fade-in space-y-3">
+        <p class="text-sm text-gray-500">Maombi ya udhamini yanayosubiri jibu lako (${mine.length})</p>
+        ${mine.map(a=>`
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 border-l-4 border-l-amber-400">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <p class="font-medium text-gray-900 text-sm">${memberName(a.memberId)} ameomba mkopo ${fmt(a.amount)}</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Ref: <span class="font-mono">${a.ref}</span> • ${fmtDate(a.date)} • Sababu: ${a.reason || '—'}</p>
+                    <p class="text-[11px] text-gray-600 mt-1">Udhamini wako: michango yako ${fmt(memberContribution(me()))} itatumika kama dhamana (${state.settings.multiplier}× / kikomo).</p>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="respondConsent('${a.ref}',true)" class="bg-emerald-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">Kubali Udhamini</button>
+                    <button onclick="respondConsent('${a.ref}',false)" class="bg-red-50 text-red-600 px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Kataa</button>
+                </div>
+            </div>
+        </div>`).join('') || '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna maombi ya udhamini yanayosubiri.</div>'}
+    </div>`;
+}
+
+function respondConsent(ref, agree) {
+    const app = state.loanApplications.find(a => a.ref === ref);
+    if (!app) return;
+    const mine = app.referees.find(r => r.memberId === currentMemberId);
+    if (!mine || mine.consent !== 'pending') return;
+    mine.consent = agree ? 'agreed' : 'refused';
+    const borrower = memberName(app.memberId);
+    if (!agree) {
+        app.status = 'rejected';
+        notify('Udhamini umekataliwa', app.ref + ' — ombi la ' + borrower + ' limetatuliwa');
+        addAudit('Amekataa udhamini ' + app.ref + ' (' + borrower + ') — ombi limefutwa');
+    } else if (app.referees.every(r => r.consent === 'agreed')) {
+        app.status = 'awaiting_approval';
+        notify('Wadhamini wote 3 wamekubali', app.ref + ' — ' + borrower + ' ' + fmt(app.amount) + ' • Linaenda kwa idhini ya viongozi');
+        addAudit('Wadhamini wote wamekubali ' + app.ref + ' — linasubiri idhini');
+    } else {
+        notify('Udhamini umekubali', app.ref + ' — asante. Tunasubiri wadhamini wengine.');
+        addAudit('Amekubali udhamini ' + app.ref);
+    }
+    save();
+    renderSection();
+}
+
+// ================= MEMBERSHIP APPLICATIONS =================
+function approvalThreshold(gid) {
+    const total = state.members.filter(m => m.groupId === gid).length;
+    return {total, need: Math.ceil(total * 0.7)};
+}
+
+function renderMemberApps() {
+    const g = currentGroup();
+    const apps = currentRole === 'admin' ? state.membershipApplications : state.membershipApplications.filter(a => a.invite === (g || {}).invite);
+    const officer = ['chairperson','secretary','treasurer','admin'].indexOf(currentRole) > -1;
+    return `<div class="fade-in space-y-3">
+        <p class="text-sm text-gray-500">Maombi ya kujiunga ${currentRole === 'admin' ? '(vikundi vyote)' : '— ' + (g ? g.name : '')} (${apps.length}) • Yanakubaliwa na afisa (Mwenyekiti/Katibu/Mweka Hazina) au kura ya 70% ya wanachama</p>
+        ${apps.map(a=>{
+            const grp = groupByInvite(a.invite);
+            const th = grp ? approvalThreshold(grp.id) : {total: 0, need: 0};
+            const votes = (a.approvals || []).length;
+            const voted = (a.approvals || []).indexOf(currentMemberId) > -1;
+            const pct = th.need ? Math.min(100, Math.round(100 * votes / th.need)) : 0;
+            return `
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <p class="font-medium text-gray-900 text-sm">${a.name} — <span class="text-emerald-700">${a.groupName}</span></p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Simu: ${a.phone || '—'} • NIDA: <span class="font-mono">${a.nida || '—'}</span> • Ref: <span class="font-mono">${a.ref}</span> • ${fmtDate(a.date)}</p>
+                    <div class="mt-2 flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full font-medium bg-blue-50 text-blue-700">Kura: ${votes}/${th.need} (70% ya ${th.total})</span>
+                        <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden max-w-[140px]"><div class="h-1.5 bg-blue-500 rounded-full" style="width:${pct}%"></div></div>
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    ${officer
+                        ? `<button onclick="approveMembership('${a.ref}',true)" class="bg-emerald-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">Idhinisha (Afisa)</button>
+                           <button onclick="approveMembership('${a.ref}',false)" class="bg-red-50 text-red-600 px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Kataa</button>`
+                        : (voted
+                            ? '<span class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">✓ Umeipigia kura</span>'
+                            : `<button onclick="voteMembership('${a.ref}')" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Kubali kwa Kura</button>`)}
+                </div>
+            </div>
+        </div>`;}).join('') || '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna maombi mapya. Wageni wanaojiunga kwa kiitiko cha mwaliko wataonekana hapa.</div>'}
+    </div>`;
+}
+
+function finalizeMembership(app, ok, by) {
+    const idx = state.membershipApplications.indexOf(app);
+    if (idx > -1) state.membershipApplications.splice(idx, 1);
+    const group = groupByInvite(app.invite);
+    if (ok) {
+        state.members.push({id: nextMemberId(), name: app.name, phone: app.phone || '—', savings: 0, shares: 0, loan: 0, status: 'Active', groupId: group ? group.id : currentGroupId, role: 'member', photo: app.photo || null, nationalId: app.nida || '', kinName: app.kinName || '', kinRelation: app.kinRelation || '—', kinPhone: app.kinPhone || '—'});
+        if (group) group.members += 1;
+        addAudit('Amekubali mwanachama mpya — ' + app.name + (group ? ' (' + group.name + ')' : '') + ' [' + by + ']');
+        notify('Mwanachama mpya amekubaliwa', app.name + (group ? ' → ' + group.name : '') + ' (' + by + ')', group ? group.id : currentGroupId);
+    } else {
+        addAudit('Amekataa maombi ya uanachama — ' + app.name);
+        notify('Maombi ya uanachama yamekataliwa', app.name, group ? group.id : currentGroupId);
+    }
+    save();
+}
+
+function approveMembership(ref, ok) {
+    const app = state.membershipApplications.find(a => a.ref === ref);
+    if (!app) return;
+    finalizeMembership(app, ok, roleLabels[currentRole] || 'Afisa');
+    renderSection();
+}
+
+function voteMembership(ref) {
+    const app = state.membershipApplications.find(a => a.ref === ref);
+    if (!app || app.status !== 'pending') return;
+    if (!Array.isArray(app.approvals)) app.approvals = [];
+    if (app.approvals.indexOf(currentMemberId) > -1) return;
+    app.approvals.push(currentMemberId);
+    addAudit('Amepigia kura kukubali mwanachama — ' + app.name);
+    const grp = groupByInvite(app.invite);
+    const th = grp ? approvalThreshold(grp.id) : {need: 1};
+    if (app.approvals.length >= th.need) {
+        finalizeMembership(app, true, 'kura ya 70% ya wanachama');
+    } else {
+        notify('Kura ya uanachama', app.name + ': kura ' + app.approvals.length + '/' + th.need, grp ? grp.id : currentGroupId);
+        save();
+    }
+    renderSection();
+}
+
+// ================= PUBLIC FORMS =================
+function checkInvite(code) {
+    const g = groupByInvite(code);
+    const msg = document.getElementById('join-group');
+    const fields = document.getElementById('join-fields');
+    if (g) {
+        msg.innerHTML = '<span class="text-emerald-700">✓ ' + g.name + ' • ' + g.location + ' • ' + g.members + ' wanachama</span>';
+        fields.classList.remove('hidden');
+    } else {
+        msg.innerHTML = code ? '<span class="text-red-500">Msimbo haujulikani — uliza viongozi wa kikundi chako.</span>' : '';
+        fields.classList.add('hidden');
+    }
+}
+
+function submitJoin() {
+    const code = document.getElementById('join-code').value;
+    const g = groupByInvite(code);
+    const name = document.getElementById('join-name').value.trim();
+    const phone = document.getElementById('join-phone').value.trim();
+    const nida = document.getElementById('join-nida').value.trim();
+    const kinName = document.getElementById('join-kin-name').value.trim();
+    const kinRelation = document.getElementById('join-kin-rel').value.trim();
+    const kinPhone = document.getElementById('join-kin-phone').value.trim();
+    if (!g) return;
+    const err = document.getElementById('join-error');
+    const msg = memberFormError(name, phone, nida, kinName, photoDraft);
+    if (msg) { err.textContent = msg; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    state.membershipApplications.push({ref: genTxId(), name, phone, nida, kinName, kinRelation: kinRelation || '—', kinPhone: kinPhone || '—', photo: photoDraft, invite: g.invite, groupName: g.name, date: todayISO(), status: 'pending', approvals: []});
+    notify('Maombi ya uanachama mapya', name + ' → ' + g.name + ' (mwaliko ' + g.invite + ')', g.id);
+    photoDraft = null;
+    save();
+    document.getElementById('join-fields').classList.add('hidden');
+    document.getElementById('join-done').classList.remove('hidden');
+    lucide.createIcons();
+}
+
+// ================= REMINDERS =================
+function runReminders() {
+    const today = new Date();
+    const iso = todayISO();
+    const seen = new Set(state.remindersLog.map(r => r.id));
+    let changed = false;
+    const push = (id, memberId, msg, kind) => {
+        if (seen.has(id)) return;
+        seen.add(id);
+        const m = memberById(memberId);
+        const gid = (m && m.groupId) || 'G1';
+        state.remindersLog.unshift({id, to: memberName(memberId), phone: m ? m.phone : '', msg, date: iso, time: nowStamp(), kind, groupId: gid});
+        notify('Kumbusho', msg, gid);
+        changed = true;
+    };
+    activeLoans().forEach(l => {
+        const days = Math.ceil((new Date(l.due) - today) / 86400000);
+        if (days >= 0 && days <= state.settings.remindLeadDays) {
+            const penalty = Math.round(l.balance * state.settings.penalty / 100);
+            push('RMD-' + l.id + '-' + iso, l.memberId,
+                'Mkopo ' + l.id + ' unalipwa ' + fmtDate(l.due) + ' (siku ' + days + ' zimebaki). Lipa sasa kuepuka adhabu ya ' + fmt(penalty) + ' (' + state.settings.penalty + '%).', 'loan-due');
+        }
+    });
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    if (tomorrow.getDay() === state.settings.contributionDay) {
+        state.members.forEach(m => push('CTR-' + m.id + '-' + iso, m.id,
+            'Kumbusho la mchango: mchango wa wiki hii ' + fmt(state.settings.weekly) + ' unalipwa kesho ' + fmtDate(tomorrow) + '.', 'contribution'));
+    }
+    state.loans.forEach(l => {
+        if (l.balance > 0 && new Date(l.due) < today && !l.penaltyFlagged) {
+            l.penaltyFlagged = true;
+            const penalty = Math.round(l.balance * state.settings.penalty / 100);
+            l.penalty = penalty;
+            push('ODR-' + l.id + '-' + iso, l.memberId,
+                'Mkopo ' + l.id + ' umechelewa! Adhabu ya ' + fmt(penalty) + ' imeongezwa. Lipa haraka kuepuka adhabu zaidi.', 'overdue');
+        }
+    });
+    // Referee risk: warn guarantors what they may lose if the borrower keeps paying at the current pace
+    state.loans.forEach(l => {
+        if (l.balance <= 0 || !l.referees || !l.referees.length) return;
+        const overdue = new Date(l.due) < today;
+        const exp = refereeExposure(l);
+        if (!exp || exp.amount <= 0) return;
+        if (!overdue && exp.monthlyRate >= exp.required) return;
+        l.referees.forEach(r => {
+            const rm = memberById(r.memberId);
+            if (!rm) return;
+            push('REF-' + l.id + '-' + rm.id + '-' + iso, rm.id,
+                '⚠ Mkopo ' + l.id + ' wa ' + memberName(l.memberId) + ': analipa ~' + fmt(exp.monthlyRate) + '/mwezi badala ya ' + fmt(exp.required) + ' inayohitajika' + (overdue ? ' (umechelewa)' : '') + '. Kama ataendelea hivi, udhamini wako unaweza kupoteza ~' + fmt(exp.perReferee) + '.', 'referee-risk');
+        });
+    });
+    if (changed) save();
+}
+
+function renderOutbox() {
+    const kindBadge = k => ({'loan-due':['bg-amber-50 text-amber-700','Kumbusho la Mkopo'],'overdue':['bg-red-50 text-red-600','Chelewa + Adhabu'],'contribution':['bg-emerald-50 text-emerald-700','Kumbusho la Mchango'],'referee-risk':['bg-red-50 text-red-600','Hatari ya Udhamini']}[k] || ['bg-gray-100 text-gray-500', k]);
+    return `<div class="fade-in space-y-4">
+        <div class="flex items-center justify-between">
+            <p class="text-sm text-gray-500">Ujumbe wa kumbusho (${state.remindersLog.length}) — simulation ya SMS</p>
+            <span class="text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-500 font-medium">Gateway halisi: docs/payments-integration-spec.md</span>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">Wakati</th><th class="px-4 py-3 text-left">Mpokeaji</th><th class="px-4 py-3 text-left">Ujumbe</th><th class="px-4 py-3 text-left hidden sm:table-cell">Aina</th></tr></thead>
+                <tbody>${state.remindersLog.filter(r => r.groupId === currentGroupId).slice(0, 30).map(r => { const b = kindBadge(r.kind); return `<tr class="border-t border-gray-50">
+                    <td class="px-4 py-3 font-mono text-[11px] text-gray-400 whitespace-nowrap">${r.time}</td>
+                    <td class="px-4 py-3 text-[13px] whitespace-nowrap">${r.to}${r.phone ? '<br><span class="text-[10px] text-gray-400 font-mono">' + r.phone + '</span>' : ''}</td>
+                    <td class="px-4 py-3 text-gray-600 text-[13px]">${r.msg}</td>
+                    <td class="px-4 py-3 hidden sm:table-cell"><span class="text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${b[0]}">${b[1]}</span></td>
+                </tr>`; }).join('') || '<tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Hakuna kumbusho bado. Zinatengenezwa kiotomatiki zinapofika siku za mwisho.</td></tr>'}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+// ================= MEETINGS =================
+function renderMeetings() {
+    return `<div class="fade-in space-y-4">
+        <div class="bg-white rounded-xl p-5 border border-gray-100 border-l-4 border-l-emerald-500">
+            <div class="flex items-center gap-2 mb-2"><span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Ujao</span></div>
+            <h3 class="font-semibold text-gray-900 text-sm">Mkutano wa Kawaida</h3>
+            <p class="text-[13px] text-gray-600 mt-1">📅 Jumapili, 24 Agosti 2026 — Saa 10:00</p>
+            <p class="text-[13px] text-gray-600">📍 Ofisi ya Kikundi, Kinondoni</p>
+            <p class="text-[13px] text-gray-500 mt-2">Ajenda: Ripoti ya fedha, Idhini za mikopo, Uchaguzi</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Mikutano Iliyopita</h3>
+            <div class="space-y-0 text-sm">
+                ${[{d:'10/08/2026',t:'Mkutano wa Kawaida',a:'42/45'},{d:'27/07/2026',t:'Mkutano wa Kawaida',a:'39/45'},{d:'13/07/2026',t:'Mkutano Maalum',a:'44/45'}].map(m=>`<div class="flex justify-between py-2.5 border-b border-gray-50 last:border-0 text-[13px]"><span class="text-gray-600">${m.d} — ${m.t}</span><span class="text-emerald-600 font-medium">${m.a}</span></div>`).join('')}
+            </div>
+        </div>
+    </div>`;
+}
+
+// ================= REPORTS =================
+function renderReports() {
+    return `<div class="fade-in">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${[{t:'Taarifa ya Fedha',d:'Mapato, matumizi, faida',i:'file-text',k:'financial'},{t:'Orodha ya Wanachama',d:'Hali, akiba, mikopo',i:'users',k:'members'},{t:'Mikopo — Uchambuzi',d:'Portfolio, delinquency',i:'pie-chart',k:'loans'},{t:'Ripoti ya Gawio',d:'Faida & mgao',i:'gift',k:'dividend'},{t:'Mahudhurio',d:'Wastani wa uwepo',i:'calendar',k:'attendance'},{t:'Ukaguzi',d:'Shughuli zote',i:'shield',k:'audit'}].map(r=>`
+            <div class="bg-white rounded-xl p-5 border border-gray-100 card-hover cursor-pointer">
+                <div class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center mb-3"><i data-lucide="${r.i}" style="width:16px;height:16px" class="text-gray-500"></i></div>
+                <h4 class="font-semibold text-gray-900 text-sm">${r.t}</h4>
+                <p class="text-[11px] text-gray-500 mt-0.5">${r.d}</p>
+                <button onclick="generateReport('${r.k}')" class="mt-3 text-[11px] text-emerald-600 font-medium hover:underline">Tengeneza PDF →</button>
+            </div>`).join('')}
+        </div>
+    </div>`;
+}
+
+function generateReport(kind) {
+    const titles = {financial:'Taarifa ya Fedha',members:'Orodha ya Wanachama',loans:'Uchambuzi wa Mikopo',dividend:'Ripoti ya Gawio',attendance:'Mahudhurio',audit:'Kumbukumbu za Ukaguzi'};
+    const acc = accounting();
+    const totalShares = groupMembers().reduce((s,m)=>s+m.shares,0);
+    const overdue = scopedLoans().filter(l => l.balance > 0 && new Date(l.due) < new Date());
+    let body = '';
+    if (kind === 'financial') {
+        const gs = groupStats(currentGroup() || state.groups[0]);
+        const tl = scopedLoans().filter(l=>l.balance>0).reduce((s,l)=>s+l.balance,0);
+        body = `<table>${[
+            ['Kikundi', (currentGroup() || {}).name || '—'],
+            ['Wanachama', gs.members],
+            ['Akiba Jumla', fmt(gs.savings)],
+            ['Mikopo Hai', fmt(tl)],
+            ['Riba Imepokelewa', fmt(acc.interest)],
+            ['Adhabu za Kuchelewa', fmt(acc.penalties)],
+        ].map(r=>`<tr><td>${r[0]}</td><td style="text-align:right;font-weight:600">${r[1]}</td></tr>`).join('')}
+        ${acc.expenseList.map(e=>`<tr><td>${e.category}${e.desc && e.desc !== '—' ? ' — ' + e.desc : ''} (${e.id})</td><td style="text-align:right;color:#dc2626">-${fmt(e.amount)}</td></tr>`).join('')}
+        <tr><td style="font-weight:700">Jumla ya Matumizi</td><td style="text-align:right;font-weight:700;color:#dc2626">${fmt(acc.expenses)}</td></tr>
+        <tr><td style="font-weight:700">Faida ya Kugawana</td><td style="text-align:right;font-weight:700">${fmt(acc.profit)}</td></tr></table>`;
+    } else if (kind === 'members') {
+        body = `<table><tr><th>ID</th><th>Jina</th><th>Simu</th><th>NIDA</th><th>Mtuo wa Karibu</th><th>Akiba</th><th>Hisa</th><th>Mkopo</th></tr>
+            ${groupMembers().map(m=>`<tr><td>${m.id}</td><td>${m.name}</td><td>${m.phone}</td><td style="font-family:monospace;font-size:11px">${m.nationalId || '—'}</td><td>${m.kinName || '—'} (${m.kinRelation || '—'}) ${m.kinPhone || ''}</td><td style="text-align:right">${fmt(m.savings)}</td><td style="text-align:right">${m.shares}</td><td style="text-align:right">${m.loan>0?fmt(m.loan):'—'}</td></tr>`).join('')}</table>
+            <p class="muted">Jumla: ${groupMembers().length} wanachama • ${(currentGroup() || {}).name}</p>`;
+    } else if (kind === 'loans') {
+        body = `<table><tr><th>ID</th><th>Mwanachama</th><th>Kiasi</th><th>Baki</th><th>Riba</th><th>Hali</th><th>Mwisho</th></tr>
+            ${scopedLoans().map(l=>`<tr><td>${l.id}</td><td>${memberName(l.memberId)}</td><td style="text-align:right">${fmt(l.amount)}</td><td style="text-align:right">${fmt(l.balance)}</td><td style="text-align:right">${l.rate}%</td><td>${loanStatus(l)}</td><td>${fmtDate(l.due)}</td></tr>`).join('')}</table>
+            <p class="muted">Mikopo chelewa: ${overdue.length} • Riba imepokewa: ${fmt(acc.interest)}</p>`;
+    } else if (kind === 'dividend') {
+        const perShare = totalShares > 0 ? Math.round(acc.profit / totalShares) : 0;
+        body = `<table>${[
+            ['Faida ya Kugawana', fmt(acc.profit)],
+            ['Hisa Zote', totalShares],
+            ['Gawio kwa Hisa', fmt(perShare)],
+        ].map(r=>`<tr><td>${r[0]}</td><td style="text-align:right;font-weight:600">${r[1]}</td></tr>`).join('')}</table>
+            <p class="muted">Mfano: mwanachama wenye hisa 12 atapata ${fmt(perShare*12)}.</p>`;
+    } else if (kind === 'attendance') {
+        body = `<table><tr><th>Tarehe</th><th>Mkutano</th><th>Mahudhurio</th></tr>
+            ${[['10/08/2026','Mkutano wa Kawaida','42/45'],['27/07/2026','Mkutano wa Kawaida','39/45'],['13/07/2026','Mkutano Maalum','44/45']].map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+    } else if (kind === 'audit') {
+        const logs = currentRole === 'admin' ? state.audit : state.audit.filter(e => e.groupId === currentGroupId);
+        body = `<table><tr><th>Wakati</th><th>Mtumiaji</th><th>Kitendo</th><th>IP</th></tr>
+            ${logs.map(l=>`<tr><td>${l.time}</td><td>${l.user}</td><td>${l.action}</td><td>${l.ip}</td></tr>`).join('')}</table>`;
+    }
+    const w = window.open('', '_blank', 'width=800,height=900');
+    if (!w) { alert('Tafuta ruhusu ya pop-up kuona ripoti.'); return; }
+    w.document.write(`<html><head><title>${titles[kind]}</title><style>body{font-family:Arial,Helvetica,sans-serif;padding:24px;color:#111827}h1{font-size:20px;border-bottom:2px solid #059669;padding-bottom:8px;margin-bottom:4px}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #d1d5db;padding:6px 10px;font-size:13px;text-align:left}th{background:#ecfdf5}.muted{color:#6b7280;font-size:12px;margin-top:8px}</style></head><body><h1>VICOBA OS — ${titles[kind]}</h1><p class="muted">Kikundi: ${(currentGroup() || {}).name || '—'} • Imetengenezwa: ${fmtDate(Date.now())} • Na: ${roleLabels[currentRole] || ''}</p>${body}<script>window.onload=function(){window.print()}<\/script></body></html>`);
+    w.document.close();
+}
+
+// ================= AUDIT =================
+function renderAudit() {
+    const logs = currentRole === 'admin' ? state.audit : state.audit.filter(e => e.groupId === currentGroupId);
+    return `<div class="fade-in">
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">Wakati</th><th class="px-4 py-3 text-left">Mtumiaji</th><th class="px-4 py-3 text-left">Kitendo</th><th class="px-4 py-3 text-left hidden sm:table-cell">IP</th></tr></thead>
+                <tbody>${logs.map(l=>`<tr class="border-t border-gray-50"><td class="px-4 py-3 font-mono text-[11px] text-gray-400">${l.time}</td><td class="px-4 py-3 font-medium text-[13px]">${l.user}</td><td class="px-4 py-3 text-gray-600 text-[13px]">${l.action}</td><td class="px-4 py-3 font-mono text-[11px] text-gray-400 hidden sm:table-cell">${l.ip}</td></tr>`).join('')}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+// ================= SOCIAL FUND =================
+function renderSocial() {
+    const g = currentGroup();
+    const helps = state.socialHelp.filter(h => h.invite === (g || {}).invite);
+    const helpsTotal = helps.reduce((s,h)=>s+h.a,0);
+    const claims = state.jamiiClaims.filter(c => inCurrentGroup(c.memberId));
+    const pending = claims.filter(c => c.status === 'pending');
+    const canApprove = ['chairperson','admin'].indexOf(currentRole) > -1;
+    return `<div class="fade-in space-y-4">
+        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100 text-[12px] text-emerald-900">
+            <p class="font-semibold mb-1">📜 Masharti ya Mfuko wa Jamii</p>
+            <p>• <strong>Msiba au Ugonjwa Mkali:</strong> mwanachama, mzazi, mwana au mkwe (in-law) tu.</p>
+            <p>• <strong>Harusi:</strong> mwanachama mwenyewe TU — si jamaa.</p>
+            <p>• Kila ombi linakaguliwa na Mwenyekiti kabla ya malipo.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-red">
+                <p class="text-[11px] text-gray-500 uppercase tracking-wide">Salio la Mfuko — ${g.name}</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">${fmt((g || {}).social || 0)}</p>
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-amber">
+                <p class="text-[11px] text-gray-500 uppercase tracking-wide">Misaada (Mwaka)</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">${fmt(helpsTotal)}</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-gray-500">Maombi yanayosubiri (${pending.length})</p>
+            <button onclick="showJamiiModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Omba Msaada wa Jamii</button>
+        </div>
+        ${pending.map(c=>{
+            const gap = c.amount > ((g || {}).social || 0) ? c.amount - ((g || {}).social || 0) : 0;
+            return `
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 ${gap > 0 ? 'border-l-4 border-l-red-400' : 'border-l-4 border-l-amber-400'}">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <p class="font-medium text-gray-900 text-sm">${memberName(c.memberId)} — ${c.type}: ${c.beneficiary}</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Ref: <span class="font-mono">${c.ref}</span> • ${fmtDate(c.date)} • Kiasi: ${fmt(c.amount)}</p>
+                    ${c.note ? `<p class="text-[11px] text-gray-400 mt-0.5 italic">"${c.note}"</p>` : ''}
+                    ${gap > 0 ? `<div class="mt-2 bg-red-50 border border-red-100 rounded-lg p-2.5">
+                        <p class="text-[11px] text-red-700 font-medium">🚨 Njaa ya ${fmt(gap)} — salio la mfuko halitoshi. Michango ya dharura inahitajika.</p>
+                        <button onclick="showContributeModal('Dharura ya Jamii')" class="mt-1.5 text-[11px] bg-red-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-red-700 transition">🚨 Changia Dharura sasa</button>
+                    </div>` : ''}
+                </div>
+                ${canApprove ? `<div class="flex gap-2 flex-shrink-0">
+                    <button onclick="approveJamiiClaim('${c.ref}',true)" class="bg-emerald-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition ${gap > 0 ? 'opacity-40 pointer-events-none' : ''}">Idhinisha</button>
+                    <button onclick="approveJamiiClaim('${c.ref}',false)" class="bg-red-50 text-red-600 px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Kataa</button>
+                </div>` : '<span class="text-[11px] px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 font-medium">Inasubiri idhini</span>'}
+            </div>
+        </div>`;}).join('')}
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Misaada Yaliyolipwa</h3>
+            <div class="space-y-0 text-sm">
+                ${helps.map(s=>`<div class="flex justify-between py-2.5 border-b border-gray-50 last:border-0 text-[13px]"><span class="text-gray-600">${s.n}</span><span class="font-medium text-gray-900">${fmt(s.a)}</span></div>`).join('') || '<p class="text-sm text-gray-400">Hakuna misaada yaliyolipwa bado.</p>'}
+            </div>
+        </div>
+    </div>`;
+}
+
+function showJamiiModal() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Omba Msaada wa Jamii</h3>
+        <p class="text-[11px] text-gray-400 mb-4">Msiba/Ugonjwa: mwanachama, mzazi, mwana au mkwe • Harusi: mwanachama tu.</p>
+        <form onsubmit="event.preventDefault(); processJamiiClaim()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mwanachama</label>
+            <select id="jamii-member" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${groupMembers().map(m=>`<option value="${m.id}" ${m.id===currentMemberId?'selected':''}>${m.name}</option>`).join('')}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Aina ya Tukio</label>
+            <select id="jamii-type" onchange="jamiiTypeChanged()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${JAMII_TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join('')}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Nusurika / Mhusika</label>
+            <select id="jamii-benef" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></select>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tarehe</label>
+                <input id="jamii-date" type="date" value="${todayISO()}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+                <input id="jamii-amount" type="number" oninput="jamiiWarn()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+            </div>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1 mt-2">Maelezo</label>
+            <textarea id="jamii-note" rows="2" placeholder="Maelezo mafupi ya tukio..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+            <p id="jamii-error" class="text-xs text-red-600 mb-2 hidden"></p>
+            <div id="jamii-warn" class="hidden bg-red-50 border border-red-100 rounded-lg p-2.5 text-[11px] text-red-700 mb-2"></div>
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Wasilisha</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+    jamiiTypeChanged();
+}
+
+function jamiiTypeChanged() {
+    const t = JAMII_TYPES.find(x => x.id === document.getElementById('jamii-type').value);
+    const benef = document.getElementById('jamii-benef');
+    benef.innerHTML = t.beneficiaries.map(b => `<option value="${b}">${b === 'Mwanachama' ? 'Mwanachama (mwenyewe)' : b === 'Mzazi' ? 'Mzazi (parent)' : b === 'Mwana' ? 'Mwana (child)' : 'Mkwe (in-law)'}</option>`).join('');
+    document.getElementById('jamii-amount').value = state.settings[t.amountKey];
+    jamiiWarn();
+}
+
+function jamiiWarn() {
+    const warn = document.getElementById('jamii-warn');
+    if (!warn) return;
+    const amount = parseInt(document.getElementById('jamii-amount').value, 10) || 0;
+    const social = (currentGroup() || {}).social || 0;
+    if (amount > social) {
+        warn.innerHTML = '⚠ Salio la mfuko (' + fmt(social) + ') halitoshi kwa <strong>' + fmt(amount - social) + '</strong>. Ombi linaweza wasilishwa — linasubiri <strong>michango ya dharura</strong> ya wanachama.';
+        warn.classList.remove('hidden');
+    } else warn.classList.add('hidden');
+}
+
+function processJamiiClaim() {
+    const mid = document.getElementById('jamii-member').value;
+    const type = JAMII_TYPES.find(x => x.id === document.getElementById('jamii-type').value);
+    const benef = document.getElementById('jamii-benef').value;
+    const date = document.getElementById('jamii-date').value;
+    const amount = parseInt(document.getElementById('jamii-amount').value, 10) || 0;
+    const note = document.getElementById('jamii-note').value.trim();
+    const err = document.getElementById('jamii-error');
+    if (type.id === 'harusi' && benef !== 'Mwanachama') {
+        err.textContent = 'Harusi inatumika kwa mwanachama mwenyewe TU.'; err.classList.remove('hidden'); return;
+    }
+    if (amount <= 0) { err.textContent = 'Weka kiasi sahihi.'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    const g = currentGroup();
+    const shortfall = amount > (g.social || 0) ? amount - (g.social || 0) : 0;
+    const ref = genTxId();
+    state.jamiiClaims.unshift({ref, memberId: mid, type: type.label, beneficiary: benef, amount, date, note, shortfall, status: 'pending'});
+    notify('Ombi la Jamii limesubiri idhini', memberName(mid) + ' — ' + type.label + ': ' + benef + ' • ' + fmt(amount));
+    if (shortfall > 0) notify('🚨 Njaa ya Mfuko wa Jamii', fmt(shortfall) + ' inahitajika — michango ya dharura ya wanachana inahitajika (' + ref + ')');
+    addAudit('Ombi la Jamii ' + ref + ' — ' + memberName(mid) + ' (' + type.label + ': ' + benef + ') ' + fmt(amount) + (shortfall > 0 ? ' [njaa ' + fmt(shortfall) + ']' : ''));
+    save();
+    renderSection();
+    openModal(`<div class="text-center">
+        <div class="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="heart" style="width:28px;height:28px" class="text-amber-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-900">Ombi la Jamii Limewasilishwa</h3>
+        <p class="text-sm text-gray-500 mt-2">Linasubiri idhini ya Mwenyekiti wa ${g.name}.</p>
+        <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
+            <p><span class="text-gray-500">Ref:</span> <span class="font-mono">${ref}</span></p>
+            <p><span class="text-gray-500">Mwanachama:</span> ${memberName(mid)} (${mid})</p>
+            <p><span class="text-gray-500">Tukio:</span> ${type.label} — ${benef}</p>
+            <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)}</p>
+            ${shortfall > 0 ? `<p class="text-red-600 font-medium">🚨 Njaa ya ${fmt(shortfall)} — michango ya dharura inahitajika kabla ya malipo.</p>` : ''}
+        </div>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
+    </div>`);
+    lucide.createIcons();
+}
+
+function approveJamiiClaim(ref, ok) {
+    const c = state.jamiiClaims.find(x => x.ref === ref);
+    if (!c || c.status !== 'pending') return;
+    const m = memberById(c.memberId);
+    const g = m ? groupById(m.groupId) : currentGroup();
+    if (ok) {
+        if (!g || c.amount > (g.social || 0)) {
+            notify('Msaada bado hauwezekana', 'Salio la mfuko halitoshi bado — ' + c.ref + ' linasubiri michango ya dharura');
+            save();
+            renderSection();
+            return;
+        }
+        g.social -= c.amount;
+        c.status = 'approved';
+        state.socialHelp.unshift({n: memberName(c.memberId) + ' — ' + c.type + ' (' + c.beneficiary + ')', a: c.amount, invite: g.invite});
+        notify('Msaada wa Jamii umelipwa', memberName(c.memberId) + ' — ' + c.type + ': ' + c.beneficiary + ' • ' + fmt(c.amount));
+        addAudit('Amelipa msaada wa Jamii ' + c.ref + ' — ' + memberName(c.memberId) + ' ' + fmt(c.amount));
+    } else {
+        c.status = 'rejected';
+        notify('Ombi la Jamii limekataliwa', memberName(c.memberId) + ' — ' + c.ref);
+        addAudit('Amekataa ombi la Jamii ' + c.ref);
+    }
+    save();
+    renderSection();
+}
+
+// ================= NOTIFICATIONS =================
+function renderNotifications() {
+    const feed = state.notifications.filter(n => n.groupId === currentGroupId);
+    const html = feed.map(n=>`
+        <div class="bg-white rounded-xl p-4 border ${n.read?'border-gray-100':'border-emerald-200'} flex items-start gap-3">
+            <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read?'bg-gray-300':'bg-emerald-500'}"></div>
+            <div><p class="font-medium text-[13px] text-gray-900">${n.t}</p><p class="text-[11px] text-gray-500">${n.d}</p><p class="text-[10px] text-gray-400 mt-0.5">${n.time}</p></div>
+        </div>`).join('');
+    const hadUnread = feed.some(n => !n.read);
+    if (hadUnread) { feed.forEach(n => n.read = true); save(); updateBell(); }
+    return `<div class="fade-in space-y-2.5">${html || '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna arifa.</div>'}</div>`;
+}
+
+// ================= REPAYMENTS =================
+function renderRepayments() {
+    const rows = scopedRepayments().slice(0, 20).map(r=>`<tr class="border-t border-gray-50"><td class="px-4 py-3 font-mono text-[11px] text-gray-400">${r.id}</td><td class="px-4 py-3">${memberName(r.memberId)}</td><td class="px-4 py-3 hidden sm:table-cell">${r.loanId}</td><td class="px-4 py-3 text-right font-medium">${fmt(r.amount)}</td><td class="px-4 py-3 hidden sm:table-cell">${fmtDate(r.date)}</td></tr>`).join('');
+    return `<div class="fade-in space-y-4">
+        <div class="flex items-center justify-between">
+            <p class="text-sm text-gray-500">Malipo ya mikopo (${scopedRepayments().length} jumla)</p>
+            <button onclick="showRepayModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Rekodi Malipo</button>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">TXN</th><th class="px-4 py-3 text-left">Mwanachama</th><th class="px-4 py-3 text-left hidden sm:table-cell">Mkopo</th><th class="px-4 py-3 text-right">Kiasi</th><th class="px-4 py-3 text-left hidden sm:table-cell">Tarehe</th></tr></thead>
+                <tbody>${rows || '<tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">Hakuna malipo bado.</td></tr>'}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+function showRepayModal() {
+    const debtors = groupMembers().filter(m=>m.loan>0);
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Rekodi Malipo</h3>
+        <form onsubmit="event.preventDefault(); processRepayment()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mwanachama</label>
+            <select id="repay-member" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${debtors.map(m=>`<option value="${m.id}">${m.name} (Baki: ${fmt(m.loan)})</option>`).join('') || '<option value="">Hakuna deni</option>'}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+            <input id="repay-amount" type="number" value="50000" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Thibitisha</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function processRepayment() {
+    const mid = document.getElementById('repay-member').value;
+    const amount = parseInt(document.getElementById('repay-amount').value, 10) || 0;
+    const member = memberById(mid);
+    if (!member || amount <= 0) return;
+    const loan = state.loans.filter(l => l.memberId === mid && l.balance > 0).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
+    const rate = loan ? loan.rate : state.settings.rate;
+    if (loan) loan.balance = Math.max(0, loan.balance - amount);
+    member.loan = Math.max(0, member.loan - amount);
+    const tx = {id: genTxId(), memberId: mid, loanId: loan ? loan.id : '—', amount, interest: Math.round(amount * rate / (100 + rate)), date: todayISO()};
+    state.repayments.unshift(tx);
+    addAudit('Amerekodi malipo — ' + tx.id + ' ' + member.name + ' ' + fmt(amount));
+    notify('Malipo ya mkopo yamepokelewa', member.name + ' — ' + fmt(amount));
+    save();
+    renderSection();
+    openModal(`<div class="text-center">
+        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check" style="width:28px;height:28px" class="text-blue-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-900">Malipo Yamepokelewa!</h3>
+        <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
+            <p><span class="text-gray-500">TXN:</span> <span class="font-mono">${tx.id}</span></p>
+            <p><span class="text-gray-500">Mwanachama:</span> ${member.name}</p>
+            <p><span class="text-gray-500">Mkopo:</span> ${tx.loanId}</p>
+            <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)}</p>
+            <p><span class="text-gray-500">Baki Mpya:</span> ${fmt(member.loan)}</p>
+        </div>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
+    </div>`);
+    lucide.createIcons();
+}
+
+// ================= ACCOUNTING =================
+function renderAccounting() {
+    const acc = accounting();
+    const canRecord = ['treasurer','admin'].indexOf(currentRole) > -1;
+    return `<div class="fade-in space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-gray-500">Matumizi yaliyorekodiwa (${acc.expenseList.length}) — kila kitu kina kumbukumbu</p>
+            ${canRecord ? `<button onclick="showExpenseModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Rekodi Matumizi</button>` : ''}
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-emerald"><p class="text-[11px] text-gray-500 uppercase tracking-wide">Riba Imepokelewa</p><p class="text-xl font-bold text-emerald-600 mt-1">${fmt(acc.interest)}</p></div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-red"><p class="text-[11px] text-gray-500 uppercase tracking-wide">Matumizi (Yaliyorekodiwa)</p><p class="text-xl font-bold text-red-600 mt-1">${fmt(acc.expenses)}</p></div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-amber"><p class="text-[11px] text-gray-500 uppercase tracking-wide">Faida Halisi</p><p class="text-xl font-bold text-amber-600 mt-1">${fmt(acc.profit)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Muhtasari (Tangu Kuanza)</h3>
+            <div class="space-y-0 text-sm">
+                <div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">Riba ya Mikopo (${state.settings.rate}%)</span><span class="font-medium text-emerald-600">+${fmt(acc.interest)}</span></div>
+                <div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">Adhabu za Kuchelewa</span><span class="font-medium text-emerald-600">+${fmt(acc.penalties)}</span></div>
+                ${acc.expenseList.map(e=>`<div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">${e.category}${e.desc?' — '+e.desc:''} <span class="text-[10px] text-gray-400 font-mono">${e.id} • ${fmtDate(e.date)}</span></span><span class="font-medium text-red-500">-${fmt(e.amount)}</span></div>`).join('') || '<div class="py-2.5 text-[13px] text-gray-400">Hakuna matumizi yaliyorekodiwa.</div>'}
+                <div class="flex justify-between py-2.5 text-[13px] font-bold"><span class="text-gray-900">Faida ya Kugawana</span><span class="text-amber-600">${fmt(acc.profit)}</span></div>
+            </div>
+        </div>
+    </div>`;
+}
+
+const EXPENSE_CATEGORIES = ['Posho ya Mkutano','Utasuluhishi (Grievances)','Stationery & Ofisi','SMS & Mawasiliano','Msaada wa Dharura','Nyingine'];
+
+function showExpenseModal() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Rekodi Matumizi ya Kikundi</h3>
+        <form onsubmit="event.preventDefault(); processExpense()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Aina ya Matumizi</label>
+            <select id="exp-category" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${EXPENSE_CATEGORIES.map(c=>`<option>${c}</option>`).join('')}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Maelezo</label>
+            <input id="exp-desc" type="text" placeholder="mf. Posho ya viongozi — mkutano wa Septemba" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+                <input id="exp-amount" type="number" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tarehe</label>
+                <input id="exp-date" type="date" value="${todayISO()}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+            </div>
+            <p id="exp-error" class="text-xs text-red-600 mt-2 hidden"></p>
+            <div class="flex gap-2 mt-3"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Hifadhi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function processExpense() {
+    const category = document.getElementById('exp-category').value;
+    const desc = document.getElementById('exp-desc').value.trim();
+    const amount = parseInt(document.getElementById('exp-amount').value, 10) || 0;
+    const date = document.getElementById('exp-date').value || todayISO();
+    const err = document.getElementById('exp-error');
+    if (amount <= 0) { err.textContent = 'Weka kiasi sahihi.'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    const id = nextExpId();
+    state.expenses.unshift({id, groupId: currentGroupId, category, desc: desc || '—', amount, date});
+    addAudit('Amerekodi matumizi ' + id + ' — ' + category + ' ' + fmt(amount));
+    notify('Matumizi yamerekodiwa', category + ' — ' + fmt(amount) + ' (' + id + ')');
+    save();
+    closeModal();
+    renderSection();
+}
+
+// ================= RISK =================
+function renderRisk() {
+    const today = new Date();
+    const overdue = scopedLoans().filter(l => l.balance > 0 && new Date(l.due) < today).map(l => {
+        const days = Math.floor((today - new Date(l.due)) / 86400000);
+        return {l, days};
+    }).sort((a,b)=>b.days-a.days);
+    const nearDue = scopedLoans().filter(l => {
+        if (l.balance <= 0) return false;
+        const d = (new Date(l.due) - today) / 86400000;
+        return d >= 0 && d <= 14;
+    });
+    const highRisk = overdue.filter(o => o.days > 30).length;
+    return `<div class="fade-in space-y-4">
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            ${statCard('Mikopo Chelewa',overdue.length,'alert-triangle','red')}
+            ${statCard('Hatari ya Juu',highRisk,'shield-alert','amber')}
+            ${statCard('Shughuli za Shaka','0','search','emerald')}
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Tahadhari</h3>
+            <div class="space-y-3">
+                ${overdue.map(o=>{const penalty=Math.round(o.l.balance*state.settings.penalty/100);return `<div class="bg-red-50 rounded-lg p-3.5 border border-red-100">
+                    <p class="text-[13px] font-medium text-red-800">⚠️ ${memberName(o.l.memberId)} — Mkopo chelewa siku ${o.days}</p>
+                    <p class="text-[11px] text-red-600 mt-0.5">${o.l.id} • Baki: ${fmt(o.l.balance)} • Adhabu: ${fmt(penalty)} • Mwisho: ${fmtDate(o.l.due)}</p>
+                </div>`;}).join('')}
+                ${nearDue.map(l=>`<div class="bg-amber-50 rounded-lg p-3.5 border border-amber-100">
+                    <p class="text-[13px] font-medium text-amber-800">⚠️ ${memberName(l.memberId)} — Karibu na mwisho wa muda</p>
+                    <p class="text-[11px] text-amber-600 mt-0.5">${l.id} • Siku ${Math.ceil((new Date(l.due)-today)/86400000)} zimebaki • Baki: ${fmt(l.balance)}</p>
+                </div>`).join('')}
+                ${(overdue.length + nearDue.length) === 0 ? '<p class="text-sm text-gray-400">Hakuna tahadhari kwa sasa.</p>' : ''}
+            </div>
+        </div>
+    </div>`;
+}
+
+// ================= SETTINGS =================
+function renderSettings() {
+    const s = state.settings;
+    return `<div class="fade-in space-y-4">
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-4">Mipangilio ya Kikundi</h3>
+            <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mchango/wiki</label><input id="set-weekly" type="number" value="${s.weekly}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Thamani ya Hisa</label><input id="set-share" type="number" value="${s.shareValue}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Riba ya Mkopo (%)</label><input id="set-rate" type="number" value="${s.rate}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiwango (x Hisa)</label><input id="set-mult" type="number" value="${s.multiplier}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mfuko Jamii/mwezi</label><input id="set-social" type="number" value="${s.socialMonthly}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Adhabu Kuchelewa (%)</label><input id="set-penalty" type="number" value="${s.penalty}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Siku ya Mchango</label><select id="set-cday" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'].map((d,i)=>`<option value="${i}" ${s.contributionDay===i?'selected':''}>${d}</option>`).join('')}</select></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kumbusha Siku Kabla</label><input id="set-lead" type="number" value="${s.remindLeadDays}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Msiba (TSh)</label><input id="set-jamii-msiba" type="number" value="${s.jamiiMsiba}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Ugonjwa Mkali (TSh)</label><input id="set-jamii-ugonjwa" type="number" value="${s.jamiiUgonjwa}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Harusi (TSh)</label><input id="set-jamii-harusi" type="number" value="${s.jamiiHarusi}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="saveSettings()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium mt-5 hover:bg-emerald-700 transition">Hifadhi Mipangilio</button>
+                <button onclick="resetDemo()" class="border border-red-200 text-red-600 px-5 py-2 rounded-lg text-sm font-medium mt-5 hover:bg-red-50 transition">Rudisha Data ya Awali</button>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Ujumuishaji</h3>
+            <div class="space-y-0 text-sm">
+                ${[{n:'📱 SMS Gateway',s:'Simulation',c:'gray'},{n:'💰 Malipo (M-Pesa, Mixx, Airtel...)',s:'Simulation',c:'gray'},{n:'💬 WhatsApp Bot',s:'Placeholder',c:'gray'},{n:'🏦 Benki API',s:'Placeholder',c:'gray'}].map(i=>`<div class="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0 text-[13px]"><span class="text-gray-700">${i.n}</span><span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${i.c==='emerald'?'bg-emerald-50 text-emerald-700':'bg-gray-100 text-gray-500'}">${i.s}</span></div>`).join('')}
+                <p class="text-[11px] text-gray-400 mt-3">Integration halisi inahitaji backend — soma <span class="font-mono">docs/payments-integration-spec.md</span>.</p>
+            </div>
+        </div>
+    </div>`;
+}
+
+function saveSettings() {
+    const num = id => parseFloat(document.getElementById(id).value) || 0;
+    state.settings.weekly = num('set-weekly');
+    state.settings.shareValue = num('set-share');
+    state.settings.rate = num('set-rate');
+    state.settings.multiplier = num('set-mult');
+    state.settings.socialMonthly = num('set-social');
+    state.settings.penalty = num('set-penalty');
+    state.settings.contributionDay = parseInt(document.getElementById('set-cday').value, 10) || 0;
+    state.settings.remindLeadDays = num('set-lead');
+    state.settings.jamiiMsiba = num('set-jamii-msiba');
+    state.settings.jamiiUgonjwa = num('set-jamii-ugonjwa');
+    state.settings.jamiiHarusi = num('set-jamii-harusi');
+    addAudit('Amehifadhi mipangilio ya kikundi');
+    notify('Mipangilio imehifadhika', 'Riba ' + state.settings.rate + '% • Hisa ' + fmt(state.settings.shareValue) + ' • Kumbusha siku ' + state.settings.remindLeadDays + ' kabla');
+    save();
+    openModal(`<div class="text-center">
+        <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check" style="width:28px;height:28px" class="text-emerald-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-900">Mipangilio Imehifadhiwa</h3>
+        <p class="text-sm text-gray-500 mt-2">Mipangilio mpya itatumika kwenye mikopo na michango mpya.</p>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Sawa</button>
+    </div>`);
+    lucide.createIcons();
+}
+
+function resetDemo() {
+    if (!confirm('Rudisha data yote ya awali? Shughuli zote zilizorekodiwa zitafutika.')) return;
+    state = defaultState();
+    save();
+    addAudit('Amrudisha data ya awali (demo reset)');
+    save();
+    renderDashboard();
+}
+
+// ================= MODALS =================
+function openModal(html) {
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+document.getElementById('modal-overlay').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+
+// ================= INIT =================
+document.addEventListener('DOMContentLoaded', function() {
+    runReminders();
+    const inv = location.hash.match(/invite=([A-Za-z0-9-]+)/);
+    if (inv) {
+        showPage('join');
+        document.getElementById('join-code').value = decodeURIComponent(inv[1]).toUpperCase();
+        checkInvite(document.getElementById('join-code').value);
+    } else {
+        showPage('landing');
+    }
+    lucide.createIcons();
+    updateBell();
+});
+</script>
+
+</body></html>

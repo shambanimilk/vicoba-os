@@ -1,0 +1,5 @@
+.zcode/
+*.log
+dom-out*.html
+test-e2e*.html
+edge-err*.log
