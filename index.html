@@ -464,7 +464,8 @@ function loadState() {
     return s;
 }
 function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    try { state._rev = new Date().toISOString(); localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    schedulePush();
 }
 
 let state = loadState();
@@ -2216,6 +2217,77 @@ function openModal(html) {
 function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
 document.getElementById('modal-overlay').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
 
+// ================= SUPABASE CLOUD SYNC (demo mode) =================
+// The whole app state is stored as one JSON document in the app_state table
+// (supabase/app-state.sql), so the demo syncs across devices — including the
+// GitHub Pages deployment. Production moves to the normalized schema +
+// Supabase Auth (see docs/payments-integration-spec.md).
+const SUPABASE_URL = 'https://aqekcxftnfhgbdpdszgi.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxZWtjeGZ0bmZoZ2JkcGRzemdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2NTIzNjksImV4cCI6MjEwNTIyODM2OX0.FVK1qGg3-Le3Ba6ESYz7IIhpnBjL61MqMPjP2Dic84I';
+const SB_HEADERS = {apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json'};
+let cloudSynced = false;
+let pushTimer = null;
+
+function setSync(ok, txt) {
+    const el = document.getElementById('sync-status');
+    if (el) el.textContent = txt || (ok ? 'Supabase ✓ Imesawazishwa' : 'Hifadhi ya Ndani (offline)');
+}
+
+async function cloudGet() {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/app_state?id=eq.main&select=data,updated_at', {headers: SB_HEADERS});
+    if (!r.ok) throw new Error('GET ' + r.status);
+    const rows = await r.json();
+    return rows.length ? rows[0] : null;
+}
+
+async function cloudPut() {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/app_state', {
+        method: 'POST',
+        headers: Object.assign({}, SB_HEADERS, {'Prefer': 'resolution=merge-duplicates'}),
+        body: JSON.stringify({id: 'main', data: state, updated_at: new Date().toISOString()})
+    });
+    if (!r.ok) throw new Error('PUT ' + r.status);
+}
+
+function cloudPushNow() {
+    if (!cloudSynced) return;
+    cloudPut().then(() => setSync(true)).catch(() => setSync(false));
+}
+
+function schedulePush() {
+    if (!cloudSynced) return;
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(cloudPushNow, 1200);
+}
+
+async function initCloud() {
+    try {
+        const row = await cloudGet();
+        const localRev = state._rev || '';
+        if (row && row.data) {
+            if (String(row.updated_at || '') > localRev) {
+                // cloud is newer — adopt it
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(row.data)); } catch (e) {}
+                state = loadState();
+                runReminders();
+                save();
+                if (!document.getElementById('page-dashboard').classList.contains('hidden')) renderDashboard();
+                else updateBell();
+            } else {
+                cloudSynced = true; // local is newer — push it
+                cloudPushNow();
+            }
+        } else {
+            cloudSynced = true; // seed the cloud with local state
+            cloudPushNow();
+        }
+        setSync(true);
+    } catch (e) {
+        cloudSynced = false;
+        setSync(false);
+    }
+}
+
 // ================= INIT =================
 document.addEventListener('DOMContentLoaded', function() {
     runReminders();
@@ -2229,6 +2301,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     lucide.createIcons();
     updateBell();
+    initCloud();
 });
 </script>
 
