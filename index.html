@@ -60,7 +60,7 @@
         </div>
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.1] mb-5">Mfumo Kamili wa Kifedha kwa VICOBA na Kikoba</h1>
         <p class="text-base sm:text-lg text-emerald-100/80 mb-8 max-w-lg">Simamia akiba, mikopo, gawio, na ripoti za kikundi chako — kwa urahisi, uwazi, na usalama. Teknolojia ya kisasa kwa jamii za kifedha Tanzania.</p>
-        <div class="flex flex-wrap gap-3 mb-10"><button onclick="showPage('login')" class="bg-white text-emerald-800 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-emerald-50 transition-colors shadow-lg">Anza Sasa — Bure</button> <button onclick="doLogin('member')" class="glass-card text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-white/15 transition-colors">▶ Angalia Demo</button>
+        <div class="flex flex-wrap gap-3 mb-10"><button onclick="showPage('login')" class="bg-white text-emerald-800 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-emerald-50 transition-colors shadow-lg">Anza Sasa — Bure</button> <button onclick="demoLogin('member')" class="glass-card text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-white/15 transition-colors">▶ Angalia Demo</button>
         </div>
         <div class="grid grid-cols-3 gap-4 max-w-sm">
          <div class="text-center">
@@ -228,8 +228,9 @@
       </form>
       <div class="mt-5 pt-5 border-t border-gray-100">
        <p class="text-xs text-gray-400 text-center mb-3 font-medium uppercase tracking-wide">Demo — Chagua Jukumu</p>
-       <div class="grid grid-cols-3 gap-1.5"><button onclick="doLogin('admin')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Super Admin</button> <button onclick="doLogin('chairperson')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwenyekiti</button> <button onclick="doLogin('treasurer')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mweka Hazina</button> <button onclick="doLogin('secretary')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Katibu</button> <button onclick="doLogin('member')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwanachama</button> <button onclick="doLogin('auditor')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mkaguzi</button>
+       <div class="grid grid-cols-3 gap-1.5"><button onclick="demoLogin('admin')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Super Admin</button> <button onclick="demoLogin('chairperson')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwenyekiti</button> <button onclick="demoLogin('treasurer')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mweka Hazina</button> <button onclick="demoLogin('secretary')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Katibu</button> <button onclick="demoLogin('member')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwanachama</button> <button onclick="demoLogin('auditor')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mkaguzi</button>
        </div>
+       <p class="text-[10px] text-gray-400 mt-2 text-center">Demo PIN: 123456</p>
       </div><button onclick="showPage('join')" class="mt-3 w-full text-center text-xs text-emerald-600 hover:underline font-medium">Sio mwanachama? Jiunge na kikundi →</button><button onclick="showPage('landing')" class="mt-4 w-full text-center text-xs text-gray-400 hover:text-gray-600">← Rudi Nyumbani</button>
      </div>
     </div>
@@ -303,6 +304,8 @@
         <div><label class="text-[11px] text-gray-500 block mb-1">Simu ya mtuo</label>
         <input id="join-kin-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
        </div>
+       <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tengeneza PIN yako (angalau tarakimu 6)</label>
+       <input id="join-pin" type="password" placeholder="••••••" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
        <p id="join-error" class="text-xs text-red-600 mb-2 hidden"></p>
        <button onclick="submitJoin()" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition shadow-sm">Wasilisha Maombi</button>
       </div>
@@ -654,29 +657,62 @@ function goHome() {
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-function doLogin(role) {
-    currentRole = role;
-    const pid = demoPersonas[role];
-    if (pid) {
-        const m = memberById(pid);
-        if (m) { currentMemberId = m.id; currentGroupId = m.groupId; }
+async function doPhoneLogin() {
+    const err = document.getElementById('login-error');
+    const show = m => { if (err) { err.textContent = m; err.classList.remove('hidden'); } };
+    const ph = (document.getElementById('phone').value || '').replace(/\s+/g, '');
+    const pin = (document.getElementById('pin').value || '').trim();
+    if (err) err.classList.add('hidden');
+    if (!validPhone(ph)) { show('Weka nambari ya simu sahihi (mf. +255712345678).'); return; }
+    if (pin.length < 6) { show('PIN lazima iwe na angalau tarakimu 6.'); return; }
+    const btn = document.querySelector('#page-login button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Inaingia...'; }
+    try {
+        let r = await authSignIn(ph, pin);
+        if (!r.ok && String(r.reason).toLowerCase().indexOf('invalid') > -1) {
+            // no account yet — lazily create one (known member or approved applicant)
+            const su = await authSignUp(ph, pin);
+            if (su.exists) { show('PIN si sahihi kwa akaunti hii.'); return; }
+            if (!su.ok) { show(String(su.reason)); return; }
+            r = await authSignIn(ph, pin);
+        }
+        if (!r.ok) {
+            const low = String(r.reason).toLowerCase();
+            show(low.indexOf('confirmed') > -1
+                ? 'Akaunti inahitaji uthibitisho — mwombaji mmiliki azime "Confirm email" kwenye Supabase (Auth → Providers).'
+                : String(r.reason));
+            return;
+        }
+        saveSession(r.token, ph);
+        const m = state.members.find(x => x.phone === ph);
+        if (ph === ADMIN_PHONE) {
+            currentRole = 'admin';
+            currentGroupId = currentGroupId || 'G1';
+            currentMemberId = (groupMembers('G1')[0] || state.members[0] || {}).id;
+        } else if (m) {
+            currentMemberId = m.id;
+            currentRole = (m.role && roleLabels[m.role]) ? m.role : 'member';
+            currentGroupId = m.groupId;
+        } else {
+            await authSignOut();
+            show('Akaunti hii bado haijakubaliwa kwenye kikundi. Subiri idhini ya viongozi.');
+            return;
+        }
+        document.getElementById('pin').value = '';
+        showPage('dashboard');
+        initCloud();
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Ingia'; }
     }
-    showPage('dashboard');
 }
 
-function doPhoneLogin() {
-    const ph = (document.getElementById('phone').value || '').replace(/\s+/g, '');
-    const err = document.getElementById('login-error');
-    const m = state.members.find(x => x.phone === ph);
-    if (!m) {
-        if (err) { err.textContent = 'Hakuna mwanachama wa namba hii. Jiunge kwa msimbo wa mwaliko kwanza.'; err.classList.remove('hidden'); }
-        return;
-    }
-    if (err) err.classList.add('hidden');
-    currentMemberId = m.id;
-    currentRole = (m.role && roleLabels[m.role]) ? m.role : 'member';
-    currentGroupId = m.groupId;
-    showPage('dashboard');
+function demoLogin(role) {
+    let phone = '';
+    if (role === 'admin') phone = ADMIN_PHONE;
+    else { const m = memberById(demoPersonas[role]); phone = m ? m.phone : ''; }
+    document.getElementById('phone').value = phone;
+    document.getElementById('pin').value = '123456';
+    doPhoneLogin();
 }
 
 function switchGroup(v) {
@@ -685,7 +721,7 @@ function switchGroup(v) {
     renderDashboard();
 }
 
-function doLogout() { showPage('landing'); }
+async function doLogout() { await authSignOut(); showPage('landing'); }
 
 function toggleSidebar() {
     const sb = document.getElementById('sidebar');
@@ -1557,6 +1593,7 @@ function renderMemberApps() {
 function finalizeMembership(app, ok, by) {
     const idx = state.membershipApplications.indexOf(app);
     if (idx > -1) state.membershipApplications.splice(idx, 1);
+    deletePublicApplication(app.rowId);
     const group = groupByInvite(app.invite);
     if (ok) {
         state.members.push({id: nextMemberId(), name: app.name, phone: app.phone || '—', savings: 0, shares: 0, loan: 0, status: 'Active', groupId: group ? group.id : currentGroupId, role: 'member', photo: app.photo || null, nationalId: app.nida || '', kinName: app.kinName || '', kinRelation: app.kinRelation || '—', kinPhone: app.kinPhone || '—'});
@@ -1609,7 +1646,7 @@ function checkInvite(code) {
     }
 }
 
-function submitJoin() {
+async function submitJoin() {
     const code = document.getElementById('join-code').value;
     const g = groupByInvite(code);
     const name = document.getElementById('join-name').value.trim();
@@ -1618,18 +1655,59 @@ function submitJoin() {
     const kinName = document.getElementById('join-kin-name').value.trim();
     const kinRelation = document.getElementById('join-kin-rel').value.trim();
     const kinPhone = document.getElementById('join-kin-phone').value.trim();
+    const pin = (document.getElementById('join-pin').value || '').trim();
     if (!g) return;
     const err = document.getElementById('join-error');
+    const show = m => { err.textContent = m; err.classList.remove('hidden'); };
     const msg = memberFormError(name, phone, nida, kinName, photoDraft);
-    if (msg) { err.textContent = msg; err.classList.remove('hidden'); return; }
+    if (msg) { show(msg); return; }
+    if (pin.length < 6) { show('Tengeneza PIN yenye angalau tarakimu 6.'); return; }
     err.classList.add('hidden');
-    state.membershipApplications.push({ref: genTxId(), name, phone, nida, kinName, kinRelation: kinRelation || '—', kinPhone: kinPhone || '—', photo: photoDraft, invite: g.invite, groupName: g.name, date: todayISO(), status: 'pending', approvals: []});
-    notify('Maombi ya uanachama mapya', name + ' → ' + g.name + ' (mwaliko ' + g.invite + ')', g.id);
+
+    // create the applicant's account now (they can sign in once approved)
+    const su = await authSignUp(phone, pin);
+    if (!su.ok && !su.exists) { show('Akaunti imeshindikana: ' + su.reason); return; }
+
+    // send the application to the group's queue (normalized table)
+    const payload = {ref_code: genTxId(), full_name: name, phone, national_id: nida,
+        photo_url: photoDraft, kin_name: kinName, kin_relation: kinRelation || '—',
+        kin_phone: kinPhone || '—', invite_code: g.invite, status: 'pending'};
+    const sent = await fetch(SUPABASE_URL + '/rest/v1/membership_applications', {
+        method: 'POST',
+        headers: Object.assign({}, authHeaders(), {'Prefer': 'return=minimal'}),
+        body: JSON.stringify(payload)
+    }).then(r => r.ok).catch(() => false);
+    if (!sent) { show('Imeshindikana kutuma maombi — hakikisha intaneti kisha jaribu tena.'); return; }
+
     photoDraft = null;
-    save();
     document.getElementById('join-fields').classList.add('hidden');
     document.getElementById('join-done').classList.remove('hidden');
     lucide.createIcons();
+}
+
+async function pullPublicApplications() {
+    if (!authSession) return;
+    try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/membership_applications?status=eq.pending&select=*', {headers: authHeaders()});
+        if (!r.ok) return;
+        const rows = await r.json();
+        let added = false;
+        rows.forEach(row => {
+            if (state.membershipApplications.some(a => a.rowId === row.id || a.ref === row.ref_code)) return;
+            const grp = groupByInvite(row.invite_code);
+            state.membershipApplications.push({rowId: row.id, ref: row.ref_code, name: row.full_name, phone: row.phone || '—',
+                nida: row.national_id || '', photo: row.photo_url || null, kinName: row.kin_name || '', kinRelation: row.kin_relation || '—',
+                kinPhone: row.kin_phone || '—', invite: row.invite_code, groupName: grp ? grp.name : '—',
+                date: String(row.created_at || '').slice(0, 10), status: 'pending', approvals: []});
+            added = true;
+        });
+        if (added) save();
+    } catch (e) {}
+}
+
+async function deletePublicApplication(rowId) {
+    if (!rowId) return;
+    try { await fetch(SUPABASE_URL + '/rest/v1/membership_applications?id=eq.' + rowId, {method: 'DELETE', headers: authHeaders()}); } catch (e) {}
 }
 
 // ================= REMINDERS =================
@@ -2166,6 +2244,15 @@ function renderSettings() {
             </div>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Badilisha PIN Yako</h3>
+            <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-end">
+                <div class="flex-1"><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">PIN Mpya (angalau tarakimu 6)</label>
+                <input id="pin-new" type="password" placeholder="••••••" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <button onclick="changePin()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition whitespace-nowrap">Hifadhi PIN</button>
+            </div>
+            <p id="pin-msg" class="text-xs mt-2 hidden"></p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-3">Ujumuishaji</h3>
             <div class="space-y-0 text-sm">
                 ${[{n:'📱 SMS Gateway',s:'Simulation',c:'gray'},{n:'💰 Malipo (M-Pesa, Mixx, Airtel...)',s:'Simulation',c:'gray'},{n:'💬 WhatsApp Bot',s:'Placeholder',c:'gray'},{n:'🏦 Benki API',s:'Placeholder',c:'gray'}].map(i=>`<div class="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0 text-[13px]"><span class="text-gray-700">${i.n}</span><span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${i.c==='emerald'?'bg-emerald-50 text-emerald-700':'bg-gray-100 text-gray-500'}">${i.s}</span></div>`).join('')}
@@ -2209,6 +2296,19 @@ function resetDemo() {
     renderDashboard();
 }
 
+async function changePin() {
+    const v = (document.getElementById('pin-new').value || '').trim();
+    const msgEl = document.getElementById('pin-msg');
+    const show = (m, ok) => { msgEl.textContent = m; msgEl.className = 'text-xs mt-2 ' + (ok ? 'text-emerald-600' : 'text-red-600'); };
+    if (!authSession) { show('Ingia kwanza kubadilisha PIN.', false); return; }
+    if (v.length < 6) { show('PIN lazima iwe na angalau tarakimu 6.', false); return; }
+    try {
+        const r = await fetch(SUPABASE_URL + '/auth/v1/user', {method: 'PUT', headers: authHeaders(), body: JSON.stringify({password: v})});
+        if (r.ok) { document.getElementById('pin-new').value = ''; show('PIN imebadilishwa ✓ Utatumia PIN mpya mara ya next ingia.', true); notify('PIN imebadilishwa', 'Akaunti yako ya VICOBA OS'); }
+        else { const j = await r.json().catch(() => ({})); show(j.msg || 'Imeshindikana badilisha PIN.', false); }
+    } catch (e) { show('Imeshindikana — hakikisha intaneti.', false); }
+}
+
 // ================= MODALS =================
 function openModal(html) {
     document.getElementById('modal-content').innerHTML = html;
@@ -2229,13 +2329,43 @@ const LASTPUSH_KEY = 'vicoba-os-lastpush';
 let cloudSynced = false;
 let pushTimer = null;
 
+// ---- Supabase Auth: phone + PIN mapped to per-user accounts ----
+// Demo PIN for all seeded personas: 123456 (changeable in Settings).
+const ADMIN_PHONE = '+255700000001';
+function sbEmail(phone) { return 'm' + String(phone).replace(/[^0-9]/g, '') + '@vicoba.app'; }
+let authSession = null;
+try { authSession = JSON.parse(localStorage.getItem('vicoba-auth') || 'null'); } catch (e) {}
+function saveSession(token, phone) { authSession = {token, phone}; try { localStorage.setItem('vicoba-auth', JSON.stringify(authSession)); } catch (e) {} }
+function clearSession() { authSession = null; try { localStorage.removeItem('vicoba-auth'); } catch (e) {} }
+function authHeaders() {
+    return Object.assign({}, SB_HEADERS, authSession && authSession.token ? {Authorization: 'Bearer ' + authSession.token} : {});
+}
+async function authSignIn(phone, pin) {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {method: 'POST', headers: SB_HEADERS, body: JSON.stringify({email: sbEmail(phone), password: pin})});
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.access_token) return {ok: true, token: j.access_token};
+    return {ok: false, reason: (j.error_description || j.msg || j.error || 'Imeshindikana kuingia')};
+}
+async function authSignUp(phone, pin) {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/signup', {method: 'POST', headers: SB_HEADERS, body: JSON.stringify({email: sbEmail(phone), password: pin})});
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) return {ok: true};
+    const m = String(j.msg || j.error || '').toLowerCase();
+    if (m.indexOf('already') > -1 || m.indexOf('registered') > -1) return {ok: false, exists: true};
+    return {ok: false, reason: j.msg || j.error || 'Imeshindikana kujiandikisha'};
+}
+async function authSignOut() {
+    clearSession();
+    try { await fetch(SUPABASE_URL + '/auth/v1/logout', {method: 'POST', headers: authHeaders()}); } catch (e) {}
+}
+
 function setSync(ok, txt) {
     const el = document.getElementById('sync-status');
     if (el) el.textContent = txt || (ok ? 'Supabase ✓ Imesawazishwa' : 'Hifadhi ya Ndani (offline)');
 }
 
 async function cloudGet() {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/app_state?id=eq.main&select=data,updated_at', {headers: SB_HEADERS});
+    const r = await fetch(SUPABASE_URL + '/rest/v1/app_state?id=eq.main&select=data,updated_at', {headers: authHeaders()});
     if (!r.ok) throw new Error('GET ' + r.status);
     const rows = await r.json();
     return rows.length ? rows[0] : null;
@@ -2244,7 +2374,7 @@ async function cloudGet() {
 async function cloudPut() {
     const r = await fetch(SUPABASE_URL + '/rest/v1/app_state', {
         method: 'POST',
-        headers: Object.assign({}, SB_HEADERS, {'Prefer': 'resolution=merge-duplicates'}),
+        headers: Object.assign({}, authHeaders(), {'Prefer': 'resolution=merge-duplicates'}),
         body: JSON.stringify({id: 'main', data: state, updated_at: new Date().toISOString()})
     });
     if (!r.ok) throw new Error('PUT ' + r.status);
@@ -2253,7 +2383,7 @@ async function cloudPut() {
 
 function cloudPushNow() {
     if (!cloudSynced) return;
-    cloudPut().then(() => setSync(true)).catch(() => setSync(false));
+    cloudPut().then(() => setSync(true)).catch(() => { cloudSynced = false; setSync(false); });
 }
 
 function schedulePush() {
@@ -2289,6 +2419,7 @@ async function initCloud() {
             cloudPushNow();
         }
         setSync(true);
+        pullPublicApplications();
     } catch (e) {
         cloudSynced = false;
         setSync(false);

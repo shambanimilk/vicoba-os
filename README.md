@@ -34,10 +34,14 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
 - **PDF reports**, **audit log**, **loan estimate & contribution-trend cards** on the
   member dashboard.
 
-## Demo sign-ins (phone + any PIN)
+## Demo sign-ins (phone + PIN `123456`)
+
+Real Supabase Auth accounts are created lazily on first sign-in. Officers can
+change their PIN in Settings.
 
 | Role | Phone | Group |
 |---|---|---|
+| Super Admin | +255700000001 | all (switcher) |
 | Mwenyekiti (chair) | +255713456789 | Umoja wa Wanawake |
 | Mweka Hazina (treasurer) | +255715678901 | Umoja wa Wanawake |
 | Katibu (secretary) | +255712345678 | Umoja wa Wanawake |
@@ -45,7 +49,8 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
 | Mwanachama (member) | +255716789012 | Vijana Nguvu |
 
 Or use the demo role buttons on the login page. Join a group with invite code
-`UMOJA-7K2Q` or open `index.html#invite=UMOJA-7K2Q`.
+`UMOJA-7K2Q` or open `index.html#invite=UMOJA-7K2Q` (the join form creates the
+applicant's account and files a row in the `membership_applications` table).
 
 ## Run locally
 
@@ -54,11 +59,15 @@ python -m http.server 8642
 # open http://127.0.0.1:8642/index.html
 ```
 
-## Supabase (planned backend)
+## Supabase
 
-`supabase/schema.sql` contains the full database schema (tables, indexes, and
-row-level-security policies enforcing group isolation). See `docs/payments-integration-spec.md`
-for the backend architecture and roadmap.
+Connected to a live Supabase project: **Supabase Auth** (phone + PIN, mapped to
+per-user email accounts) gates the app, the demo state syncs to the
+`app_state` table (authenticated-only), and public join requests are filed in
+the normalized `membership_applications` table. `supabase/schema.sql` holds the
+full normalized schema (loan-cap trigger, 70%-vote auto-approval, RLS group
+isolation), `supabase/auth-setup.sql` the auth policies. Production migration
+path is described in `docs/payments-integration-spec.md`.
 
 ## Project layout
 
