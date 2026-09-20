@@ -169,7 +169,7 @@
       <div class="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
         <h3 class="font-semibold text-gray-900">Msingi</h3>
-        <p class="text-3xl font-bold text-gray-900 mt-2">TSh 500<span class="text-sm font-normal text-gray-500">/mwanachama/mwezi</span></p>
+        <p class="text-3xl font-bold text-gray-900 mt-2"><span id="pub-p-basic">TSh 500</span><span class="text-sm font-normal text-gray-500">/mwanachama/mwezi</span></p>
         <p class="text-sm text-gray-500 mt-1">Hadi wanachama 30 • mf. kikundi cha 30: TSh 15,000/mwezi</p>
         <ul class="mt-4 space-y-2 text-sm text-gray-600">
          <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> Moduli zote + kumbusho 10 SMS/mwanachama</li>
@@ -179,7 +179,7 @@
        </div>
        <div class="bg-emerald-600 rounded-2xl p-6 text-white relative shadow-xl shadow-emerald-600/20"><span class="absolute -top-3 right-4 bg-amber-400 text-amber-900 text-xs font-bold px-2.5 py-1 rounded-full">Maarufu</span>
         <h3 class="font-semibold">Biashara</h3>
-        <p class="text-3xl font-bold mt-2">TSh 450<span class="text-sm font-normal text-emerald-200">/mwanachama/mwezi</span></p>
+        <p class="text-3xl font-bold mt-2"><span id="pub-p-business">TSh 450</span><span class="text-sm font-normal text-emerald-200">/mwanachama/mwezi</span></p>
         <p class="text-sm text-emerald-200 mt-1">Wanachama 31–50 • mf. kikundi cha 40: TSh 18,000/mwezi</p>
         <ul class="mt-4 space-y-2 text-sm text-emerald-100">
          <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-300"></i> Kila kitu cha Msingi</li>
@@ -190,7 +190,7 @@
        </div>
        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
         <h3 class="font-semibold text-gray-900">Taasisi</h3>
-        <p class="text-3xl font-bold text-gray-900 mt-2">TSh 400<span class="text-sm font-normal text-gray-500">/mwanachama/mwezi</span></p>
+        <p class="text-3xl font-bold text-gray-900 mt-2"><span id="pub-p-institution">TSh 400</span><span class="text-sm font-normal text-gray-500">/mwanachama/mwezi</span></p>
         <p class="text-sm text-gray-500 mt-1">Wanachama 51+ • vikundi visivyo na kikomo</p>
         <ul class="mt-4 space-y-2 text-sm text-gray-600">
          <li class="flex items-center gap-2"><i data-lucide="check" style="width:14px;height:14px" class="text-emerald-500"></i> Multi-tenancy kamili</li>
@@ -431,6 +431,7 @@ function defaultState() {
             socialMonthly: 5000, penalty: 2,
             remindLeadDays: 3, contributionDay: 0,
             jamiiMsiba: 200000, jamiiUgonjwa: 150000, jamiiHarusi: 100000,
+            pricing: {basic: 500, business: 450, institution: 400},
         },
         txCounter: 1000,
     };
@@ -512,6 +513,7 @@ function loadState() {
     if (!Array.isArray(s.ruleProposals)) s.ruleProposals = [];
     if (!s.integrations) s.integrations = {payment: {}, sms: {}, whatsapp: {}};
     if (!Array.isArray(s.billing)) s.billing = [];
+    if (!s.settings.pricing || !s.settings.pricing.basic) s.settings.pricing = {basic: 500, business: 450, institution: 400};
     return s;
 }
 function save() {
@@ -664,11 +666,21 @@ function groupMonthIndex(g) {
     return Math.max(1, (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1);
 }
 // ---- Subscription: 2-week trial -> grace -> view-only until paid ----
-// Tiers (per member per month, billed to the group): <=30 = 500, 31-50 = 450, 51+ = 400
+// Tiers (per member per month, billed to the group) — prices are set by the
+// platform owner (Super Admin) in API & Huduma and shared with all groups.
 function subTier(memberCount) {
-    if (memberCount <= 30) return {name: 'Msingi', perMember: 500};
-    if (memberCount <= 50) return {name: 'Biashara', perMember: 450};
-    return {name: 'Taasisi', perMember: 400};
+    const p = (state.settings && state.settings.pricing) || {};
+    if (memberCount <= 30) return {name: 'Msingi', perMember: Number(p.basic) || 500};
+    if (memberCount <= 50) return {name: 'Biashara', perMember: Number(p.business) || 450};
+    return {name: 'Taasisi', perMember: Number(p.institution) || 400};
+}
+// Onyesha bei za mmiliki kwenye ukurasa wa Bei (public)
+function renderPublicPricing() {
+    const p = (state.settings && state.settings.pricing) || {};
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = CUR.sym + ' ' + Number(v).toLocaleString(); };
+    set('pub-p-basic', p.basic || 500);
+    set('pub-p-business', p.business || 450);
+    set('pub-p-institution', p.institution || 400);
 }
 function subStatus(g) {
     const sub = g && g.subscription;
@@ -902,9 +914,11 @@ async function doPhoneLogin() {
         saveSession(r.token, ph);
         const m = state.members.find(x => x.phone === ph);
         if (ph === ADMIN_PHONE) {
+            // Super Admin = mmiliki wa jukwaa TU — hana kikundi, haingii kwenye
+            // kazi za kikundi chochote (uhakiki wa kitaifa wa kila kikundi).
             currentRole = 'admin';
-            currentGroupId = currentGroupId || 'G1';
-            currentMemberId = (groupMembers('G1')[0] || state.members[0] || {}).id;
+            currentGroupId = null;
+            currentMemberId = null;
         } else if (m && m.groupId) {
             currentMemberId = m.id;
             currentRole = (m.role && roleLabels[m.role]) ? m.role : 'member';
@@ -931,6 +945,7 @@ function demoLogin(role) {
 }
 
 function switchGroup(v) {
+    if (currentRole === 'admin') return; // mmiliki wa jukwaa haingii kwenye kikundi
     currentGroupId = v;
     currentSection = 'dashboard';
     renderDashboard();
@@ -947,21 +962,11 @@ function toggleSidebar() {
 const navItems = {
     admin: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
-        {icon:'users',label:'Vikundi',section:'groups'},
-        {icon:'user',label:'Wanachama',section:'members'},
+        {icon:'users-round',label:'Vikundi (Jukwaa)',section:'groups'},
+        {icon:'user',label:'Wanachama Wote',section:'members'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
-        {icon:'wallet',label:'Michango',section:'contributions'},
-        {icon:'banknote',label:'Mikopo',section:'loans'},
-        {icon:'check-circle',label:'Idhini',section:'approvals'},
-        {icon:'user-check',label:'Miamvula',section:'consents'},
-        {icon:'heart',label:'Mfuko Jamii',section:'social'},
-        {icon:'calendar',label:'Mikutano',section:'meetings'},
-        {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
+        {icon:'plug',label:'API, Gateway & Bei',section:'integrations'},
         {icon:'shield',label:'Ukaguzi',section:'audit'},
-        {icon:'alert-triangle',label:'Hatari',section:'risk'},
-        {icon:'vote',label:'Uchaguzi',section:'elections'},
-        {icon:'plug',label:'API & Huduma',section:'integrations'},
-        {icon:'settings',label:'Mipangilio',section:'settings'},
     ],
     chairperson: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
@@ -1019,10 +1024,11 @@ const navItems = {
 
 function buildSidebar() {
     const nav = document.getElementById('sidebar-nav');
-    const items = !currentGroupId ? [
-        {icon:'layout-dashboard',label:'Dashibodi Yangu',section:'dashboard'},
-        {icon:'bell',label:'Arifa',section:'notifications'},
-    ] : (navItems[currentRole] || navItems.member);
+    const items = currentRole === 'admin' ? navItems.admin
+        : (!currentGroupId ? [
+            {icon:'layout-dashboard',label:'Dashibodi Yangu',section:'dashboard'},
+            {icon:'bell',label:'Arifa',section:'notifications'},
+        ] : (navItems[currentRole] || navItems.member));
     nav.innerHTML = items.map(it => `
         <button onclick="navigateTo('${it.section}')" class="sidebar-link w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-gray-600 text-[13px] font-medium ${currentSection===it.section?'active':''}">
             <i data-lucide="${it.icon}" style="width:16px;height:16px"></i> ${it.label}
@@ -1056,10 +1062,10 @@ function renderDashboard() {
     const gb = document.getElementById('group-badge');
     const gsw = document.getElementById('group-switch');
     const grp = currentGroup();
-    if (currentRole === 'admin' && currentGroupId) {
+    if (currentRole === 'admin') {
+        // Mmiliki wa jukwaa — hana kikundi/switcher; anatazama jukwaa nzima
         gb.classList.add('hidden');
-        gsw.innerHTML = state.groups.map(g => `<option value="${g.id}" ${g.id === currentGroupId ? 'selected' : ''}>${g.name}</option>`).join('');
-        gsw.classList.remove('hidden');
+        gsw.classList.add('hidden');
     } else {
         gsw.classList.add('hidden');
         gb.textContent = currentGroupId ? (grp ? grp.name : '') : 'Hakuna Kikundi';
@@ -1073,10 +1079,12 @@ function renderDashboard() {
 
 function renderSection() {
     const mc = document.getElementById('main-content');
-    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API & Huduma (Super Admin)'};
+    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API, Gateway & Bei (Super Admin)'};
     document.getElementById('page-heading').textContent = titles[currentSection] || 'Dashibodi';
 
-    if (!currentGroupId && ['dashboard','notifications','settings'].indexOf(currentSection) === -1) {
+    // Super Admin (mmiliki) ana sehemu zake za jukwaa bila kikundi
+    const adminSections = ['dashboard','groups','members','memberapps','audit','integrations','notifications'];
+    if (!currentGroupId && !(currentRole === 'admin' && adminSections.indexOf(currentSection) > -1) && ['dashboard','notifications','settings'].indexOf(currentSection) === -1) {
         mc.innerHTML = `<div class="fade-in bg-white rounded-xl p-8 border border-gray-100 text-center">
             <p class="text-4xl mb-3">🔒</p>
             <p class="text-sm text-gray-500 mb-4">Sehemu hii inapatikana baada ya kujiunga na kikundi au kutengeneza kikundi chako.</p>
@@ -1088,7 +1096,7 @@ function renderSection() {
     }
 
     const renderers = {
-        dashboard: () => !currentGroupId ? renderNoGroupDash() : (currentRole === 'member' ? renderMemberDash() : renderGroupDash()),
+        dashboard: () => !currentGroupId ? (currentRole === 'admin' ? renderPlatformDash() : renderNoGroupDash()) : (currentRole === 'member' ? renderMemberDash() : renderGroupDash()),
         members: renderMembers, contributions: renderContributions, loans: renderLoans,
         'my-savings': renderMySavings, 'my-loans': renderMyLoans, groups: renderGroups,
         approvals: renderApprovals, meetings: renderMeetings, reports: renderReports,
@@ -1145,6 +1153,68 @@ function updateBell() {
 }
 
 // ================= DASHBOARDS =================
+// Dashibodi ya mmiliki (Super Admin) — mtazamo wa jukwaa nzima, bila kikundi
+function subChip(g) {
+    const st = subStatus(g);
+    const map = {
+        active: ['bg-emerald-50 text-emerald-700', 'Imelipwa' + (st.days ? ' • ' + st.days + 's' : '')],
+        trial: ['bg-blue-50 text-blue-700', 'Majaribio • ' + st.days + 's'],
+        grace: ['bg-amber-50 text-amber-800', 'Rehema • ' + st.days + 's'],
+        expired: ['bg-red-50 text-red-700', 'Haujalipwa']
+    };
+    const c = map[st.s] || map.active;
+    return `<span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${c[0]}">${c[1]}</span>`;
+}
+function renderPlatformDash() {
+    const gs = state.groups;
+    const tiers = gs.map(g => subTier(groupStats(g).members));
+    const nActive = gs.filter(g => subStatus(g).s === 'active').length;
+    const nTrial = gs.filter(g => subStatus(g).s === 'trial').length;
+    const nExpired = gs.filter(g => subStatus(g).s === 'expired').length;
+    const revenue = (state.billing || []).reduce((s, b) => s + (b.amount || 0), 0);
+    const p = state.settings.pricing || {};
+    return `<div class="fade-in space-y-5">
+        <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900 rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-12 -mt-12"></div>
+            <p class="text-sm text-emerald-300 font-medium">👑 Mmiliki wa Jukwaa — Super Admin</p>
+            <p class="text-2xl sm:text-3xl font-bold mt-1">VICOBA OS — Mtazamo wa Jukwaa</p>
+            <p class="text-[12px] text-gray-300 mt-1.5">Akaunti hii ni ya mmiliki tu. Haingii kwenye kikundi chochote na hakikundi kinaweza kuifikia. Unadhibiti gateway za malipo/SMS, bei za usajili, na uhakiki wa jumla.</p>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            ${statCard('Vikundi',gs.length,'layers','emerald')}
+            ${statCard('Wanachama Wote',state.members.length,'users','blue')}
+            ${statCard('Usajili Hai/ Jaribio',nActive + ' / ' + nTrial,'badge-check','purple')}
+            ${statCard('Mapato ya Usajili',fmt(revenue),'wallet','amber')}
+        </div>
+        ${nExpired ? `<div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-[12px] text-red-900">⚠️ Vikundi ${nExpired} vina usajili ulioisha (wanaangalia tu). Waunganishie malipo au wakumbushe.</div>` : ''}
+        <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+            <div class="px-4 pt-4 pb-2 flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-semibold text-gray-900 text-sm">🏛️ Vikundi Vyote (${gs.length})</h3>
+                <p class="text-[11px] text-gray-400">Bei: Msingi ${fmt(p.basic || 500)} • Biashara ${fmt(p.business || 450)} • Taasisi ${fmt(p.institution || 400)} /mwanachama/mwezi — <button onclick="navigateTo('integrations')" class="text-emerald-600 hover:underline font-medium">badilisha bei</button></p>
+            </div>
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">Kikundi</th><th class="px-4 py-3 text-left hidden sm:table-cell">Eneo</th><th class="px-4 py-3 text-right">Wanachama</th><th class="px-4 py-3 text-left hidden md:table-cell">Mpango</th><th class="px-4 py-3 text-center">Usajili</th><th class="px-4 py-3 text-left hidden lg:table-cell">Imelipwa Hadi</th></tr></thead>
+                <tbody>${gs.map((g, i) => { const st = groupStats(g); const sub = g.subscription || {}; return `<tr class="border-t border-gray-50 hover:bg-gray-50/50">
+                    <td class="px-4 py-3 font-medium text-gray-900">${g.name}<p class="text-[10px] font-mono text-gray-400">${g.id} • ${g.invite || ''}</p></td>
+                    <td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${g.location || '—'}</td>
+                    <td class="px-4 py-3 text-right font-medium">${st.members}</td>
+                    <td class="px-4 py-3 hidden md:table-cell text-[12px] text-gray-600">${tiers[i].name} (${fmt(tiers[i].perMember)}/mw.)</td>
+                    <td class="px-4 py-3 text-center">${subChip(g)}</td>
+                    <td class="px-4 py-3 hidden lg:table-cell text-[12px] text-gray-500">${sub.paidUntil ? fmtDate(sub.paidUntil) : '—'}</td>
+                </tr>`; }).join('')}</tbody>
+            </table>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">💳 Historia ya Malipo ya Usajili</h3>
+            <div class="space-y-2 text-sm">
+                ${(state.billing || []).slice(0, 8).map(b => `<div class="flex items-center justify-between border-b border-gray-50 py-2 last:border-0">
+                    <span class="text-gray-600">${(groupById(b.groupId) || {}).name || b.groupId} • miezi ${b.months}</span>
+                    <span class="font-semibold text-gray-900">${fmt(b.amount)} <span class="text-[11px] text-gray-400 font-normal">• ${fmtDate(b.date)}</span></span>
+                </div>`).join('') || '<p class="text-sm text-gray-400">Hakuna malipo ya usajili bado.</p>'}
+            </div>
+        </div>
+    </div>`;
+}
 function renderGroupDash() {
     const g = currentGroup() || state.groups[0];
     const gs = groupStats(g);
@@ -1438,6 +1508,21 @@ async function processInvite() {
 
 // ================= MEMBERS =================
 function renderMembers() {
+    if (currentRole === 'admin') {
+        // Mtazamo wa mmiliki: wanachama wote kwenye jukwaa (kusoma tu)
+        return `<div class="fade-in space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <input type="text" placeholder="Tafuta mwanachama..." oninput="filterMembers(this.value)" class="border border-gray-200 rounded-lg px-3.5 py-2 text-sm w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 outline-none">
+                <p class="text-[11px] text-gray-400">Wanachama wote • vikundi vyote (${state.members.length})</p>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Jina</th><th class="px-4 py-3 text-left hidden sm:table-cell">Kikundi</th><th class="px-4 py-3 text-left hidden md:table-cell">Simu</th><th class="px-4 py-3 text-right">Akiba</th><th class="px-4 py-3 text-right hidden md:table-cell">Hisa</th></tr></thead>
+                    <tbody id="members-tbody">${state.members.map(m=>`<tr onclick="showMemberProfile('${m.id}')" class="border-t border-gray-50 hover:bg-gray-50/50 transition cursor-pointer"><td class="px-4 py-3 font-mono text-xs text-gray-400">${m.id}</td><td class="px-4 py-3 font-medium text-gray-900"><span class="inline-flex items-center gap-2">${avatarHtml(m)} ${m.name}</span></td><td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${(groupById(m.groupId) || {}).name || '—'}</td><td class="px-4 py-3 text-gray-500 hidden md:table-cell">${m.phone}</td><td class="px-4 py-3 text-right font-medium">${fmt(m.savings)}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.shares}</td></tr>`).join('')}</tbody>
+                </table>
+            </div>
+        </div>`;
+    }
     return `<div class="fade-in space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <input type="text" placeholder="Tafuta mwanachama..." oninput="filterMembers(this.value)" class="border border-gray-200 rounded-lg px-3.5 py-2 text-sm w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -1549,6 +1634,27 @@ function processAddMember() {
 
 // ================= GROUPS =================
 function renderGroups() {
+    if (currentRole === 'admin') {
+        // Uhakiki wa jukwaa: kadi za kila kikundi bila kuingia ndani yake
+        return `<div class="fade-in space-y-4">
+            <p class="text-sm text-gray-500">Vikundi vyote kwenye jukwaa (${state.groups.length}) — mtazamo wa mmiliki tu, usioingia kwenye shughuli za kikundi.</p>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${state.groups.map(g=>{const st=groupStats(g); const tier=subTier(st.members); return `<div class="bg-white rounded-xl p-5 border border-gray-100 card-hover">
+                    <div class="flex items-start justify-between gap-2">
+                        <h4 class="font-semibold text-gray-900 text-sm">${g.name}</h4>
+                        ${subChip(g)}
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-0.5">${g.location || '—'} • ${st.members} wanachama</p>
+                    <p class="text-[10px] font-mono text-gray-400 mt-2">Mwaliko: ${g.invite || '—'}</p>
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <div><p class="text-[11px] text-gray-400">Akiba</p><p class="font-bold text-emerald-600 text-sm">${fmt(st.savings)}</p></div>
+                        <div><p class="text-[11px] text-gray-400">Mikopo</p><p class="font-bold text-amber-600 text-sm">${fmt(st.loans)}</p></div>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-3 pt-2 border-t border-gray-50">Mpango: <strong>${tier.name}</strong> — ${fmt(tier.perMember)}/mwanachama/mwezi${g.subscription && g.subscription.paidUntil ? ' • hadi ' + fmtDate(g.subscription.paidUntil) : ''}</p>
+                </div>`;}).join('')}
+            </div>
+        </div>`;
+    }
     return `<div class="fade-in space-y-4">
         <div class="flex items-center justify-between">
             <p class="text-sm text-gray-500">Vikundi ${state.groups.length}</p>
@@ -3137,63 +3243,109 @@ function saveSettings() {
 }
 
 // ================= SUPER ADMIN: API INTEGRATIONS =================
+const PAY_PROVIDERS = ['Selcom','PalmPesa','Snippe','Flutterwave','DPO','AzamPay'];
+const SMS_PROVIDERS = ['NextSMS','Beem Africa',"Africa's Talking",'Infobip','Twilio'];
+function itName(cfg) { return (cfg && cfg.provider === 'Custom' && cfg.customName) ? cfg.customName : (cfg && cfg.provider) || '—'; }
+function itProviderOptions(list, current) {
+    return list.map(p => `<option value="${p}" ${current === p ? 'selected' : ''}>${p}</option>`).join('')
+        + `<option value="Custom" ${current === 'Custom' ? 'selected' : ''}>Nyingine (Desturi — weka yako)</option>`;
+}
 function renderIntegrations() {
     const it = state.integrations || {};
     const pay = it.payment || {}, sms = it.sms || {}, wa = it.whatsapp || {};
+    const pr = state.settings.pricing || {};
     const mask = v => v ? String(v).slice(0, 4) + '••••••••' + String(v).slice(-4) : '';
+    const customWrap = (kind, cfg) => `<div id="it-${kind}-custom" class="grid sm:grid-cols-2 gap-3 mt-3 ${cfg.provider === 'Custom' ? '' : 'hidden'}">
+        <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Jina la Provider</label>
+        <input id="it-${kind}-cname" type="text" value="${cfg.customName || ''}" placeholder="mf. NMB Mkononi" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+        <div><label class="text-[11px] text-gray-500 uppercase block mb-1">API Base URL</label>
+        <input id="it-${kind}-url" type="text" value="${cfg.baseUrl || ''}" placeholder="https://api.provider.co.tz/v1" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+    </div>`;
     return `<div class="fade-in space-y-4">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12px] text-amber-900">
-            <p class="font-semibold mb-1">⚠️ Sehemu ya mmiliki (Super Admin)</p>
-            <p>Hii ndipo sehemu ya kuunganisha VICOBA OS na huduma za malipo, SMS na WhatsApp. Prototipi hii huhifadhi funguo kwenye data ya mfumo — kwa uzalishaji, funguo zinahamishiwa kwenye seva za siri (soma <span class="font-mono">docs/payments-integration-spec.md</span>).</p>
+            <p class="font-semibold mb-1">⚠️ Sehemu ya mmiliki (Super Admin) tu</p>
+            <p>Hakuna kikundi kinachoweza kufikia akaunti hii au sehemu hii. Hapa unaunganisha gateway za malipo/SMS/WhatsApp (Tanzania: Selcom, PalmPesa, Snippe, NextSMS, Beem n.k. — au <strong>provider yeyote ya desturi</strong>) na kuweka bei za usajili za jukwaa. Prototipii hii huhifadhi funguo kwenye data ya mfumo — kwa uzalishaji, funguo zinahamishiwa kwenye seva za siri (soma <span class="font-mono">docs/payments-integration-spec.md</span>).</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-1">💳 Bei za Usajili (kwa mwanachama/mwezi)</h3>
+            <p class="text-[11px] text-gray-400 mb-3">Badilisha bei zinazoonekana kwa vikundi vyote na kwenye ukurasa wa Bei.</p>
+            <div class="grid sm:grid-cols-3 gap-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Msingi (hadi 30)</label>
+                <input id="price-basic" type="number" min="1" value="${pr.basic || 500}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Biashara (31–50)</label>
+                <input id="price-business" type="number" min="1" value="${pr.business || 450}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Taasisi (51+)</label>
+                <input id="price-institution" type="number" min="1" value="${pr.institution || 400}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <button onclick="savePricing()" class="mt-3 bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-gray-800 transition">Hifadhi Bei</button>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-3">💰 Malipo (Payment Gateway)</h3>
             <div class="grid sm:grid-cols-3 gap-3 text-sm">
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Provider</label>
-                <select id="it-pay-provider" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option ${pay.provider==='Selcom'?'selected':''}>Selcom</option><option ${pay.provider==='Flutterwave'?'selected':''}>Flutterwave</option><option ${pay.provider==='DPO'?'selected':''}>DPO</option></select></div>
+                <select id="it-pay-provider" onchange="itProviderChanged('pay')" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${itProviderOptions(PAY_PROVIDERS, pay.provider)}</select></div>
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">API Key</label>
                 <input id="it-pay-key" type="text" value="${pay.apiKey || ''}" placeholder="mf. selco-9f2..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Secret</label>
                 <input id="it-pay-secret" type="password" value="${pay.secret || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2">Hifadhinawa: ${mask(pay.apiKey) || '—'} • Webhook: <span class="font-mono">${location.origin}/webhooks/payments</span> (baada ya backend)</p>
+            ${customWrap('pay', pay)}
+            <p class="text-[10px] text-gray-400 mt-2">Inayotumika: <strong>${itName(pay)}</strong> • Hifadhinawa: ${mask(pay.apiKey) || '—'} • Webhook: <span class="font-mono">${location.origin}/webhooks/payments</span> (baada ya backend)</p>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-3">📱 SMS Gateway</h3>
             <div class="grid sm:grid-cols-3 gap-3 text-sm">
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Provider</label>
-                <select id="it-sms-provider" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option ${sms.provider==="Africa's Talking"?'selected':''}>Africa's Talking</option><option ${sms.provider==='Infobip'?'selected':''}>Infobip</option><option ${sms.provider==='Twilio'?'selected':''}>Twilio</option></select></div>
-                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">API Key</label>
-                <input id="it-sms-key" type="text" value="${sms.apiKey || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <select id="it-sms-provider" onchange="itProviderChanged('sms')" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${itProviderOptions(SMS_PROVIDERS, sms.provider)}</select></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">API Key / Secret</label>
+                <input id="it-sms-key" type="text" value="${sms.apiKey || ''}" placeholder="mf. nextsms-key..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Sender ID</label>
                 <input id="it-sms-sender" type="text" value="${sms.sender || ''}" placeholder="mf. VICOBAOS" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2">Hifadhinawa: ${mask(sms.apiKey) || '—'} • Kumbusho zote (mchango, mikopo, udhamini) zinaandaliwa tayari kwa SMS.</p>
+            ${customWrap('sms', sms)}
+            <p class="text-[10px] text-gray-400 mt-2">Inayotumika: <strong>${itName(sms)}</strong> • Hifadhinawa: ${mask(sms.apiKey) || '—'} • Kumbusho zote (mchango, mikopo, udhamini) zinaandaliwa tayari kwa SMS.</p>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-3">💬 WhatsApp API</h3>
             <div class="grid sm:grid-cols-3 gap-3 text-sm">
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Provider</label>
-                <select id="it-wa-provider" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option ${wa.provider==='WhatsApp Cloud API'?'selected':''}>WhatsApp Cloud API</option><option ${wa.provider==='Twilio'?'selected':''}>Twilio</option></select></div>
+                <select id="it-wa-provider" onchange="itProviderChanged('wa')" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${itProviderOptions(['WhatsApp Cloud API','Twilio'], wa.provider)}</select></div>
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Access Token</label>
                 <input id="it-wa-token" type="password" value="${wa.token || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
                 <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Phone Number ID</label>
-                <input id="it-wa-phone" type="text" value="${wa.phoneId || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <input id="it-wa-phone" type="text" value="${wa.phoneId || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2">Hifadhinawa: ${mask(wa.token) || '—'} • Arifa za kikundi/wanachama zitatumwa WhatsApp baada ya kuunganishwa.</p>
+            ${customWrap('wa', wa)}
+            <p class="text-[10px] text-gray-400 mt-2">Inayotumika: <strong>${itName(wa)}</strong> • Hifadhinawa: ${mask(wa.token) || '—'} • Arifa za kikundi/wanachama zitatumwa WhatsApp baada ya kuunganishwa.</p>
         </div>
         <button onclick="saveIntegrations()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">Hifadhi Vyuunganisho</button>
     </div>`;
 }
 
+function itProviderChanged(kind) {
+    const wrap = document.getElementById('it-' + kind + '-custom');
+    if (wrap) wrap.classList.toggle('hidden', val('it-' + kind + '-provider') !== 'Custom');
+}
+
+function savePricing() {
+    const nums = ['basic', 'business', 'institution'].map(k => Number(val('price-' + k)));
+    if (nums.some(n => !n || n < 1)) { notify('Bei zisizo sahihi', 'Weka bei chanya kwa kila mpango'); return; }
+    state.settings.pricing = {basic: nums[0], business: nums[1], institution: nums[2]};
+    addAudit('Amebadilisha bei za usajili — ' + nums.map(fmt).join(' / '));
+    notify('Bei za usajili zimehifadhiwa', 'Msingi ' + fmt(nums[0]) + ' • Biashara ' + fmt(nums[1]) + ' • Taasisi ' + fmt(nums[2]));
+    save();
+    renderPublicPricing();
+    renderSection();
+}
+
 function saveIntegrations() {
     state.integrations = {
-        payment: {provider: val('it-pay-provider'), apiKey: val('it-pay-key'), secret: val('it-pay-secret')},
-        sms: {provider: val('it-sms-provider'), apiKey: val('it-sms-key'), sender: val('it-sms-sender')},
-        whatsapp: {provider: val('it-wa-provider'), token: val('it-wa-token'), phoneId: val('it-wa-phone')}
+        payment: {provider: val('it-pay-provider'), customName: val('it-pay-cname'), baseUrl: val('it-pay-url'), apiKey: val('it-pay-key'), secret: val('it-pay-secret')},
+        sms: {provider: val('it-sms-provider'), customName: val('it-sms-cname'), baseUrl: val('it-sms-url'), apiKey: val('it-sms-key'), sender: val('it-sms-sender')},
+        whatsapp: {provider: val('it-wa-provider'), customName: val('it-wa-cname'), baseUrl: val('it-wa-url'), token: val('it-wa-token'), phoneId: val('it-wa-phone')}
     };
-    addAudit('Amehifadhi vyuunganisho vya API (Super Admin)');
-    notify('Vyuunganisho vimehifadhiwa', 'Malipo • SMS • WhatsApp');
+    addAudit('Amehifadhi vyuunganisho vya API — Malipo: ' + itName(state.integrations.payment) + ', SMS: ' + itName(state.integrations.sms) + ', WhatsApp: ' + itName(state.integrations.whatsapp));
+    notify('Vyuunganisho vimehifadhiwa', 'Malipo: ' + itName(state.integrations.payment) + ' • SMS: ' + itName(state.integrations.sms) + ' • WhatsApp: ' + itName(state.integrations.whatsapp));
     save();
     renderSection();
 }
@@ -3547,6 +3699,7 @@ async function initCloud() {
 // ================= INIT =================
 document.addEventListener('DOMContentLoaded', function() {
     runReminders();
+    renderPublicPricing();
     const inv = location.hash.match(/invite=([A-Za-z0-9-]+)/);
     if (inv) {
         try { localStorage.setItem('vicoba-pending-invite', decodeURIComponent(inv[1]).toUpperCase()); } catch (e) {}

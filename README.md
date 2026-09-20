@@ -12,7 +12,10 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
   network, and payment reference (simulated gateway — see `docs/payments-integration-spec.md`).
 - **Group isolation (multi-tenancy)** — every member belongs to one group; members,
   loans, statistics, notifications, and reports are scoped to the signed-in group only.
-  Super Admin can switch between groups.
+- **Super Admin = owner only** — the platform owner (+255700000001) signs into a
+  group-less platform workspace (all groups' subscription oversight, all members
+  read-only, audit, gateways, pricing). They never operate inside a group and no
+  group account can reach the Super Admin panel or its API keys.
 - **Sign-in required for loans** — a member borrows only from their own group, with
   **3 referees from the same group** and a hard cap:
   `min(3 × shares value, referees' combined contributions)`.
@@ -82,14 +85,30 @@ Leaders start elections; each member casts one vote; most votes wins
 
 Per-member monthly pricing, billed to the group (the pricing page shows the
 per-member figure): **Msingi** ≤30 members — TSh 500/member/mo • **Biashara**
-31–50 — TSh 450 • **Taasisi** 51+ — TSh 400. Every group gets a **2-week free
-trial**; paying **6 months upfront gives −10%**, **12 months −15%**. Included:
-the platform plus ~10 SMS reminders per member per month; mobile-money
-processing fees are paid by the payer at checkout, extra SMS sold as bundles
-(TSh 5,000 ≈ 200 SMS). Unpaid after the trial plus a 7-day grace period, the
-group becomes **view-only** — full read access, writes blocked behind a
-"Lipa Usajili" prompt (officers can pay from the billing card in Settings;
-the Super Admin bypasses).
+31–50 — TSh 450 • **Taasisi** 51+ — TSh 400. **The owner edits these three
+prices any time** in the Super Admin "API, Gateway & Bei" panel; changes apply
+to every group's billing modal and the public pricing page instantly. Every
+group gets a **2-week free trial**; paying **6 months upfront gives −10%**,
+**12 months −15%**. Included: the platform plus ~10 SMS reminders per member
+per month; mobile-money processing fees are paid by the payer at checkout,
+extra SMS sold as bundles (TSh 5,000 ≈ 200 SMS). Unpaid after the trial plus a
+7-day grace period, the group becomes **view-only** — full read access, writes
+blocked behind a "Lipa Usajili" prompt (officers can pay from the billing card
+in Settings; the Super Admin platform is never gated).
+
+## Super Admin: gateways & pricing
+
+Owner-only panel (no group can access it) to connect the platform's
+integrations and set subscription prices:
+
+- **Payment gateway** — Selcom, **PalmPesa**, **Snippe**, Flutterwave, DPO,
+  AzamPay, or **any custom provider** (choose "Nyingine (Desturi)" and enter
+  the provider name + API base URL + key/secret).
+- **SMS gateway** — **NextSMS**, Beem Africa, Africa's Talking, Infobip,
+  Twilio, or **any custom SMS API** (name + base URL + key, plus sender ID).
+- **WhatsApp API** — WhatsApp Cloud API, Twilio, or custom.
+- **Prices** — the three subscription tier prices, editable and applied
+  platform-wide immediately.
 
 ## Demo sign-ins (phone + PIN `123456`)
 
@@ -98,7 +117,7 @@ change their PIN in Settings.
 
 | Role | Phone | Group |
 |---|---|---|
-| Super Admin | +255700000001 | all (switcher) |
+| Super Admin (owner) | +255700000001 | platform-wide, no group |
 | Mwenyekiti (chair) | +255713456789 | Umoja wa Wanawake |
 | Mweka Hazina (treasurer) | +255715678901 | Umoja wa Wanawake |
 | Katibu (secretary) | +255712345678 | Umoja wa Wanawake |
