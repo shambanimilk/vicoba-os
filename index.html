@@ -2790,6 +2790,7 @@ function saveSettings() {
 function resetDemo() {
     if (!confirm('Rudisha data yote ya awali? Shughuli zote zilizorekodiwa zitafutika.')) return;
     state = defaultState();
+    state.groups.forEach(g => { if (!g.rules) g.rules = defaultRules(state.settings); if (!g.startedAt) g.startedAt = todayISO(); });
     save();
     addAudit('Amrudisha data ya awali (demo reset)');
     save();
