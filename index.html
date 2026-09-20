@@ -337,6 +337,7 @@ function defaultState() {
             {id:'VI84NEJ',name:'Neema Joseph Nkya',phone:'+255719012345',savings:380000,shares:5,loan:150000,status:'Active',groupId:'G2',role:'treasurer',photo:null,nationalId:'20000113123456740890',kinName:'Josephine Nkya',kinRelation:'Mama',kinPhone:'+255719888999'},
         ],
         elections: [],
+        integrations: {payment: {}, sms: {}, whatsapp: {}},
         rulesVersion: 1,
         groups: [
             {id:'G1',name:'Umoja wa Wanawake',members:45,savings:18500000,loans:12000000,location:'Kinondoni',invite:'UMOJA-7K2Q',social:1250000,startedAt:'2025-11-20'},
@@ -505,6 +506,7 @@ function loadState() {
     if (!Array.isArray(s.fines)) s.fines = [];
     if (!Array.isArray(s.excuses)) s.excuses = [];
     if (!Array.isArray(s.ruleProposals)) s.ruleProposals = [];
+    if (!s.integrations) s.integrations = {payment: {}, sms: {}, whatsapp: {}};
     return s;
 }
 function save() {
@@ -630,7 +632,8 @@ function defaultRules(legacy) {
         memberProfitPct: 50,            // % of member-generated profit returned to the member
         exitFeePct: 10,                 // % held by the group when a member exits
         exitPayoutMonths: 3,            // months before exit payout
-        txFeePct: 1                     // mobile-money charge on contributions
+        txFeePct: 1,                    // mobile-money charge on contributions
+        quickLoanCapX: 1                // emergency loan cap: × share value (groups may set their own)
     };
 }
 const RULE_FIELDS = [
@@ -639,6 +642,7 @@ const RULE_FIELDS = [
     {key:'maxSharesMonthly', label:'Hisa Upuu / Mwezi'},
     {key:'contributionDeadlineDay', label:'Mwisho wa Mchango (tarehe 1-28)'},
     {key:'interestPct', label:'Riba ya Mkopo (%)'},
+    {key:'quickLoanCapX', label:'Mkopo wa Dharura (x Thamani ya Hisa)'},
     {key:'lateHisaFine', label:'Faini ya Hisa Kuchelewa (' + CUR.sym + ')'},
     {key:'lateRepaymentFinePct', label:'Faini ya Mkopo Kuchelewa (%)'},
     {key:'finePeriod', label:'Kipindi cha Faini ya Mkopo', type:'select', options:['daily','weekly','monthly']},
@@ -692,7 +696,7 @@ function memberEstimate(mid) {
     const myTx = state.transactions.filter(t => t.memberId === mid);
     const hisa = myTx.filter(t => t.type === 'Hisa').reduce((s, t) => s + t.amount, 0);
     const jamii = myTx.filter(t => t.type === 'Mfuko wa Jamii' || t.type === 'Dharura ya Jamii').reduce((s, t) => s + t.amount, 0);
-    const txFees = Math.round(myTx.reduce((s, t) => s + t.amount, 0) * r.txFeePct / 100);
+    const txFees = Math.round(myTx.filter(t => t.type !== 'Mkopo').reduce((s, t) => s + t.amount, 0) * r.txFeePct / 100);
     const expTotal = state.expenses.filter(e => e.groupId === m.groupId).reduce((s, e) => s + e.amount, 0);
     const myExp = m.shares ? Math.round(expTotal * m.shares / totalShares) : 0;
     return {myProfit, myPoolShare, akiba: m.savings, hisa, jamii, txFees, myExp, attrTotal: attr.total,
@@ -702,7 +706,7 @@ function nextExpId() { state.expCounter = (state.expCounter || 4) + 1; return 'E
 function memberTrend(mid) {
     const now = new Date();
     const cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 84);
-    const tx = state.transactions.filter(t => t.memberId === mid && t.type !== 'Mfuko wa Jamii' && t.type !== 'Dharura ya Jamii' && new Date(t.date) >= cutoff);
+    const tx = state.transactions.filter(t => t.memberId === mid && (t.type === 'Akiba' || t.type === 'Hisa') && new Date(t.date) >= cutoff);
     const weekly = Math.round(tx.reduce((s, t) => s + t.amount, 0) / 12);
     const weeksHit = new Set(tx.map(t => {
         const d = new Date(t.date);
@@ -889,6 +893,7 @@ const navItems = {
         {icon:'shield',label:'Ukaguzi',section:'audit'},
         {icon:'alert-triangle',label:'Hatari',section:'risk'},
         {icon:'vote',label:'Uchaguzi',section:'elections'},
+        {icon:'plug',label:'API & Huduma',section:'integrations'},
         {icon:'settings',label:'Mipangilio',section:'settings'},
     ],
     chairperson: [
@@ -1001,7 +1006,7 @@ function renderDashboard() {
 
 function renderSection() {
     const mc = document.getElementById('main-content');
-    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi'};
+    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API & Huduma (Super Admin)'};
     document.getElementById('page-heading').textContent = titles[currentSection] || 'Dashibodi';
 
     if (!currentGroupId && ['dashboard','notifications','settings'].indexOf(currentSection) === -1) {
@@ -1022,7 +1027,8 @@ function renderSection() {
         approvals: renderApprovals, meetings: renderMeetings, reports: renderReports,
         audit: renderAudit, social: renderSocial, notifications: renderNotifications,
         repayments: renderRepayments, accounting: renderAccounting, risk: renderRisk, settings: renderSettings,
-        memberapps: renderMemberApps, consents: renderConsents, outbox: renderOutbox, elections: renderElections
+        memberapps: renderMemberApps, consents: renderConsents, outbox: renderOutbox,
+        elections: renderElections, integrations: () => currentRole === 'admin' ? renderIntegrations() : '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Sehemu ya Super Admin tu.</div>'
     };
     mc.innerHTML = (renderers[currentSection] || renderGroupDash)();
     lucide.createIcons();
@@ -1176,6 +1182,8 @@ function renderMemberDash() {
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="showContributeModal()" class="bg-emerald-50 text-emerald-700 rounded-lg py-3 text-xs font-medium hover:bg-emerald-100 transition">💰 Lipa Mchango</button>
                     <button onclick="showLoanModal()" class="bg-amber-50 text-amber-700 rounded-lg py-3 text-xs font-medium hover:bg-amber-100 transition">📋 Omba Mkopo</button>
+                    ${myLoan ? '<button onclick="showMyRepayModal()" class="bg-blue-50 text-blue-700 rounded-lg py-3 text-xs font-medium hover:bg-blue-100 transition">💳 Lipa Mkopo</button>' : ''}
+                    ${(() => { const hasQuick = state.loans.some(l => l.memberId === m.id && l.isQuick && l.balance > 0); return hasQuick ? '' : '<button onclick="showQuickLoanModal()" class="bg-red-50 text-red-700 rounded-lg py-3 text-xs font-medium hover:bg-red-100 transition">🚨 Mkopo wa Dharura</button>'; })()}
                     <button onclick="navigateTo('my-savings')" class="bg-blue-50 text-blue-700 rounded-lg py-3 text-xs font-medium hover:bg-blue-100 transition">📊 Taarifa</button>
                     <button onclick="navigateTo('social')" class="bg-purple-50 text-purple-700 rounded-lg py-3 text-xs font-medium hover:bg-purple-100 transition">🤝 Mfuko</button>
                 </div>
@@ -1519,7 +1527,7 @@ function renderContributions() {
         <td class="px-4 py-3 font-mono text-xs text-gray-400">${t.id}</td>
         <td class="px-4 py-3"><span class="font-mono text-[10px] text-gray-400">${t.memberId}</span> ${memberName(t.memberId)}</td>
         <td class="px-4 py-3 text-right font-medium">${fmt(t.amount)}</td>
-        <td class="px-4 py-3 hidden sm:table-cell"><span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${t.type === 'Akiba' ? 'bg-emerald-50 text-emerald-700' : t.type === 'Hisa' ? 'bg-amber-50 text-amber-700' : 'bg-purple-50 text-purple-700'}">${t.type}</span></td>
+        <td class="px-4 py-3 hidden sm:table-cell"><span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${t.type === 'Akiba' ? 'bg-emerald-50 text-emerald-700' : t.type === 'Hisa' ? 'bg-amber-50 text-amber-700' : t.type === 'Mkopo' ? 'bg-gray-100 text-gray-500' : 'bg-purple-50 text-purple-700'}">${t.type === 'Mkopo' ? 'Mkopo (Toleo)' : t.type}</span></td>
         <td class="px-4 py-3 hidden lg:table-cell"><span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${netBadge(t.network)}">${t.network || '—'}</span></td>
         <td class="px-4 py-3 hidden sm:table-cell">${t.ref ? '<span class="font-mono text-[11px] text-gray-400">' + t.ref + '</span><br>' : ''}${fmtDate(t.date)}</td>
         <td class="px-4 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5 rounded-full">Imethibitishwa</span></td>
@@ -1664,6 +1672,12 @@ function pickChannel(id) {
 
 function confirmPayment() {
     if (!payDraft) return;
+    if (payDraft.kind === 'repay') {
+        const res = recordRepayment(payDraft.mid, payDraft.amount, payDraft.network, payDraft.ref);
+        if (res) repaymentReceipt(res, payDraft.network, payDraft.ref);
+        payDraft = null;
+        return;
+    }
     processContribution(payDraft.mid, payDraft.type, payDraft.amount, payDraft.network, payDraft.ref);
 }
 
@@ -1854,7 +1868,11 @@ function renderMyLoans() {
             </div>
             <div class="mt-4"><div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-2 bg-emerald-500 rounded-full" style="width:${progress}%"></div></div><p class="text-[11px] text-gray-400 mt-1">${progress}% umelipa • Mwisho: ${fmtDate(myLoan.due)}</p></div>
         </div>`:'<div class="bg-white rounded-xl p-5 border border-gray-100 text-center"><p class="text-sm text-gray-400">Huna mkopo hai.</p></div>'}
-        <button onclick="showLoanModal()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition">Omba Mkopo Mpya</button>
+        <div class="grid sm:grid-cols-3 gap-2">
+            <button onclick="showLoanModal()" class="bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition">📋 Omba Mkopo</button>
+            <button onclick="showMyRepayModal()" class="bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 transition">💳 Lipa Mkopo</button>
+            <button onclick="showQuickLoanModal()" class="bg-red-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-red-700 transition">🚨 Mkopo wa Dharura</button>
+        </div>
     </div>`;
 }
 
@@ -1863,8 +1881,24 @@ function renderApprovals() {
     const inScope = scopedApps();
     const awaiting = inScope.filter(a => a.status === 'awaiting_approval');
     const pendingRefs = inScope.filter(a => a.status === 'awaiting_referees');
+    const quickApps = inScope.filter(a => a.status === 'awaiting_quick');
     return `<div class="fade-in space-y-3">
-        <p class="text-sm text-gray-500">Maombi yanayosubiri idhini (${awaiting.length})</p>
+        ${quickApps.length ? `<p class="text-sm font-semibold text-red-700">🚨 Mikopo ya Dharura (idhini ya viongozi 2)</p>` : ''}
+        ${quickApps.map(l=>`
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-red-200 border-l-4 border-l-red-500">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <p class="font-medium text-gray-900 text-sm">${memberName(l.memberId)} — Dharura ${fmt(l.amount)} <span class="text-[11px] text-gray-400 font-normal">• ${l.reason || '—'}</span></p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Ref: <span class="font-mono">${l.ref}</span> • ${fmtDate(l.date)} • Riba ${rulesOf(currentGroup()).interestPct}% • Mwezi 1 tu</p>
+                    <p class="text-[11px] text-red-600 font-medium mt-1">Idhini: ${l.quickApprovals.length}/2 ${l.quickApprovals.length === 1 ? '— mfanyikio idhini ya pili' : ''}</p>
+                </div>
+                ${isOfficer() ? `<div class="flex gap-2 flex-shrink-0">
+                    <button ${l.quickApprovals.indexOf(currentMemberId) > -1 ? 'disabled class="bg-gray-100 text-gray-400 px-3.5 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed"' : `onclick="approveQuickLoan('${l.ref}',true)" class="bg-red-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-700 transition"`}>${l.quickApprovals.indexOf(currentMemberId) > -1 ? '✓ Umeidhinisha' : 'Idhinisha (Dharura)'}</button>
+                    <button onclick="approveQuickLoan('${l.ref}',false)" class="bg-red-50 text-red-600 px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Kataa</button>
+                </div>` : '<span class="text-[11px] px-2.5 py-1 rounded-full bg-red-50 text-red-600 font-medium">Inasubiri viongozi</span>'}
+            </div>
+        </div>`).join('')}
+        <p class="text-sm text-gray-500 ${quickApps.length ? 'pt-2' : ''}">Maombi yanayosubiri idhini (${awaiting.length})</p>
         ${pendingRefs.length ? `<div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-[13px] text-blue-800">⏳ ${pendingRefs.length} maombi yanapasubiri makubaliano ya wadhamini: ${pendingRefs.map(a => memberName(a.memberId) + ' (' + a.ref + ')').join(' • ')}</div>` : ''}
         ${awaiting.map(l=>`
         <div class="bg-white rounded-xl p-4 sm:p-5 border border-gray-100">
@@ -1883,6 +1917,97 @@ function renderApprovals() {
     </div>`;
 }
 
+// Quick emergency loan: 1-month term, group interest, cap = quickLoanCapX × share value,
+// no referees, TWO officer approvals, blocked while a previous quick loan is unpaid.
+function showQuickLoanModal() {
+    const m = me();
+    const r = rulesOf(currentGroup());
+    const unpaidQuick = state.loans.some(l => l.isQuick && l.memberId === m.id && l.balance > 0);
+    const cap = m.shares * r.sharePrice * (r.quickLoanCapX || 1);
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">🚨 Mkopo wa Dharura</h3>
+        <p class="text-[12px] text-gray-500 mb-4">Muda: mwezi 1 tu • Riba: ${r.interestPct}% (kama mkopo wa kawaida) • Lazima ilipwe kikamilifu ndani ya mwezi • Adhabu zote zinatumika • Idhini: viongozi 2</p>
+        <p id="quick-error" class="text-xs text-red-600 mb-3 hidden"></p>
+        ${unpaidQuick ? `<div class="bg-red-50 border border-red-100 rounded-lg p-3 text-[12px] text-red-700 mb-3">Una mkopo wa dharura hai haujalipwa kikamilifu — hutaweza kuomba mwingine hadi ulipe.</div>` : ''}
+        <form onsubmit="event.preventDefault(); submitQuickLoan()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym}) — kikomo ${fmt(cap)} (${m.shares} hisa × ${fmt(r.sharePrice)} × ${r.quickLoanCapX || 1})</label>
+            <input id="quick-amount" type="number" max="${cap}" value="${Math.min(50000, cap)}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Sababu ya Dharura</label>
+            <select id="quick-reason" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option>Matibabu</option><option>Msiba</option><option>Dharura ya Familia</option><option>Biashara</option><option>Nyingine</option></select>
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-red-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-red-700 transition">Wasilisha</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function submitQuickLoan() {
+    const m = me();
+    const r = rulesOf(currentGroup());
+    const err = document.getElementById('quick-error');
+    const amount = parseInt(document.getElementById('quick-amount').value, 10) || 0;
+    const reason = document.getElementById('quick-reason').value;
+    const cap = m.shares * r.sharePrice * (r.quickLoanCapX || 1);
+    if (state.loans.some(l => l.isQuick && l.memberId === m.id && l.balance > 0)) {
+        err.textContent = 'Una mkopo wa dharura hai — lipa kwanza kabla ya kuomba mwingine.'; err.classList.remove('hidden'); return;
+    }
+    if (amount <= 0 || amount > cap) {
+        err.textContent = 'Kiasi lazima kiwe kati ya 1 na ' + fmt(cap) + '.'; err.classList.remove('hidden'); return;
+    }
+    err.classList.add('hidden');
+    const ref = genTxId();
+    state.loanApplications.unshift({ref, memberId: m.id, amount, reason, quick: true, quickApprovals: [], status: 'awaiting_quick', date: todayISO(), shares: m.shares, score: Math.min(100, Math.round(40 + m.shares * 2 + m.savings / 100000))});
+    notify('🚨 Mkopo wa dharura', m.name + ' — ' + fmt(amount) + ' • inahitaji idhini ya viongozi 2 (' + ref + ')');
+    addAudit('Ombi la mkopo wa dharura ' + ref + ' — ' + m.name + ' ' + fmt(amount) + ' (mwezi 1, kikomo ' + fmt(cap) + ')');
+    save();
+    closeModal();
+    renderSection();
+    openModal(`<div class="text-center">
+        <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="zap" style="width:28px;height:28px" class="text-red-600"></i></div>
+        <h3 class="text-lg font-bold text-gray-900">Ombi la Dharura Limewasilishwa</h3>
+        <p class="text-sm text-gray-500 mt-2">Linahitaji idhini ya viongozi 2. Malipo kamili yanapaswa kufanyika ndani ya mwezi mmoja.</p>
+        <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
+            <p><span class="text-gray-500">Ref:</span> <span class="font-mono">${ref}</span></p>
+            <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)} • ${reason}</p>
+            <p><span class="text-gray-500">Riba:</span> ${r.interestPct}% • Muda: Mwezi 1</p>
+        </div>
+        <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
+    </div>`);
+    lucide.createIcons();
+}
+
+function approveQuickLoan(ref, ok) {
+    if (!isOfficer()) return;
+    const app = state.loanApplications.find(a => a.ref === ref);
+    if (!app || app.status !== 'awaiting_quick') return;
+    if (!ok) {
+        app.status = 'rejected';
+        addAudit('Amekataa mkopo wa dharura ' + ref + ' — ' + memberName(app.memberId));
+        notify('Mkopo wa dharura umekataliwa', memberName(app.memberId) + ' — ' + ref);
+        save(); renderSection(); return;
+    }
+    if (app.quickApprovals.indexOf(currentMemberId) > -1) return;
+    app.quickApprovals.push(currentMemberId);
+    addAudit('Ameidhinisha mkopo wa dharura ' + ref + ' (' + app.quickApprovals.length + '/2)');
+    if (app.quickApprovals.length >= 2) {
+        app.status = 'approved';
+        const d = new Date(); d.setMonth(d.getMonth() + 1);
+        const r = rulesOf(currentGroup());
+        const loanId = nextLoanId();
+        state.loans.unshift({id: loanId, memberId: app.memberId, amount: app.amount, balance: app.amount, rate: r.interestPct, due: d.toISOString().slice(0, 10), isQuick: true});
+        const member = memberById(app.memberId);
+        if (member) member.loan += app.amount;
+        recordDisbursement(loanId, app.memberId, app.amount);
+        notify('🚨 Mkopo wa dharura umetolewa', memberName(app.memberId) + ' — ' + fmt(app.amount) + ' (' + loanId + ') • Lipa kikamilifu hadi ' + fmtDate(d));
+        addAudit('Mkopo wa dharura ' + loanId + ' umetolewa — ' + memberName(app.memberId) + ' ' + fmt(app.amount) + ' (mwisho ' + fmtDate(d) + ')');
+    } else {
+        notify('Mkopo wa dharura — idhini 1/2', memberName(app.memberId) + ' • ' + ref + ' — mfanyikio idhini ya pili');
+    }
+    save();
+    renderSection();
+}
+
+// Automatic ledger record when any loan is disbursed (money out)
+function recordDisbursement(loanId, memberId, amount) {
+    state.transactions.unshift({id: genTxId(), memberId, type: 'Mkopo', amount, date: todayISO(), network: 'Ofisi', ref: loanId});
+}
+
 function approveLoan(ref, ok) {
     const app = state.loanApplications.find(a => a.ref === ref);
     if (!app) return;
@@ -1894,6 +2019,7 @@ function approveLoan(ref, ok) {
             referees: app.referees.map(r => ({memberId: r.memberId, contribution: r.contribution}))});
         const member = memberById(app.memberId);
         if (member) member.loan += app.amount;
+        recordDisbursement(loanId, app.memberId, app.amount);
         addAudit('Ameidhinisha mkopo ' + loanId + ' — ' + memberName(app.memberId) + ' ' + fmt(app.amount));
         notify('Mkopo umeidhinishwa', memberName(app.memberId) + ' — ' + fmt(app.amount) + ' (' + loanId + ')');
     } else {
@@ -2650,34 +2776,92 @@ function showRepayModal() {
         </form>`);
 }
 
-function processRepayment() {
-    const mid = document.getElementById('repay-member').value;
-    const amount = parseInt(document.getElementById('repay-amount').value, 10) || 0;
+// Core repayment recorder — used by the treasurer flow and member self-service
+function recordRepayment(mid, amount, network, ref) {
     const member = memberById(mid);
-    if (!member || amount <= 0) return;
+    if (!member) return null;
     const loan = state.loans.filter(l => l.memberId === mid && l.balance > 0).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
-    const rate = loan ? loan.rate : state.settings.rate;
-    if (loan) loan.balance = Math.max(0, loan.balance - amount);
-    member.loan = Math.max(0, member.loan - amount);
-    const tx = {id: genTxId(), memberId: mid, loanId: loan ? loan.id : '—', amount, interest: Math.round(amount * rate / (100 + rate)), date: todayISO()};
+    if (!loan) { notify('Hakuna mkopo hai', member.name + ' hana mkopo wa kulipa.'); return null; }
+    const capped = Math.min(amount, loan.balance);
+    const rate = loan.rate;
+    loan.balance = Math.max(0, loan.balance - capped);
+    member.loan = Math.max(0, member.loan - capped);
+    const tx = {id: genTxId(), memberId: mid, loanId: loan.id, amount: capped, interest: Math.round(capped * rate / (100 + rate)), date: todayISO(), network: network || null, ref: ref || null};
     state.repayments.unshift(tx);
-    addAudit('Amerekodi malipo — ' + tx.id + ' ' + member.name + ' ' + fmt(amount));
-    notify('Malipo ya mkopo yamepokelewa', member.name + ' — ' + fmt(amount));
+    addAudit('Amerekodi malipo — ' + tx.id + ' ' + member.name + ' ' + fmt(capped) + (network ? ' • ' + network : ''));
+    notify('Malipo ya mkopo yamepokelewa', member.name + ' — ' + fmt(capped) + (network ? ' • ' + network : ''));
     save();
+    return {tx, loan, member};
+}
+
+function repaymentReceipt(res, network, ref) {
     renderSection();
     openModal(`<div class="text-center">
         <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check" style="width:28px;height:28px" class="text-blue-600"></i></div>
         <h3 class="text-lg font-bold text-gray-900">Malipo Yamepokelewa!</h3>
         <div class="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-left space-y-1">
-            <p><span class="text-gray-500">TXN:</span> <span class="font-mono">${tx.id}</span></p>
-            <p><span class="text-gray-500">Mwanachama:</span> ${member.name}</p>
-            <p><span class="text-gray-500">Mkopo:</span> ${tx.loanId}</p>
-            <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)}</p>
-            <p><span class="text-gray-500">Baki Mpya:</span> ${fmt(member.loan)}</p>
+            <p><span class="text-gray-500">TXN:</span> <span class="font-mono">${res.tx.id}</span></p>
+            <p><span class="text-gray-500">Mwanachama:</span> ${res.member.name} (${res.member.id})</p>
+            <p><span class="text-gray-500">Mkopo:</span> ${res.tx.loanId}</p>
+            <p><span class="text-gray-500">Kiasi:</span> ${fmt(res.tx.amount)}</p>
+            ${network ? `<p><span class="text-gray-500">Mtandao:</span> ${network} ${ref ? '• <span class="font-mono">' + ref + '</span>' : ''}</p>` : ''}
+            <p><span class="text-gray-500">Baki Mpya:</span> ${fmt(res.member.loan)}</p>
         </div>
         <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
     </div>`);
     lucide.createIcons();
+}
+
+// Member self-service: two options — the monthly installment or any amount
+function showMyRepayModal() {
+    const m = me();
+    const myLoan = state.loans.filter(l => l.memberId === m.id && l.balance > 0).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
+    if (!myLoan) { notify('Hakuna mkopo hai', 'Huna mkopo wa kulipa kwa sasa.'); return; }
+    const monthly = myLoan.isQuick ? myLoan.balance : Math.min(Math.round(myLoan.amount * (1 + myLoan.rate / 100) / 6), myLoan.balance);
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">💳 Lipa Mkopo (${myLoan.id})</h3>
+        <p class="text-[12px] text-gray-500 mb-4">Baki: <strong>${fmt(myLoan.balance)}</strong> • Mwisho: ${fmtDate(myLoan.due)}${myLoan.isQuick ? ' • Mkopo wa Dharura — lazima ilipwe kikamilifu ndani ya mwezi' : ''}</p>
+        <button onclick="payMyLoan(${monthly})" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition mb-2">Lipa Malipo ya Mwezi — ${fmt(monthly)}</button>
+        <p class="text-center text-[11px] text-gray-400 my-2">— au —</p>
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Lipa Kiasi Cho Chote (${CUR.sym})</label>
+        <div class="flex gap-2">
+            <input id="myrepay-amount" type="number" placeholder="${state.settings.weekly}" class="flex-1 border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <button onclick="payMyLoanCustom()" class="bg-blue-600 text-white px-4 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">Endelea →</button>
+        </div>
+        <button onclick="closeModal()" class="mt-3 w-full border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button>`);
+}
+
+function payMyLoan(amount) {
+    const m = me();
+    if (!amount || amount <= 0) return;
+    payDraft = {kind: 'repay', mid: m.id, type: 'Malipo ya Mkopo', amount: Math.min(amount, 1000000000), ref: genPayRef()};
+    showRepayChannels();
+}
+
+function payMyLoanCustom() {
+    const amount = parseInt(document.getElementById('myrepay-amount').value, 10) || 0;
+    if (amount <= 0) return;
+    payMyLoan(amount);
+}
+
+function showRepayChannels() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Lipa kwa Mtandao Wowote</h3>
+        <p class="text-xs text-gray-500 mb-4">${memberName(payDraft.mid)} • ${payDraft.type} • ${fmt(payDraft.amount)} • Ref: <span class="font-mono">${payDraft.ref}</span></p>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+            ${PAY_CHANNELS.map(c=>`<button type="button" onclick="pickChannel('${c.id}')" class="border border-gray-200 rounded-xl p-3 text-left hover:border-emerald-400 hover:bg-emerald-50 transition">
+                <p class="text-sm font-semibold text-gray-900">${c.icon} ${c.id}</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">${c.hint}</p>
+            </button>`).join('')}
+        </div>
+        <div id="pay-instructions"></div>
+        <p class="text-[10px] text-gray-400 mt-3 text-center">Simulation — integration halisi: docs/payments-integration-spec.md</p>`);
+}
+
+function processRepayment() {
+    const mid = document.getElementById('repay-member').value;
+    const amount = parseInt(document.getElementById('repay-amount').value, 10) || 0;
+    if (amount <= 0) return;
+    const res = recordRepayment(mid, amount, null, null);
+    if (res) repaymentReceipt(res);
 }
 
 // ================= ACCOUNTING =================
@@ -2863,6 +3047,69 @@ function saveSettings() {
     </div>`);
     lucide.createIcons();
 }
+
+// ================= SUPER ADMIN: API INTEGRATIONS =================
+function renderIntegrations() {
+    const it = state.integrations || {};
+    const pay = it.payment || {}, sms = it.sms || {}, wa = it.whatsapp || {};
+    const mask = v => v ? String(v).slice(0, 4) + '••••••••' + String(v).slice(-4) : '';
+    return `<div class="fade-in space-y-4">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12px] text-amber-900">
+            <p class="font-semibold mb-1">⚠️ Sehemu ya mmiliki (Super Admin)</p>
+            <p>Hii ndipo sehemu ya kuunganisha VICOBA OS na huduma za malipo, SMS na WhatsApp. Prototipi hii huhifadhi funguo kwenye data ya mfumo — kwa uzalishaji, funguo zinahamishiwa kwenye seva za siri (soma <span class="font-mono">docs/payments-integration-spec.md</span>).</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">💰 Malipo (Payment Gateway)</h3>
+            <div class="grid sm:grid-cols-3 gap-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Provider</label>
+                <select id="it-pay-provider" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option ${pay.provider==='Selcom'?'selected':''}>Selcom</option><option ${pay.provider==='Flutterwave'?'selected':''}>Flutterwave</option><option ${pay.provider==='DPO'?'selected':''}>DPO</option></select></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">API Key</label>
+                <input id="it-pay-key" type="text" value="${pay.apiKey || ''}" placeholder="mf. selco-9f2..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Secret</label>
+                <input id="it-pay-secret" type="password" value="${pay.secret || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2">Hifadhinawa: ${mask(pay.apiKey) || '—'} • Webhook: <span class="font-mono">${location.origin}/webhooks/payments</span> (baada ya backend)</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">📱 SMS Gateway</h3>
+            <div class="grid sm:grid-cols-3 gap-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Provider</label>
+                <select id="it-sms-provider" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option ${sms.provider==="Africa's Talking"?'selected':''}>Africa's Talking</option><option ${sms.provider==='Infobip'?'selected':''}>Infobip</option><option ${sms.provider==='Twilio'?'selected':''}>Twilio</option></select></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">API Key</label>
+                <input id="it-sms-key" type="text" value="${sms.apiKey || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Sender ID</label>
+                <input id="it-sms-sender" type="text" value="${sms.sender || ''}" placeholder="mf. VICOBAOS" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2">Hifadhinawa: ${mask(sms.apiKey) || '—'} • Kumbusho zote (mchango, mikopo, udhamini) zinaandaliwa tayari kwa SMS.</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">💬 WhatsApp API</h3>
+            <div class="grid sm:grid-cols-3 gap-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Provider</label>
+                <select id="it-wa-provider" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option ${wa.provider==='WhatsApp Cloud API'?'selected':''}>WhatsApp Cloud API</option><option ${wa.provider==='Twilio'?'selected':''}>Twilio</option></select></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Access Token</label>
+                <input id="it-wa-token" type="password" value="${wa.token || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Phone Number ID</label>
+                <input id="it-wa-phone" type="text" value="${wa.phoneId || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2">Hifadhinawa: ${mask(wa.token) || '—'} • Arifa za kikundi/wanachama zitatumwa WhatsApp baada ya kuunganishwa.</p>
+        </div>
+        <button onclick="saveIntegrations()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">Hifadhi Vyuunganisho</button>
+    </div>`;
+}
+
+function saveIntegrations() {
+    state.integrations = {
+        payment: {provider: val('it-pay-provider'), apiKey: val('it-pay-key'), secret: val('it-pay-secret')},
+        sms: {provider: val('it-sms-provider'), apiKey: val('it-sms-key'), sender: val('it-sms-sender')},
+        whatsapp: {provider: val('it-wa-provider'), token: val('it-wa-token'), phoneId: val('it-wa-phone')}
+    };
+    addAudit('Amehifadhi vyuunganisho vya API (Super Admin)');
+    notify('Vyuunganisho vimehifadhiwa', 'Malipo • SMS • WhatsApp');
+    save();
+    renderSection();
+}
+function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
 function resetDemo() {
     if (!confirm('Rudisha data yote ya awali? Shughuli zote zilizorekodiwa zitafutika.')) return;
