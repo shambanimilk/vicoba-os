@@ -337,13 +337,22 @@ function defaultState() {
             {id:'VI84NEJ',name:'Neema Joseph Nkya',phone:'+255719012345',savings:380000,shares:5,loan:150000,status:'Active',groupId:'G2',role:'treasurer',photo:null,nationalId:'20000113123456740890',kinName:'Josephine Nkya',kinRelation:'Mama',kinPhone:'+255719888999'},
         ],
         elections: [],
+        rulesVersion: 1,
         groups: [
-            {id:'G1',name:'Umoja wa Wanawake',members:45,savings:18500000,loans:12000000,location:'Kinondoni',invite:'UMOJA-7K2Q',social:1250000},
-            {id:'G2',name:'Vijana Nguvu',members:32,savings:8200000,loans:5500000,location:'Ilala',invite:'VIJANA-3M8X',social:640000},
-            {id:'G3',name:'Tumaini VICOBA',members:28,savings:6800000,loans:4200000,location:'Temeke',invite:'TUMAINI-9P4D',social:520000},
-            {id:'G4',name:'Mwanga Kikoba',members:50,savings:22000000,loans:15000000,location:'Dodoma',invite:'MWANGA-5T6B',social:980000},
-            {id:'G5',name:'Amani Group',members:38,savings:11500000,loans:7800000,location:'Arusha',invite:'AMANI-8R2F',social:710000}
+            {id:'G1',name:'Umoja wa Wanawake',members:45,savings:18500000,loans:12000000,location:'Kinondoni',invite:'UMOJA-7K2Q',social:1250000,startedAt:'2025-11-20'},
+            {id:'G2',name:'Vijana Nguvu',members:32,savings:8200000,loans:5500000,location:'Ilala',invite:'VIJANA-3M8X',social:640000,startedAt:'2025-12-05'},
+            {id:'G3',name:'Tumaini VICOBA',members:28,savings:6800000,loans:4200000,location:'Temeke',invite:'TUMAINI-9P4D',social:520000,startedAt:'2026-02-01'},
+            {id:'G4',name:'Mwanga Kikoba',members:50,savings:22000000,loans:15000000,location:'Dodoma',invite:'MWANGA-5T6B',social:980000,startedAt:'2026-03-15'},
+            {id:'G5',name:'Amani Group',members:38,savings:11500000,loans:7800000,location:'Arusha',invite:'AMANI-8R2F',social:710000,startedAt:'2026-05-02'}
         ],
+        meetings: [
+            {id:'MT-001', groupId:'G1', month:'2026-08', type:'physical', date:'2026-08-24', location:'Ofisi ya Kikundi, Kinondoni'},
+            {id:'MT-002', groupId:'G1', month:'2026-09', type:'physical', date:'2026-09-27', location:'Ofisi ya Kikundi, Kinondoni'},
+            {id:'MT-003', groupId:'G2', month:'2026-09', type:'online', date:'2026-09-25', location:'Zoom: vicoba-g2'},
+        ],
+        fines: [],
+        excuses: [],
+        ruleProposals: [],
         loans: [
             {id:'LN-042',memberId:'UM91PEK',amount:300000,balance:220000,rate:10,due:'2026-11-01'},
             {id:'LN-041',memberId:'VI12GRM',amount:800000,balance:600000,rate:10,due:'2026-12-15'},
@@ -487,6 +496,15 @@ function loadState() {
         (s.jamiiClaims || []).forEach(c => c.memberId = remap(c.memberId));
         s._idfmt = 2;
     }
+    // One-time: give every group its rules constitution + startedAt + new collections
+    (s.groups || []).forEach(g => {
+        if (!g.rules) g.rules = defaultRules(s.settings || {});
+        if (!g.startedAt) g.startedAt = todayISO();
+    });
+    if (!Array.isArray(s.meetings)) s.meetings = [];
+    if (!Array.isArray(s.fines)) s.fines = [];
+    if (!Array.isArray(s.excuses)) s.excuses = [];
+    if (!Array.isArray(s.ruleProposals)) s.ruleProposals = [];
     return s;
 }
 function save() {
@@ -570,6 +588,48 @@ function genMemberId(groupId, name, members) {
     return gl + String(Date.now()).slice(-2) + ini;
 }
 function validNames(n) { return String(n || '').trim().split(/\s+/).filter(Boolean).length >= 3; }
+
+// Group constitution: general VICOBA OS preset (customizable per group at creation;
+// after adoption, changes need a >70% member vote)
+function defaultRules(legacy) {
+    legacy = legacy || {};
+    return {
+        sharePrice: legacy.shareValue || 75000,
+        minSharesMonthly: 1,
+        maxSharesMonthly: 4,
+        contributionDeadlineDay: 28,
+        interestPct: legacy.rate || 10,
+        lateHisaFine: 5000,
+        lateRepaymentFinePct: legacy.penalty || 2,
+        finePeriod: 'monthly',          // 'daily' | 'weekly' | 'monthly'
+        meetingLatePenalty: 5000,
+        memberProfitPct: 50,            // % of member-generated profit returned to the member
+        exitFeePct: 10,                 // % held by the group when a member exits
+        exitPayoutMonths: 3,            // months before exit payout
+        txFeePct: 1                     // mobile-money charge on contributions
+    };
+}
+const RULE_FIELDS = [
+    {key:'sharePrice', label:'Bei ya Hisa 1 (TSh)'},
+    {key:'minSharesMonthly', label:'Hisa Ndogo / Mwezi'},
+    {key:'maxSharesMonthly', label:'Hisa Upuu / Mwezi'},
+    {key:'contributionDeadlineDay', label:'Mwisho wa Mchango (tarehe 1-28)'},
+    {key:'interestPct', label:'Riba ya Mkopo (%)'},
+    {key:'lateHisaFine', label:'Faini ya Hisa Kuchelewa (TSh)'},
+    {key:'lateRepaymentFinePct', label:'Faini ya Mkopo Kuchelewa (%)'},
+    {key:'finePeriod', label:'Kipindi cha Faini ya Mkopo', type:'select', options:['daily','weekly','monthly']},
+    {key:'meetingLatePenalty', label:'Adhabu ya Kukosa Mkutano (TSh)'},
+    {key:'memberProfitPct', label:'% ya Faida kwa Mwanachama'},
+    {key:'exitFeePct', label:'% Inachukuliwa Akitoka'},
+    {key:'exitPayoutMonths', label:'Miezi ya Malipo Akitoka'},
+    {key:'txFeePct', label:'Ada ya Malipo ya Simu (%)'}
+];
+function rulesOf(g) { return (g && g.rules) ? g.rules : defaultRules(); }
+function groupMonthIndex(g) {
+    const start = new Date((g && g.startedAt) || todayISO());
+    const now = new Date();
+    return Math.max(1, (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1);
+}
 function monthlySeries(entries) {
     const out = [], now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -582,10 +642,37 @@ function monthlySeries(entries) {
 }
 function accounting() {
     const interest = scopedRepayments().reduce((s, r) => s + (r.interest || 0), 0);
-    const penalties = scopedLoans().reduce((s, l) => s + (l.penalty || 0), 0);
+    const penalties = state.fines.filter(f => f.groupId === currentGroupId).reduce((s, f) => s + f.amount, 0);
     const expenseList = state.expenses.filter(e => e.groupId === currentGroupId);
     const expenses = expenseList.reduce((s, e) => s + e.amount, 0);
     return {interest, penalties, expenses, expenseList, profit: interest + penalties - expenses};
+}
+// Profit a member has generated for the group (their loan interest + all their fines)
+function memberAttribution(mid) {
+    const interest = state.repayments.filter(r => r.memberId === mid).reduce((s, r) => s + (r.interest || 0), 0);
+    const fines = state.fines.filter(f => f.memberId === mid).reduce((s, f) => s + f.amount, 0);
+    return {interest, fines, total: interest + fines};
+}
+// Member estimate per the group's adopted rules
+function memberEstimate(mid) {
+    const m = memberById(mid);
+    if (!m || !m.groupId) return null;
+    const r = rulesOf(groupById(m.groupId));
+    const attr = memberAttribution(mid);
+    const myProfit = Math.round(attr.total * r.memberProfitPct / 100);
+    const gms = groupMembers(m.groupId);
+    const totalShares = gms.reduce((s, x) => s + x.shares, 0) || 1;
+    const totalAttr = gms.reduce((s, x) => s + memberAttribution(x.id).total, 0);
+    const pool = Math.round(totalAttr * (100 - r.memberProfitPct) / 100);
+    const myPoolShare = m.shares ? Math.round(pool * m.shares / totalShares) : 0;
+    const myTx = state.transactions.filter(t => t.memberId === mid);
+    const hisa = myTx.filter(t => t.type === 'Hisa').reduce((s, t) => s + t.amount, 0);
+    const jamii = myTx.filter(t => t.type === 'Mfuko wa Jamii' || t.type === 'Dharura ya Jamii').reduce((s, t) => s + t.amount, 0);
+    const txFees = Math.round(myTx.reduce((s, t) => s + t.amount, 0) * r.txFeePct / 100);
+    const expTotal = state.expenses.filter(e => e.groupId === m.groupId).reduce((s, e) => s + e.amount, 0);
+    const myExp = m.shares ? Math.round(expTotal * m.shares / totalShares) : 0;
+    return {myProfit, myPoolShare, akiba: m.savings, hisa, jamii, txFees, myExp, attrTotal: attr.total,
+        net: m.savings + hisa + jamii - txFees - myExp};
 }
 function nextExpId() { state.expCounter = (state.expCounter || 4) + 1; return 'EXP-' + String(state.expCounter).padStart(3, '0'); }
 function memberTrend(mid) {
@@ -613,11 +700,11 @@ function refereeExposure(l) {
     if (monthlyRate >= required && shortfall === 0) return null;
     return {monthlyRate: Math.round(monthlyRate), required: Math.round(required), amount: shortfall, perReferee: Math.ceil(shortfall / l.referees.length)};
 }
-function memberContribution(m) { return (m ? m.savings + m.shares * state.settings.shareValue : 0); }
+function memberContribution(m) { return (m ? m.savings + m.shares * rulesOf(groupById(m.groupId)).sharePrice : 0); }
 function loanCapFor(memberId, refereeIds) {
     const m = memberById(memberId);
     if (!m) return {sharesCap: 0, refCap: 0, cap: 0};
-    const sharesCap = m.shares * state.settings.shareValue * state.settings.multiplier;
+    const sharesCap = m.shares * rulesOf(groupById(m.groupId)).sharePrice * state.settings.multiplier;
     const refCap = refereeIds.reduce((sum, rid) => sum + memberContribution(memberById(rid)), 0);
     return {sharesCap, refCap, cap: Math.min(sharesCap, refCap)};
 }
@@ -960,6 +1047,10 @@ function renderGroupDash() {
     const health = act.length ? Math.round(100 * (1 - overdue / act.length)) : 100;
     const pendingApps = scopedApps().filter(a => a.status === 'awaiting_referees' || a.status === 'awaiting_approval').length;
     return `<div class="fade-in space-y-5">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-[11px] font-semibold px-3 py-1.5 rounded-full">🗓️ Mwezi wa ${groupMonthIndex(g)}</span>
+            <span class="text-[11px] text-gray-400">kuanzia ${fmtDate(g.startedAt || todayISO())}</span>
+        </div>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             ${statCard('Akiba Jumla',fmt(gs.savings),'wallet','emerald')}
             ${statCard('Mikopo Hai',fmt(tl),'banknote','amber')}
@@ -969,7 +1060,7 @@ function renderGroupDash() {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             ${currentRole === 'admin' ? statCard('Vikundi',state.groups.length,'layers','emerald') : statCard('Maombi ya Mikopo',pendingApps,'file-text','blue')}
             ${statCard('Mikopo Chelewa',overdue,'alert-triangle','red')}
-            ${statCard('Riba (Est.)',fmt(Math.round(tl*state.settings.rate/100)),'trending-up','amber')}
+            ${statCard('Faini & Adhabu',fmt(accounting().penalties),'gavel','amber')}
             ${statCard('Afya ya Fedha',health+'%','activity','emerald')}
         </div>
         <div class="grid lg:grid-cols-2 gap-4">
@@ -1006,7 +1097,7 @@ function renderMemberDash() {
     const myLoan = state.loans.filter(l => l.memberId === m.id && l.balance > 0).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
     const myMfuko = state.transactions.filter(t => t.memberId === m.id && t.type === 'Mfuko wa Jamii').reduce((s,t)=>s+t.amount,0);
     const score = Math.min(100, Math.round(40 + m.shares * 2 + m.savings / 100000));
-    const loanEstimate = m.shares * state.settings.shareValue * state.settings.multiplier;
+    const loanEstimate = m.shares * rulesOf(currentGroup()).sharePrice * state.settings.multiplier;
     const trend = memberTrend(m.id);
     return `<div class="fade-in space-y-5">
         <div class="bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden">
@@ -1025,7 +1116,7 @@ function renderMemberDash() {
             <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-emerald">
                 <p class="text-[11px] text-gray-500 uppercase tracking-wide">Naweza Kuomba (Est.)</p>
                 <p class="text-2xl font-bold text-emerald-600 mt-1">${fmt(loanEstimate)}</p>
-                <p class="text-[11px] text-gray-400 mt-1">3 × hisa zako (${m.shares} × ${fmt(state.settings.shareValue)})</p>
+                <p class="text-[11px] text-gray-400 mt-1">3 × hisa zako (${m.shares} × ${fmt(rulesOf(currentGroup()).sharePrice)})</p>
                 <p class="text-[11px] text-gray-500 mt-2">Kikomo halisi = chanya <strong>ndogo</strong> kati ya hii na jumla ya michango ya wadhamini wako 3.</p>
             </div>
             <div class="bg-white rounded-xl p-5 border border-gray-100 stat-card stat-card-blue">
@@ -1035,6 +1126,25 @@ function renderMemberDash() {
                 <div class="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-2 bg-blue-500 rounded-full" style="width:${trend.consistency}%"></div></div>
                 <p class="text-[11px] text-gray-500 mt-1.5">Ukiendelea hivi, miezi 6 ijayo utaongeza ~<strong class="text-gray-900">${fmt(trend.projected6)}</strong> (fuatiliaji ${trend.consistency}%).</p>
             </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100 border-l-4 border-l-amber-400">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <p class="font-semibold text-gray-900 text-sm">💰 Makadirio Yangu (kwa sheria za kikundi)</p>
+                <span class="text-[10px] text-gray-400">Mwezi wa ${groupMonthIndex(currentGroup())}</span>
+            </div>
+            ${(() => { const est = memberEstimate(m.id); if (!est) return ''; const r = rulesOf(currentGroup()); return `
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-[11px] text-gray-500 uppercase tracking-wide">Faida Yangu (est.)</p>
+                    <p class="text-2xl font-bold text-emerald-600 mt-1">${fmt(est.myProfit + est.myPoolShare)}</p>
+                    <p class="text-[11px] text-gray-400 mt-1">${fmt(est.myProfit)} ya faida uliyotoa (${r.memberProfitPct}% ya ${fmt(est.attrTotal)}) + ${fmt(est.myPoolShare)} sehemu yako ya mkopo wa kikundi (kwa hisi)</p>
+                </div>
+                <div>
+                    <p class="text-[11px] text-gray-500 uppercase tracking-wide">Michango Yangu (net)</p>
+                    <p class="text-2xl font-bold text-blue-600 mt-1">${fmt(est.net)}</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Akiba ${fmt(est.akiba)} + Hisa ${fmt(est.hisa)} + Jamii ${fmt(est.jamii)} − ada simu ${fmt(est.txFees)} − matumizi ya kikundi ${fmt(est.myExp)}</p>
+                </div>
+            </div>`; })()}
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
             <div class="bg-white rounded-xl p-5 border border-gray-100">
@@ -1121,14 +1231,41 @@ async function loadInvitations() {
     } catch (e) { box.innerHTML = noneMsg; }
 }
 
+function rulesFieldsHtml(rules, prefix) {
+    return `<div class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto p-1">
+        ${RULE_FIELDS.map(f => `<div>
+            <label class="text-[10px] text-gray-500 uppercase tracking-wide block mb-0.5">${f.label}</label>
+            ${f.type === 'select'
+                ? `<select id="${prefix}-${f.key}" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${f.options.map(o => `<option ${o === rules[f.key] ? 'selected' : ''}>${o}</option>`).join('')}</select>`
+                : `<input id="${prefix}-${f.key}" type="number" step="any" value="${rules[f.key]}" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">`}
+        </div>`).join('')}
+    </div>`;
+}
+function readRulesFromForm(prefix) {
+    const rules = {};
+    RULE_FIELDS.forEach(f => {
+        const el = document.getElementById(prefix + '-' + f.key);
+        rules[f.key] = f.type === 'select' ? el.value : (parseFloat(el.value) || 0);
+    });
+    return rules;
+}
+
 function showCreateGroupModal() {
-    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Tengeneza Kikundi</h3>
+    const preset = defaultRules();
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Tengeneza Kikundi</h3>
         <form onsubmit="event.preventDefault(); createMyGroup()">
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jina la Kikundi</label>
             <input id="newg-name" type="text" placeholder="mf. Tushikamane VICOBA" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Eneo</label>
             <input id="newg-loc" type="text" placeholder="mf. Morogoro" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-            <p class="text-[11px] text-gray-400 mb-4">Wewe utakuwa Mwenyekiti na mwanachama wa kwanza. Msimbo wa mwaliko utatengenezwa kiotomatiki.</p>
+            <p class="text-[11px] font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Sheria za Kikundi</p>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <label class="border border-emerald-200 bg-emerald-50 rounded-lg px-3 py-2.5 text-[12px] text-emerald-900 cursor-pointer"><input type="radio" name="newg-preset" value="general" checked onchange="document.getElementById('newg-custom-wrap').classList.add('hidden')"> 📜 Za VICOBA OS (jumla)</label>
+                <label class="border border-gray-200 rounded-lg px-3 py-2.5 text-[12px] text-gray-800 cursor-pointer"><input type="radio" name="newg-preset" value="custom" onchange="document.getElementById('newg-custom-wrap').classList.remove('hidden')"> ✏️ Andaa sheria zako</label>
+            </div>
+            <p class="text-[10px] text-gray-400 mb-2">Sheria zikubaliwa zinakuwa za kudumu — kubadilisha kunahitaji kura ya zaidi ya 70% ya wanachama.</p>
+            <div id="newg-custom-wrap" class="hidden">${rulesFieldsHtml(preset, 'newg-rule')}</div>
+            <p class="text-[11px] text-gray-400 mt-3">Wewe utakuwa Mwenyekiti na mwanachama wa kwanza. Msimbo wa mwaliko utatengenezwa kiotomatiki.</p>
             <p id="newg-error" class="text-xs text-red-600 mb-2 hidden"></p>
             <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Hifadhi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
         </form>`);
@@ -1140,8 +1277,10 @@ function createMyGroup() {
     const err = document.getElementById('newg-error');
     if (!name) { err.textContent = 'Weka jina la kikundi.'; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
+    const custom = document.querySelector('input[name="newg-preset"]:checked') && document.querySelector('input[name="newg-preset"]:checked').value === 'custom';
+    const rules = custom ? readRulesFromForm('newg-rule') : defaultRules();
     const prof = readProfile() || {};
-    const g = {id: nextGroupId(), name, location: loc || '—', members: 1, savings: 0, loans: 0, invite: newInviteCode(name), social: 0};
+    const g = {id: nextGroupId(), name, location: loc || '—', members: 1, savings: 0, loans: 0, invite: newInviteCode(name), social: 0, startedAt: todayISO(), rules};
     state.groups.push(g);
     const m = {id: genMemberId(g.id, prof.name || authSession.phone), name: prof.name || authSession.phone, phone: authSession.phone, savings: 0, shares: 0, loan: 0, status: 'Active', groupId: g.id, role: 'chairperson', photo: prof.photo || null, nationalId: prof.nida || '', kinName: prof.kinName || '', kinRelation: prof.kinRelation || '—', kinPhone: prof.kinPhone || '—'};
     state.members.push(m);
@@ -1460,7 +1599,7 @@ function processContribution(mid, type, amount, network, ref) {
     const member = memberById(mid);
     if (!member || amount <= 0) return;
     if (type === 'Akiba') member.savings += amount;
-    else if (type === 'Hisa') member.shares += Math.floor(amount / state.settings.shareValue);
+    else if (type === 'Hisa') member.shares += Math.floor(amount / rulesOf(currentGroup()).sharePrice);
     else if (type === 'Mfuko wa Jamii' || type === 'Dharura ya Jamii') { const g = currentGroup(); if (g) g.social = (g.social || 0) + amount; }
 
     const tx = {id: genTxId(), memberId: mid, type, amount, date: todayISO(), network: network || null, ref: ref || null};
@@ -1543,7 +1682,7 @@ function updateLoanElig() {
     const el = document.getElementById('loan-elig');
     const btn = document.getElementById('loan-submit');
     if (el) el.innerHTML = `
-        <p><strong>${m.name}:</strong> Hisa ${m.shares} × ${fmt(state.settings.shareValue)} × ${state.settings.multiplier} = <strong>${fmt(sharesCap)}</strong></p>
+        <p><strong>${m.name}:</strong> Hisa ${m.shares} × ${fmt(rulesOf(groupById(m.groupId)).sharePrice)} × ${state.settings.multiplier} = <strong>${fmt(sharesCap)}</strong></p>
         <p>Jumla ya michango ya wadhamini (${refs.length}/3): <strong>${fmt(refCap)}</strong></p>
         <p class="mt-1 border-t border-blue-100 pt-1">Kikomo halisi (chanya ndogo): <strong>${fmt(cap)}</strong></p>
         ${!distinct ? '<p class="text-amber-700 font-medium mt-1">⚠ Chagua wadhamini 3 tofauti (si wewe).</p>' : ''}
@@ -1954,14 +2093,40 @@ function runReminders() {
         state.members.forEach(m => push('CTR-' + m.id + '-' + iso, m.id,
             'Kumbusho la mchango: mchango wa wiki hii ' + fmt(state.settings.weekly) + ' unalipwa kesho ' + fmtDate(tomorrow) + '.', 'contribution'));
     }
+    // Late-repayment fines: accrue on the outstanding balance per the group's rule period
     state.loans.forEach(l => {
-        if (l.balance > 0 && new Date(l.due) < today && !l.penaltyFlagged) {
-            l.penaltyFlagged = true;
-            const penalty = Math.round(l.balance * state.settings.penalty / 100);
-            l.penalty = penalty;
-            push('ODR-' + l.id + '-' + iso, l.memberId,
-                'Mkopo ' + l.id + ' umechelewa! Adhabu ya ' + fmt(penalty) + ' imeongezwa. Lipa haraka kuepuka adhabu zaidi.', 'overdue');
+        if (l.balance <= 0 || new Date(l.due) >= today) return;
+        const m = memberById(l.memberId);
+        const g = m ? groupById(m.groupId) : null;
+        const r = rulesOf(g);
+        const msPer = r.finePeriod === 'daily' ? 86400000 : r.finePeriod === 'weekly' ? 7 * 86400000 : 30.4 * 86400000;
+        const periods = Math.floor((today - new Date(l.due)) / msPer) + 1;
+        const fine = Math.round(l.balance * r.lateRepaymentFinePct / 100);
+        l.penalty = (l.penalty || 0);
+        for (let p = 0; p < periods; p++) {
+            const key = 'LRF-' + l.id + '-' + p;
+            if (state.fines.some(f => f.id === key)) continue;
+            state.fines.unshift({id: key, memberId: l.memberId, groupId: m ? m.groupId : 'G1', kind: 'repayment-late',
+                amount: fine, periodLabel: r.finePeriod + ' #' + (p + 1), date: iso});
+            l.penalty += fine;
+            changed = true;
+            if (p === 0) push('ODR-' + l.id + '-' + iso, l.memberId,
+                'Mkopo ' + l.id + ' umechelewa! Faini ya ' + fmt(fine) + ' (' + r.lateRepaymentFinePct + '% / ' + r.finePeriod + ') imeanza kukusanya. Lipa haraka.', 'overdue');
         }
+    });
+    // Late-hisa fines: after the group's monthly contribution deadline, members who
+    // have not contributed at all this month are fined (once per month)
+    (state.groups || []).forEach(g => {
+        const r = rulesOf(g);
+        if (today.getDate() < r.contributionDeadlineDay) return;
+        const ym = today.getFullYear() + '-' + pad2(today.getMonth() + 1);
+        state.members.filter(m => m.groupId === g.id).forEach(m => {
+            const contributed = state.transactions.some(t => t.memberId === m.id && String(t.date).indexOf(ym) === 0 && (t.type === 'Akiba' || t.type === 'Hisa'));
+            const key = 'HLF-' + m.id + '-' + ym;
+            if (contributed || state.fines.some(f => f.id === key)) return;
+            state.fines.unshift({id: key, memberId: m.id, groupId: g.id, kind: 'hisa-late', amount: r.lateHisaFine, periodLabel: ym, date: iso});
+            changed = true;
+        });
     });
     // Referee risk: warn guarantors what they may lose if the borrower keeps paying at the current pace
     state.loans.forEach(l => {
@@ -2003,21 +2168,128 @@ function renderOutbox() {
 
 // ================= MEETINGS =================
 function renderMeetings() {
+    const mine = state.meetings.filter(x => x.groupId === currentGroupId).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const today = todayISO();
+    const upcoming = mine.filter(x => String(x.date) >= today).sort((a, b) => String(a.date).localeCompare(String(b.date)))[0];
+    const past = mine.filter(x => x !== upcoming);
+    const pendingExcuses = state.excuses.filter(e => e.groupId === currentGroupId && e.status === 'pending');
+    const historyExcuses = state.excuses.filter(e => e.groupId === currentGroupId && e.status !== 'pending').slice(0, 8);
+    const r = rulesOf(currentGroup());
     return `<div class="fade-in space-y-4">
-        <div class="bg-white rounded-xl p-5 border border-gray-100 border-l-4 border-l-emerald-500">
-            <div class="flex items-center gap-2 mb-2"><span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Ujao</span></div>
-            <h3 class="font-semibold text-gray-900 text-sm">Mkutano wa Kawaida</h3>
-            <p class="text-[13px] text-gray-600 mt-1">📅 Jumapili, 24 Agosti 2026 — Saa 10:00</p>
-            <p class="text-[13px] text-gray-600">📍 Ofisi ya Kikundi, Kinondoni</p>
-            <p class="text-[13px] text-gray-500 mt-2">Ajenda: Ripoti ya fedha, Idhini za mikopo, Uchaguzi</p>
-        </div>
-        <div class="bg-white rounded-xl p-5 border border-gray-100">
-            <h3 class="font-semibold text-gray-900 text-sm mb-3">Mikutano Iliyopita</h3>
-            <div class="space-y-0 text-sm">
-                ${[{d:'10/08/2026',t:'Mkutano wa Kawaida',a:'42/45'},{d:'27/07/2026',t:'Mkutano wa Kawaida',a:'39/45'},{d:'13/07/2026',t:'Mkutano Maalum',a:'44/45'}].map(m=>`<div class="flex justify-between py-2.5 border-b border-gray-50 last:border-0 text-[13px]"><span class="text-gray-600">${m.d} — ${m.t}</span><span class="text-emerald-600 font-medium">${m.a}</span></div>`).join('')}
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-gray-500">Mikutano — tarehe na eneo linabadilika kila mwezi (bila kura)</p>
+            <div class="flex gap-2">
+                <button onclick="showExcuseModal()" class="border border-amber-300 text-amber-800 px-3.5 py-2 rounded-lg text-xs font-medium hover:bg-amber-50 transition">📝 Fomu ya Samahani</button>
+                ${isOfficer() ? `<button onclick="showMeetingModal()" class="bg-emerald-600 text-white px-3.5 py-2 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">+ Weka Mkutano</button>` : ''}
             </div>
         </div>
+        ${upcoming ? `<div class="bg-white rounded-xl p-5 border border-gray-100 border-l-4 border-l-emerald-500">
+            <div class="flex items-center gap-2 mb-2"><span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Ujao — ${upcoming.month}</span><span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${upcoming.type === 'online' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'}">${upcoming.type === 'online' ? '🌐 Online' : '📍 Physical'}</span></div>
+            <p class="text-[13px] text-gray-600 mt-1">📅 ${fmtDate(upcoming.date)}</p>
+            <p class="text-[13px] text-gray-600">${upcoming.type === 'online' ? '🔗' : '📍'} ${upcoming.location}</p>
+        </div>` : ''}
+        ${past.length ? `<div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Mikutano Iliyopita</h3>
+            <div class="space-y-0 text-sm">
+                ${past.map(m => `<div class="flex justify-between py-2.5 border-b border-gray-50 last:border-0 text-[13px]"><span class="text-gray-600">${fmtDate(m.date)} — ${m.type === 'online' ? 'Online' : 'Physical'} • ${m.location}</span><span class="text-gray-400 font-mono text-[10px]">${m.month}</span></div>`).join('')}
+            </div>
+        </div>` : ''}
+        <div class="bg-white rounded-xl p-5 border border-amber-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">📝 Maombi ya Samahani (${pendingExcuses.length} yanayosubiri)</h3>
+            <p class="text-[11px] text-gray-400 mb-3">Kosa mkutano bila sababu = adhabu ya ${fmt(r.meetingLatePenalty)} kwa sheria za kikundi.</p>
+            ${pendingExcuses.map(e => `
+            <div class="border border-gray-100 rounded-xl p-4 mb-2.5">
+                <p class="text-[13px] font-medium text-gray-900">${memberName(e.memberId)} — ${e.activity} • ${fmtDate(e.date)}</p>
+                <p class="text-[12px] text-gray-500 mt-1 italic">"${e.reason}"</p>
+                ${isOfficer() ? `<div class="flex gap-2 mt-2.5">
+                    <button onclick="reviewExcuse('${e.id}',true)" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">Kubali Samahani</button>
+                    <button onclick="reviewExcuse('${e.id}',false)" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Hakuna Sababu (adhabu)</button>
+                </div>` : ''}
+            </div>`).join('') || '<p class="text-sm text-gray-400">Hakuna maombi ya samahani yanayosubiri.</p>'}
+            ${historyExcuses.length ? `<div class="mt-3 pt-3 border-t border-gray-100 space-y-1">
+                ${historyExcuses.map(e => `<p class="text-[11px] text-gray-400">${memberName(e.memberId)} — ${e.activity} ${fmtDate(e.date)}: <span class="${e.status === 'excused' ? 'text-emerald-600' : 'text-red-500'} font-medium">${e.status === 'excused' ? 'amekusamehewa' : 'adhabu ' + fmt(e.fine || 0)}</span></p>`).join('')}
+            </div>` : ''}
+        </div>
     </div>`;
+}
+
+function showMeetingModal() {
+    const ym = todayISO().slice(0, 7);
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Weka Mkutano wa Mwezi</h3>
+        <form onsubmit="event.preventDefault(); addMeeting()">
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Aina</label>
+                <select id="mt-type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option>physical</option><option>online</option></select></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mwezi</label>
+                <input id="mt-month" type="text" value="${ym}" placeholder="2026-10" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1 mt-2">Tarehe</label>
+            <input id="mt-date" type="date" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Eneo / Kiungo (linabadilika kila mwezi)</label>
+            <input id="mt-loc" type="text" placeholder="mf. Ofisi ya Kikundi / Zoom: link" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Hifadhi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function addMeeting() {
+    const type = document.getElementById('mt-type').value;
+    const month = document.getElementById('mt-month').value.trim() || todayISO().slice(0, 7);
+    const date = document.getElementById('mt-date').value || todayISO();
+    const loc = document.getElementById('mt-loc').value.trim() || '—';
+    state.meetings.push({id: 'MT-' + String((state.mtCounter = (state.mtCounter || 10) + 1)).padStart(3, '0'), groupId: currentGroupId, month, type, date, location: loc});
+    addAudit('Ameweka mkutano (' + month + ', ' + type + ') — ' + loc);
+    notify('Mkutano umewekwa', month + ' • ' + fmtDate(date) + ' • ' + loc);
+    save();
+    closeModal();
+    renderSection();
+}
+
+const EXCUSE_ACTIVITIES = ['Mkutano', 'Sherehe ya Kikundi', 'Msiba', 'Harusi', 'Tukio Nyingine'];
+
+function showExcuseModal() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">📝 Fomu ya Samahani</h3>
+        <p class="text-[11px] text-gray-400 mb-4">Kosa mkutano au shughuli ya kikundi? Toa sababu yako — viongozi watakagua.</p>
+        <form onsubmit="event.preventDefault(); submitExcuse()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Shughuli</label>
+            <select id="ex-activity" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${EXCUSE_ACTIVITIES.map(a => `<option>${a}</option>`).join('')}</select>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tarehe</label>
+            <input id="ex-date" type="date" value="${todayISO()}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Sababu</label>
+            <textarea id="ex-reason" rows="3" placeholder="Eleza sababu yako..." required class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Wasilisha</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function submitExcuse() {
+    const activity = document.getElementById('ex-activity').value;
+    const date = document.getElementById('ex-date').value || todayISO();
+    const reason = document.getElementById('ex-reason').value.trim();
+    if (!reason) return;
+    state.excuses.unshift({id: 'EX-' + String((state.exCounter = (state.exCounter || 100) + 1)).padStart(3, '0'), groupId: currentGroupId, memberId: currentMemberId, activity, date, reason, status: 'pending', fine: 0});
+    notify('📝 Ombi la samahani', memberName(currentMemberId) + ' — ' + activity + ' ' + fmtDate(date));
+    addAudit('Ametuma ombi la samahani (' + activity + ' ' + fmtDate(date) + ')');
+    save();
+    closeModal();
+    renderSection();
+}
+
+function reviewExcuse(id, excused) {
+    const e = state.excuses.find(x => x.id === id);
+    if (!e || e.status !== 'pending') return;
+    const r = rulesOf(currentGroup());
+    if (excused) {
+        e.status = 'excused';
+        addAudit('Amekubali samahani — ' + memberName(e.memberId) + ' (' + e.activity + ')');
+        notify('Samahani imekubaliwa', memberName(e.memberId) + ' — ' + e.activity);
+    } else {
+        e.status = 'unexcused';
+        e.fine = r.meetingLatePenalty;
+        state.fines.unshift({id: 'MTF-' + e.id, memberId: e.memberId, groupId: currentGroupId, kind: 'meeting-late', amount: r.meetingLatePenalty, periodLabel: fmtDate(e.date), date: todayISO()});
+        addAudit('Samahani imekataliwa — adhabu ' + fmt(r.meetingLatePenalty) + ' (' + memberName(e.memberId) + ')');
+        notify('Adhabu ya kukosa ' + e.activity, memberName(e.memberId) + ' — ' + fmt(r.meetingLatePenalty));
+    }
+    save();
+    renderSection();
 }
 
 // ================= REPORTS =================
@@ -2050,7 +2322,7 @@ function generateReport(kind) {
             ['Akiba Jumla', fmt(gs.savings)],
             ['Mikopo Hai', fmt(tl)],
             ['Riba Imepokelewa', fmt(acc.interest)],
-            ['Adhabu za Kuchelewa', fmt(acc.penalties)],
+            ['Faini & Adhabu', fmt(acc.penalties)],
         ].map(r=>`<tr><td>${r[0]}</td><td style="text-align:right;font-weight:600">${r[1]}</td></tr>`).join('')}
         ${acc.expenseList.map(e=>`<tr><td>${e.category}${e.desc && e.desc !== '—' ? ' — ' + e.desc : ''} (${e.id})</td><td style="text-align:right;color:#dc2626">-${fmt(e.amount)}</td></tr>`).join('')}
         <tr><td style="font-weight:700">Jumla ya Matumizi</td><td style="text-align:right;font-weight:700;color:#dc2626">${fmt(acc.expenses)}</td></tr>
@@ -2354,7 +2626,7 @@ function renderAccounting() {
             <h3 class="font-semibold text-gray-900 text-sm mb-3">Muhtasari (Tangu Kuanza)</h3>
             <div class="space-y-0 text-sm">
                 <div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">Riba ya Mikopo (${state.settings.rate}%)</span><span class="font-medium text-emerald-600">+${fmt(acc.interest)}</span></div>
-                <div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">Adhabu za Kuchelewa</span><span class="font-medium text-emerald-600">+${fmt(acc.penalties)}</span></div>
+                <div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">Faini & Adhabu (repayment/hisa/mkutano)</span><span class="font-medium text-emerald-600">+${fmt(acc.penalties)}</span></div>
                 ${acc.expenseList.map(e=>`<div class="flex justify-between py-2.5 border-b border-gray-50 text-[13px]"><span class="text-gray-600">${e.category}${e.desc?' — '+e.desc:''} <span class="text-[10px] text-gray-400 font-mono">${e.id} • ${fmtDate(e.date)}</span></span><span class="font-medium text-red-500">-${fmt(e.amount)}</span></div>`).join('') || '<div class="py-2.5 text-[13px] text-gray-400">Hakuna matumizi yaliyorekodiwa.</div>'}
                 <div class="flex justify-between py-2.5 text-[13px] font-bold"><span class="text-gray-900">Faida ya Kugawana</span><span class="text-amber-600">${fmt(acc.profit)}</span></div>
             </div>
@@ -2438,7 +2710,19 @@ function renderRisk() {
 // ================= SETTINGS =================
 function renderSettings() {
     const s = state.settings;
+    const g = currentGroup();
+    const r = rulesOf(g);
     return `<div class="fade-in space-y-4">
+        <div class="bg-white rounded-xl p-5 border border-emerald-100 border-l-4 border-l-emerald-500">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h3 class="font-semibold text-gray-900 text-sm">📜 Sheria za Kikundi — ${g.name} (zimekubaliwa)</h3>
+                ${isOfficer() ? `<button onclick="showRuleProposalModal()" class="text-[11px] bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg font-medium hover:bg-amber-100 transition">Pendekeza Mabadiliko (kura &gt;70%)</button>` : ''}
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-[12px]">
+                ${RULE_FIELDS.map(f => `<div class="flex justify-between border-b border-gray-50 py-1"><span class="text-gray-500">${f.label}</span><span class="font-semibold text-gray-900">${f.key === 'sharePrice' || f.key === 'lateHisaFine' || f.key === 'meetingLatePenalty' ? fmt(r[f.key]) : r[f.key]}${f.key.includes('Pct') || f.key === 'interestPct' ? '%' : ''}</span></div>`).join('')}
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2">Sheria hizi ni za kudumu — mabadiliko yanahitaji kura ya zaidi ya 70% ya wanachama wote. Tarehe/eneo la mkutano linabadilika kila mwezi bila kura.</p>
+        </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-4">Mipangilio ya Kikundi</h3>
             <div class="grid sm:grid-cols-2 gap-3 text-sm">
@@ -2570,7 +2854,81 @@ function renderElections() {
             <h3 class="font-semibold text-gray-900 text-sm mb-3">Uchaguzi Uliopita</h3>
             ${closed.map(e => { const pos = ELECTION_POSITIONS.find(p => p.key === e.position) || {label: e.position}; return `<div class="flex justify-between py-2 border-b border-gray-50 text-[13px] last:border-0"><span class="text-gray-600">${pos.label} — ${fmtDate(e.date)}</span><span class="text-emerald-700 font-medium">🏆 ${memberName(e.winner)}</span></div>`; }).join('')}
         </div>` : ''}
+        ${renderRuleProposals(gms)}
     </div>`;
+}
+
+function renderRuleProposals(gms) {
+    const props = state.ruleProposals.filter(p => p.groupId === currentGroupId && p.status === 'open');
+    if (!props.length) return '';
+    const total = gms.length;
+    const need = Math.floor(total * 0.7) + 1; // strictly more than 70%
+    return `<div class="space-y-3">
+        <p class="text-sm text-gray-500 pt-2">📜 Mapendekezo ya Kubadilisha Sheria (yanahitaji ${need}/${total} kura "Ndiyo")</p>
+        ${props.map(p => {
+            const yes = p.votes.filter(v => v.vote === true).length;
+            const mine = p.votes.find(v => v.voter === currentMemberId);
+            const changed = Object.keys(p.changes).map(k => {
+                const f = RULE_FIELDS.find(x => x.key === k) || {label: k};
+                return `<span class="text-[11px]">${f.label}: <s class="text-red-400">${p.old[k]}</s> → <strong class="text-emerald-700">${p.changes[k]}</strong></span>`;
+            }).join(' • ');
+            return `<div class="bg-white rounded-xl p-5 border border-amber-200 border-l-4 border-l-amber-500">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div><p class="font-semibold text-gray-900 text-sm">Pendekezo la Sheria <span class="font-mono text-[10px] text-gray-400">${p.id}</span></p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">${changed}</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Ndiyo: ${yes}/${need} zinahitajika • imetolewa na ${memberName(p.by)}</p></div>
+                    ${mine ? `<span class="text-[11px] px-2.5 py-1 rounded-full ${mine.vote ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'} font-medium">✓ ${mine.vote ? 'Ndiyo' : 'Hapana'}</span>` :
+                    `<div class="flex gap-2"><button onclick="voteRuleProposal('${p.id}',true)" class="bg-emerald-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">Ndiyo</button>
+                    <button onclick="voteRuleProposal('${p.id}',false)" class="bg-red-50 text-red-600 px-3.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-100 transition">Hapana</button></div>`}
+                </div>
+            </div>`;
+        }).join('')}
+    </div>`;
+}
+
+function showRuleProposalModal() {
+    const r = rulesOf(currentGroup());
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Pendekeza Mabadiliko ya Sheria</h3>
+        <p class="text-[11px] text-gray-400 mb-3">Badilisha la unachohitaji — wananachama wote wataipigia kura. Kinachopita ni zaidi ya 70% kura "Ndiyo".</p>
+        <form onsubmit="event.preventDefault(); submitRuleProposal()">
+            ${rulesFieldsHtml(r, 'rp-rule')}
+            <div class="flex gap-2 mt-3"><button type="submit" class="flex-1 bg-amber-500 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-amber-600 transition">Tuma Pendekezo</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function submitRuleProposal() {
+    const g = currentGroup();
+    const old = rulesOf(g);
+    const fresh = readRulesFromForm('rp-rule');
+    const changes = {};
+    RULE_FIELDS.forEach(f => { if (String(fresh[f.key]) !== String(old[f.key])) changes[f.key] = fresh[f.key]; });
+    if (!Object.keys(changes).length) { closeModal(); return; }
+    state.ruleProposals.unshift({id: 'RP-' + String((state.rpCounter = (state.rpCounter || 0) + 1)).padStart(3, '0'), groupId: currentGroupId, changes, old, votes: [], status: 'open', by: currentMemberId, date: todayISO()});
+    notify('📜 Pendekezo la kubadilisha sheria', Object.keys(changes).length + ' sheria — pigeni kura kwenye Uchaguzi');
+    addAudit('Ametuma pendekezo la kubadilisha sheria (' + Object.keys(changes).length + ' mabadiliko)');
+    save();
+    closeModal();
+    navigateTo('elections');
+}
+
+function voteRuleProposal(id, vote) {
+    const p = state.ruleProposals.find(x => x.id === id);
+    if (!p || p.status !== 'open') return;
+    if (p.votes.some(v => v.voter === currentMemberId)) return;
+    p.votes.push({voter: currentMemberId, vote: !!vote});
+    addAudit('Amepiga kura ya sheria ' + id + ' (' + (vote ? 'Ndiyo' : 'Hapana') + ')');
+    const total = groupMembers().length;
+    const need = Math.floor(total * 0.7) + 1;
+    const yes = p.votes.filter(v => v.vote === true).length;
+    if (yes >= need) {
+        const g = currentGroup();
+        Object.assign(g.rules, p.changes);
+        p.status = 'passed';
+        notify('📜 Sheria zimebadilishwa!', 'Kura ' + yes + '/' + total + ' — mabadiliko ' + Object.keys(p.changes).length + ' yamekubaliwa');
+        addAudit('Sheria za kikundi zimebadilishwa kwa kura ' + yes + '/' + total + ' (' + p.id + ')');
+    }
+    save();
+    renderSection();
 }
 
 function showElectionModal() {
