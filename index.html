@@ -544,7 +544,31 @@ function groupStats(g) {
 function me() { return state.members.find(m => m.id === currentMemberId) || state.members[0]; }
 function memberById(id) { return state.members.find(m => m.id === id); }
 function memberName(id) { const m = memberById(id); return m ? m.name : '—'; }
-function fmt(n) { return 'TSh ' + Number(n).toLocaleString('en'); }
+// Region-aware currency: detect the user's country from their timezone and pick
+// the currency. Tanzania (TZS) is active first; neighbours are pre-registered.
+const COUNTRY_CURRENCIES = {
+    TZ: {cur: 'TZS', sym: 'TSh', name: 'Tanzania', flag: '🇹🇿', active: true},
+    KE: {cur: 'KES', sym: 'KSh', name: 'Kenya', flag: '🇰🇪', active: false},
+    UG: {cur: 'UGX', sym: 'USh', name: 'Uganda', flag: '🇺🇬', active: false},
+    RW: {cur: 'RWF', sym: 'FRw', name: 'Rwanda', flag: '🇷🇼', active: false},
+    ZM: {cur: 'ZMW', sym: 'ZK', name: 'Zambia', flag: '🇿🇲', active: false}
+};
+function detectCountry() {
+    try {
+        const lang = String(navigator.language || '');
+        if (/^(sw|en)[-_]TZ/i.test(lang)) return 'TZ';
+        if (/^(sw|en)[-_]KE/i.test(lang)) return 'KE';
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        const map = {'Dar_es_Salaam': 'TZ', 'Nairobi': 'KE', 'Kampala': 'UG', 'Kigali': 'RW', 'Lusaka': 'ZM'};
+        for (const city in map) if (tz.indexOf(city) > -1) return map[city];
+    } catch (e) {}
+    return 'TZ';
+}
+let REGION = detectCountry();
+// While rolling out, only activated countries are served; others fall back to Tanzania.
+if (!COUNTRY_CURRENCIES[REGION] || !COUNTRY_CURRENCIES[REGION].active) REGION = 'TZ';
+const CUR = COUNTRY_CURRENCIES[REGION] || COUNTRY_CURRENCIES.TZ;
+function fmt(n) { return CUR.sym + ' ' + Number(n).toLocaleString('en'); }
 function pad2(n) { return String(n).padStart(2, '0'); }
 function fmtDate(d) { const dt = new Date(d); return pad2(dt.getDate()) + '/' + pad2(dt.getMonth() + 1) + '/' + dt.getFullYear(); }
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -610,15 +634,15 @@ function defaultRules(legacy) {
     };
 }
 const RULE_FIELDS = [
-    {key:'sharePrice', label:'Bei ya Hisa 1 (TSh)'},
+    {key:'sharePrice', label:'Bei ya Hisa 1 (' + CUR.sym + ')'},
     {key:'minSharesMonthly', label:'Hisa Ndogo / Mwezi'},
     {key:'maxSharesMonthly', label:'Hisa Upuu / Mwezi'},
     {key:'contributionDeadlineDay', label:'Mwisho wa Mchango (tarehe 1-28)'},
     {key:'interestPct', label:'Riba ya Mkopo (%)'},
-    {key:'lateHisaFine', label:'Faini ya Hisa Kuchelewa (TSh)'},
+    {key:'lateHisaFine', label:'Faini ya Hisa Kuchelewa (' + CUR.sym + ')'},
     {key:'lateRepaymentFinePct', label:'Faini ya Mkopo Kuchelewa (%)'},
     {key:'finePeriod', label:'Kipindi cha Faini ya Mkopo', type:'select', options:['daily','weekly','monthly']},
-    {key:'meetingLatePenalty', label:'Adhabu ya Kukosa Mkutano (TSh)'},
+    {key:'meetingLatePenalty', label:'Adhabu ya Kukosa Mkutano (' + CUR.sym + ')'},
     {key:'memberProfitPct', label:'% ya Faida kwa Mwanachama'},
     {key:'exitFeePct', label:'% Inachukuliwa Akitoka'},
     {key:'exitPayoutMonths', label:'Miezi ya Malipo Akitoka'},
@@ -1505,7 +1529,7 @@ function renderContributions() {
     return `<div class="fade-in space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm text-gray-500">Michango ya hivi karibuni (${scopedTx().length} jumla)</p>
-            <button onclick="showContributeModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Rekodi</button>
+            <button onclick="showContributeModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Nunua</button>
         </div>
         <div class="flex flex-wrap gap-1.5">${chips}</div>
         <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
@@ -1540,23 +1564,71 @@ let payDraft = null;
 
 function showContributeModal(presetType) {
     const types = ['Akiba','Hisa','Mfuko wa Jamii','Dharura ya Jamii'];
-    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Lipa Mchango</h3>
+    const r = rulesOf(currentGroup());
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Nunua / Lipa Mchango</h3>
         <form onsubmit="event.preventDefault(); showPaymentStep()">
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mwanachama</label>
             <select id="contrib-member" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${groupMembers().map(m=>`<option value="${m.id}" ${m.id===currentMemberId?'selected':''}>${m.name} (${m.id})</option>`).join('')}</select>
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Aina</label>
-            <select id="contrib-type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${types.map(t=>`<option ${t===presetType?'selected':''}>${t}</option>`).join('')}</select>
-            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
-            <input id="contrib-amount" type="number" value="${state.settings.weekly}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <select id="contrib-type" onchange="contributeTypeChanged()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${types.map(t=>`<option ${t===presetType?'selected':''}>${t}</option>`).join('')}</select>
+            <div id="contrib-amount-wrap">
+                <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym})</label>
+                <input id="contrib-amount" type="number" value="${state.settings.weekly}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+            <div id="contrib-shares-wrap" class="hidden">
+                <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Hisa Ngapi? (bei 1: ${fmt(r.sharePrice)})</label>
+                <input id="contrib-shares" type="number" min="1" value="1" oninput="updateShareTotal()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                <div id="shares-total" class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2.5 text-[13px] text-emerald-900 font-medium mb-1"></div>
+                <p id="shares-limit" class="text-[10px] text-gray-400 mb-3">Sheria: ndogo ${r.minSharesMonthly}, upuu ${r.maxSharesMonthly} hisa kwa mwezi.</p>
+            </div>
+            <p id="contrib-error" class="text-xs text-red-600 mb-2 hidden"></p>
             <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Endelea — Chagua Mtandao →</button>
         </form>`);
+    contributeTypeChanged();
+}
+
+function contributeTypeChanged() {
+    const isHisa = document.getElementById('contrib-type').value === 'Hisa';
+    document.getElementById('contrib-amount-wrap').classList.toggle('hidden', isHisa);
+    document.getElementById('contrib-shares-wrap').classList.toggle('hidden', !isHisa);
+    if (isHisa) updateShareTotal();
+}
+
+function updateShareTotal() {
+    const r = rulesOf(currentGroup());
+    const count = parseInt(document.getElementById('contrib-shares').value, 10) || 0;
+    const total = count * r.sharePrice;
+    const el = document.getElementById('shares-total');
+    if (el) el.innerHTML = count > 0
+        ? `Utalipa: <strong>${fmt(total)}</strong> (${fmt(r.sharePrice)} × ${count})`
+        : 'Weka idadi ya hisa';
+}
+
+function sharesBoughtThisMonth(mid) {
+    const ym = todayISO().slice(0, 7);
+    const r = rulesOf(currentGroup());
+    return Math.round(state.transactions.filter(t => t.memberId === mid && t.type === 'Hisa' && String(t.date).indexOf(ym) === 0)
+        .reduce((s, t) => s + t.amount, 0) / r.sharePrice);
 }
 
 function showPaymentStep() {
     const mid = document.getElementById('contrib-member').value;
     const type = document.getElementById('contrib-type').value;
-    const amount = parseInt(document.getElementById('contrib-amount').value, 10) || 0;
-    if (amount <= 0) return;
+    const err = document.getElementById('contrib-error');
+    const showErr = m => { err.textContent = m; err.classList.remove('hidden'); };
+    let amount = 0;
+    err.classList.add('hidden');
+    if (type === 'Hisa') {
+        const r = rulesOf(currentGroup());
+        const count = parseInt(document.getElementById('contrib-shares').value, 10) || 0;
+        if (count < 1) { showErr('Weka idadi ya hisa (angalau 1).'); return; }
+        const bought = sharesBoughtThisMonth(mid);
+        if (count + bought > r.maxSharesMonthly) { showErr('Sheria za kikundi: upuu ' + r.maxSharesMonthly + ' hisa kwa mwezi (umesha nunua ' + bought + ').'); return; }
+        amount = count * r.sharePrice;
+    } else {
+        amount = parseInt(document.getElementById('contrib-amount').value, 10) || 0;
+    }
+    if (amount <= 0) { showErr('Weka kiasi sahihi.'); return; }
     payDraft = {mid, type, amount, ref: genPayRef()};
     openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Chagua Mtandao wa Malipo</h3>
         <p class="text-xs text-gray-500 mb-4">${memberName(mid)} • ${type} • ${fmt(amount)} • Ref: <span class="font-mono">${payDraft.ref}</span></p>
@@ -1650,7 +1722,7 @@ function loanFormHtml(applicantId, cancelJs) {
     const others = groupMembers().filter(m => m.id !== applicantId);
     const opts = `<option value="">— Chagua —</option>` + others.map(m => `<option value="${m.id}">${m.name} — michango ${fmt(memberContribution(m))}</option>`).join('');
     return `
-        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym})</label>
         <input id="loan-amount" type="number" value="300000" oninput="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
         <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Sababu</label>
         <select id="loan-reason" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"><option>Biashara</option><option>Elimu</option><option>Afya</option><option>Nyumba</option></select>
@@ -2441,7 +2513,7 @@ function showJamiiModal() {
             <div class="grid grid-cols-2 gap-2">
                 <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tarehe</label>
                 <input id="jamii-date" type="date" value="${todayISO()}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
-                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym})</label>
                 <input id="jamii-amount" type="number" oninput="jamiiWarn()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
             </div>
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1 mt-2">Maelezo</label>
@@ -2572,7 +2644,7 @@ function showRepayModal() {
         <form onsubmit="event.preventDefault(); processRepayment()">
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mwanachama</label>
             <select id="repay-member" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${debtors.map(m=>`<option value="${m.id}">${m.name} (Baki: ${fmt(m.loan)})</option>`).join('') || '<option value="">Hakuna deni</option>'}</select>
-            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym})</label>
             <input id="repay-amount" type="number" value="50000" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
             <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Thibitisha</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
         </form>`);
@@ -2644,7 +2716,7 @@ function showExpenseModal() {
             <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Maelezo</label>
             <input id="exp-desc" type="text" placeholder="mf. Posho ya viongozi — mkutano wa Septemba" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
             <div class="grid grid-cols-2 gap-2">
-                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (TSh)</label>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym})</label>
                 <input id="exp-amount" type="number" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
                 <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tarehe</label>
                 <input id="exp-date" type="date" value="${todayISO()}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
@@ -2734,9 +2806,9 @@ function renderSettings() {
                 <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Adhabu Kuchelewa (%)</label><input id="set-penalty" type="number" value="${s.penalty}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
                 <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Siku ya Mchango</label><select id="set-cday" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${['Jumapili','Jumatatu','Jumanne','Jumatano','Alhamisi','Ijumaa','Jumamosi'].map((d,i)=>`<option value="${i}" ${s.contributionDay===i?'selected':''}>${d}</option>`).join('')}</select></div>
                 <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kumbusha Siku Kabla</label><input id="set-lead" type="number" value="${s.remindLeadDays}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
-                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Msiba (TSh)</label><input id="set-jamii-msiba" type="number" value="${s.jamiiMsiba}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
-                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Ugonjwa Mkali (TSh)</label><input id="set-jamii-ugonjwa" type="number" value="${s.jamiiUgonjwa}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
-                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Harusi (TSh)</label><input id="set-jamii-harusi" type="number" value="${s.jamiiHarusi}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Msiba (${CUR.sym})</label><input id="set-jamii-msiba" type="number" value="${s.jamiiMsiba}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Ugonjwa Mkali (${CUR.sym})</label><input id="set-jamii-ugonjwa" type="number" value="${s.jamiiUgonjwa}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jamii: Harusi (${CUR.sym})</label><input id="set-jamii-harusi" type="number" value="${s.jamiiHarusi}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
             </div>
             <div class="flex flex-wrap gap-2">
                 <button onclick="saveSettings()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium mt-5 hover:bg-emerald-700 transition">Hifadhi Mipangilio</button>
@@ -2751,6 +2823,11 @@ function renderSettings() {
                 <button onclick="changePin()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition whitespace-nowrap">Hifadhi PIN</button>
             </div>
             <p id="pin-msg" class="text-xs mt-2 hidden"></p>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-2">🌍 Eneo & Sarafu</h3>
+            <p class="text-[13px] text-gray-700">Imegunduliwa: <strong>${CUR.flag} ${CUR.name}</strong> — sarafu <strong>${CUR.cur} (${CUR.sym})</strong></p>
+            <p class="text-[11px] text-gray-400 mt-1">VICOBA OS inatambua nchi ya mtumiaji kiotomatiki. Kwa sasa tunaendelea Tanzania tu — nchi nyingine (Kenya, Uganda, Rwanda, Zambia) zinaandaliwa.</p>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-3">Ujumuishaji</h3>
