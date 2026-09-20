@@ -34,6 +34,30 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
 - **PDF reports**, **audit log**, **loan estimate & contribution-trend cards** on the
   member dashboard.
 
+## Group constitution (rules)
+
+Every group adopts rules at creation — the general VICOBA OS preset or fully
+custom: share price, min/max shares per month, monthly contribution deadline,
+loan interest, late-hisa fine, late-repayment fine (with daily/weekly/monthly
+accrual on the outstanding balance), meeting-absence penalty, profit split
+(e.g. 50% of member-generated profit returns to the member, 50% to the pool
+shared pro-rata by shares), exit fee and payout delay, and mobile-money
+transaction charges. Adopted rules are permanent: leaders draft changes, and
+**more than 70% of members must vote yes** for them to take effect. Meeting
+date/location (online or physical) changes monthly without a vote.
+
+## Member estimates, fines & kikoba period
+
+Dashboards show the group's age ("Mwezi wa N — kuanzia <date>"), and every
+member sees **Makadirio Yangu**: estimated profit (interest + fines they
+generated × their share %, plus their pro-rata pool share) and net
+contributions (akiba + hisa + Jamii − transaction charges − allocated group
+expenses). Late-repayment fines accrue per the chosen period; missing the
+monthly contribution deadline or an unexcused meeting absence triggers the
+group's fines automatically. Members submit absence excuses via the in-app
+**Fomu ya Samahani** (meeting, party, funeral, wedding, other); leaders accept
+or mark unexcused, applying the penalty.
+
 ## How membership works
 
 1. **Anyone registers** on the platform ("Jisajili"): 3 full names, phone, PIN (6+),
