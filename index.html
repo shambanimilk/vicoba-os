@@ -47,7 +47,7 @@
       </div>
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600"><a href="#huduma" onclick="scrollToSection('huduma'); return false;" class="hover:text-emerald-600 transition-colors">Huduma</a> <a href="#bei" onclick="scrollToSection('bei'); return false;" class="hover:text-emerald-600 transition-colors">Bei</a> <a href="#kuhusu" onclick="scrollToSection('kuhusu'); return false;" class="hover:text-emerald-600 transition-colors">Kuhusu</a>
       </div>
-      <div class="flex items-center gap-2.5"><button onclick="showPage('login')" class="hidden sm:inline-flex text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors">Ingia</button> <button onclick="showPage('login')" class="hidden md:inline-flex text-sm font-medium text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-lg hover:bg-emerald-50 transition-colors">Omba Mkopo</button> <button onclick="showPage('join')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm">Jiunge Sasa</button>
+      <div class="flex items-center gap-2.5"><button onclick="showPage('login')" class="hidden sm:inline-flex text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors">Ingia</button> <button onclick="showPage('login')" class="hidden md:inline-flex text-sm font-medium text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-lg hover:bg-emerald-50 transition-colors">Omba Mkopo</button> <button onclick="showPage('join')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm">Jisajili Sasa</button>
       </div>
      </div>
     </nav><!-- Hero -->
@@ -228,10 +228,10 @@
       </form>
       <div class="mt-5 pt-5 border-t border-gray-100">
        <p class="text-xs text-gray-400 text-center mb-3 font-medium uppercase tracking-wide">Demo — Chagua Jukumu</p>
-       <div class="grid grid-cols-3 gap-1.5"><button onclick="demoLogin('admin')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Super Admin</button> <button onclick="demoLogin('chairperson')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwenyekiti</button> <button onclick="demoLogin('treasurer')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mweka Hazina</button> <button onclick="demoLogin('secretary')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Katibu</button> <button onclick="demoLogin('member')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwanachama</button> <button onclick="demoLogin('auditor')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mkaguzi</button>
+       <div class="grid grid-cols-3 gap-1.5"><button onclick="demoLogin('admin')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Super Admin</button> <button onclick="demoLogin('chairperson')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwenyekiti</button> <button onclick="demoLogin('treasurer')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mhasibu</button> <button onclick="demoLogin('secretary')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Katibu</button> <button onclick="demoLogin('member')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mwanachama</button> <button onclick="demoLogin('auditor')" class="text-[11px] border border-gray-200 rounded-lg py-2 hover:bg-emerald-50 hover:border-emerald-300 font-medium transition">Mkaguzi</button>
        </div>
        <p class="text-[10px] text-gray-400 mt-2 text-center">Demo PIN: 123456</p>
-      </div><button onclick="showPage('join')" class="mt-3 w-full text-center text-xs text-emerald-600 hover:underline font-medium">Sio mwanachama? Jiunge na kikundi →</button><button onclick="showPage('landing')" class="mt-4 w-full text-center text-xs text-gray-400 hover:text-gray-600">← Rudi Nyumbani</button>
+      </div><button onclick="showPage('join')" class="mt-3 w-full text-center text-xs text-emerald-600 hover:underline font-medium">Sio mwanachama? Jisajili sasa →</button><button onclick="showPage('landing')" class="mt-4 w-full text-center text-xs text-gray-400 hover:text-gray-600">← Rudi Nyumbani</button>
      </div>
     </div>
    </div><!-- ========== DASHBOARD ========== -->
@@ -267,31 +267,29 @@
     <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 bottom-nav">
      <div id="bottom-nav-items" class="flex justify-around py-2"></div>
     </nav>
-   </div><!-- ========== PUBLIC JOIN (INVITE) ========== -->
+   </div><!-- ========== PUBLIC REGISTRATION (Jisajili) ========== -->
    <div id="page-join" class="page-view hidden">
     <div class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-7 fade-in">
+     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-7 fade-in max-h-[95vh] overflow-y-auto">
       <div class="text-center mb-5">
        <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3"><span class="text-2xl">🤝</span></div>
-       <h2 class="text-xl font-bold text-gray-900">Jiunge na Kikundi</h2>
-       <p class="text-sm text-gray-500 mt-1">Uanachama unapatikana kwa mwaliko (msimbo wa kikundi)</p>
+       <h2 class="text-xl font-bold text-gray-900">Jisajili — VICOBA OS</h2>
+       <p class="text-sm text-gray-500 mt-1">Mtu yeyote anaweza kujisajili. Baada ya kujisajili, unahitaji mwaliko wa kikundi au tengeneza kikundi chako.</p>
       </div>
-      <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Msimbo wa Mwaliko</label>
-      <input id="join-code" type="text" placeholder="mf. UMOJA-7K2Q" oninput="checkInvite(this.value)" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-2 text-sm font-mono uppercase focus:ring-2 focus:ring-emerald-500 outline-none">
-      <p id="join-group" class="text-xs mb-3 min-h-[16px]"></p>
-      <div id="join-fields" class="hidden">
-       <div class="flex items-center gap-3 mb-3">
+      <div class="flex items-center gap-3 mb-3">
         <img id="join-photo-preview" class="w-14 h-14 rounded-full object-cover border border-gray-200 hidden" alt="">
         <div class="flex-1">
          <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Picha ya Pasipoti (mpya)</label>
          <input id="join-photo" type="file" accept="image/*" onchange="pickPhoto('join-photo','join-photo-preview')" class="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700">
         </div>
        </div>
+       <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Majina Kamili (matatu)</label>
+       <input id="join-name" type="text" placeholder="mf. Maria John Mhando" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
        <div class="grid grid-cols-2 gap-2 mb-3">
-        <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jina Kamili</label>
-        <input id="join-name" type="text" placeholder="mf. Maria John" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
         <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Simu</label>
         <input id="join-phone" type="tel" placeholder="+255 7XX XXX XXX" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+        <div><label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">PIN (angalau 6)</label>
+        <input id="join-pin" type="password" placeholder="••••••" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
        </div>
        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kitambulisho cha Taifa (NIDA)</label>
        <input id="join-nida" type="text" placeholder="Tarakimu 20" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm font-mono outline-none focus:ring-2 focus:ring-emerald-500">
@@ -304,19 +302,16 @@
         <div><label class="text-[11px] text-gray-500 block mb-1">Simu ya mtuo</label>
         <input id="join-kin-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
        </div>
-       <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Tengeneza PIN yako (angalau tarakimu 6)</label>
-       <input id="join-pin" type="password" placeholder="••••••" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
        <p id="join-error" class="text-xs text-red-600 mb-2 hidden"></p>
-       <button onclick="submitJoin()" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition shadow-sm">Wasilisha Maombi</button>
-      </div>
+       <button onclick="submitRegistration()" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition shadow-sm">Jisajili Sasa</button>
       <div id="join-done" class="hidden text-center">
        <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="check" style="width:28px;height:28px" class="text-emerald-600"></i></div>
-       <h3 class="text-lg font-bold text-gray-900">Maombi Yamewasilishwa!</h3>
-       <p class="text-sm text-gray-500 mt-2">Viongozi wa kikundi watapokea maombi yako na kuyakubali.</p>
-       <button onclick="showPage('landing')" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Nyumbani</button>
+       <h3 class="text-lg font-bold text-gray-900">Umejisajili! 🎉</h3>
+       <p class="text-sm text-gray-500 mt-2">Sasa unaweza kutengeneza kikundi chako au kusubiri mwaliko wa kikundi.</p>
+       <button onclick="finishRegistration()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Endelea →</button>
       </div>
       <div class="mt-4 pt-4 border-t border-gray-100 text-center text-xs">
-       <button onclick="showPage('landing')" class="text-gray-400 hover:text-gray-600">← Nyumbani</button>
+       <button onclick="showPage('landing')" class="text-gray-400 hover:text-gray-600">← Nyumbani</button> • <button onclick="showPage('login')" class="text-emerald-600 font-medium hover:underline">Nina akaunti tayari</button>
       </div>
      </div>
     </div>
@@ -332,15 +327,16 @@ const STORAGE_KEY = 'vicoba-os-state-v1';
 function defaultState() {
     return {
         members: [
-            {id:'M001',name:'Juma Mwalimu',phone:'+255712345678',savings:850000,shares:12,loan:500000,status:'Active',groupId:'G1',role:'secretary',photo:null,nationalId:'19900112151234000123',kinName:'Anna Mwalimu',kinRelation:'Mke',kinPhone:'+255712111222'},
-            {id:'M002',name:'Fatma Hassan',phone:'+255713456789',savings:1200000,shares:18,loan:0,status:'Active',groupId:'G1',role:'chairperson',photo:null,nationalId:'19920324567890100234',kinName:'Mwajuma Hassan',kinRelation:'Mama',kinPhone:'+255713222333'},
-            {id:'M003',name:'Peter Kimaro',phone:'+255714567890',savings:650000,shares:8,loan:300000,status:'Active',groupId:'G1',role:'auditor',photo:null,nationalId:'19881110765432100345',kinName:'Joseph Kimaro',kinRelation:'Baba',kinPhone:'+255714333444'},
-            {id:'M004',name:'Amina Salum',phone:'+255715678901',savings:980000,shares:15,loan:0,status:'Active',groupId:'G1',role:'treasurer',photo:null,nationalId:'19950622334455110456',kinName:'Bi Salum',kinRelation:'Mama',kinPhone:'+255715444555'},
-            {id:'M005',name:'Baraka Ngowi',phone:'+255716789012',savings:420000,shares:6,loan:200000,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'19970905887766510567',kinName:'Isaya Ngowi',kinRelation:'Baba',kinPhone:'+255716555666'},
-            {id:'M006',name:'Grace Mushi',phone:'+255717890123',savings:1500000,shares:22,loan:800000,status:'Active',groupId:'G2',role:'chairperson',photo:null,nationalId:'19910418990011220678',kinName:'Joseph Mushi',kinRelation:'Baba',kinPhone:'+255717666777'},
-            {id:'M007',name:'Hassan Omary',phone:'+255718901234',savings:750000,shares:10,loan:0,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'19920226778899030789',kinName:'Rukia Omary',kinRelation:'Mama',kinPhone:'+255718777888'},
-            {id:'M008',name:'Neema Joseph',phone:'+255719012345',savings:380000,shares:5,loan:150000,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'20000113123456740890',kinName:'Josephine Nkya',kinRelation:'Mama',kinPhone:'+255719888999'},
+            {id:'UM53JAM',name:'Juma Ali Mwalimu',phone:'+255712345678',savings:850000,shares:12,loan:500000,status:'Active',groupId:'G1',role:'secretary',photo:null,nationalId:'19900112151234000123',kinName:'Anna Mwalimu',kinRelation:'Mke',kinPhone:'+255712111222'},
+            {id:'UM28FAH',name:'Fatma Juma Hassan',phone:'+255713456789',savings:1200000,shares:18,loan:0,status:'Active',groupId:'G1',role:'chairperson',photo:null,nationalId:'19920324567890100234',kinName:'Mwajuma Hassan',kinRelation:'Mama',kinPhone:'+255713222333'},
+            {id:'UM91PEK',name:'Peter Kimaro Kimaro',phone:'+255714567890',savings:650000,shares:8,loan:300000,status:'Active',groupId:'G1',role:'auditor',photo:null,nationalId:'19881110765432100345',kinName:'Joseph Kimaro',kinRelation:'Baba',kinPhone:'+255714333444'},
+            {id:'UM46AMS',name:'Amina Salum Juma',phone:'+255715678901',savings:980000,shares:15,loan:0,status:'Active',groupId:'G1',role:'treasurer',photo:null,nationalId:'19950622334455110456',kinName:'Bi Salum',kinRelation:'Mama',kinPhone:'+255715444555'},
+            {id:'VI67BAN',name:'Baraka Isaya Ngowi',phone:'+255716789012',savings:420000,shares:6,loan:200000,status:'Active',groupId:'G2',role:'member',photo:null,nationalId:'19970905887766510567',kinName:'Isaya Ngowi',kinRelation:'Baba',kinPhone:'+255716555666'},
+            {id:'VI12GRM',name:'Grace Joseph Mushi',phone:'+255717890123',savings:1500000,shares:22,loan:800000,status:'Active',groupId:'G2',role:'chairperson',photo:null,nationalId:'19910418990011220678',kinName:'Joseph Mushi',kinRelation:'Baba',kinPhone:'+255717666777'},
+            {id:'VI39HAO',name:'Hassan Omary Juma',phone:'+255718901234',savings:750000,shares:10,loan:0,status:'Active',groupId:'G2',role:'secretary',photo:null,nationalId:'19920226778899030789',kinName:'Rukia Omary',kinRelation:'Mama',kinPhone:'+255718777888'},
+            {id:'VI84NEJ',name:'Neema Joseph Nkya',phone:'+255719012345',savings:380000,shares:5,loan:150000,status:'Active',groupId:'G2',role:'treasurer',photo:null,nationalId:'20000113123456740890',kinName:'Josephine Nkya',kinRelation:'Mama',kinPhone:'+255719888999'},
         ],
+        elections: [],
         groups: [
             {id:'G1',name:'Umoja wa Wanawake',members:45,savings:18500000,loans:12000000,location:'Kinondoni',invite:'UMOJA-7K2Q',social:1250000},
             {id:'G2',name:'Vijana Nguvu',members:32,savings:8200000,loans:5500000,location:'Ilala',invite:'VIJANA-3M8X',social:640000},
@@ -349,17 +345,17 @@ function defaultState() {
             {id:'G5',name:'Amani Group',members:38,savings:11500000,loans:7800000,location:'Arusha',invite:'AMANI-8R2F',social:710000}
         ],
         loans: [
-            {id:'LN-042',memberId:'M003',amount:300000,balance:220000,rate:10,due:'2026-11-01'},
-            {id:'LN-041',memberId:'M006',amount:800000,balance:600000,rate:10,due:'2026-12-15'},
-            {id:'LN-040',memberId:'M005',amount:200000,balance:80000,rate:10,due:'2026-09-12',referees:[{memberId:'M006'},{memberId:'M007'},{memberId:'M008'}]},
-            {id:'LN-039',memberId:'M001',amount:500000,balance:150000,rate:10,due:'2026-07-15',referees:[{memberId:'M002'},{memberId:'M003'},{memberId:'M004'}]},
-            {id:'LN-038',memberId:'M008',amount:150000,balance:0,rate:10,due:'2026-08-01'},
+            {id:'LN-042',memberId:'UM91PEK',amount:300000,balance:220000,rate:10,due:'2026-11-01'},
+            {id:'LN-041',memberId:'VI12GRM',amount:800000,balance:600000,rate:10,due:'2026-12-15'},
+            {id:'LN-040',memberId:'VI67BAN',amount:200000,balance:80000,rate:10,due:'2026-09-12',referees:[{memberId:'VI12GRM'},{memberId:'VI39HAO'},{memberId:'VI84NEJ'}]},
+            {id:'LN-039',memberId:'UM53JAM',amount:500000,balance:150000,rate:10,due:'2026-07-15',referees:[{memberId:'UM28FAH'},{memberId:'UM91PEK'},{memberId:'UM46AMS'}]},
+            {id:'LN-038',memberId:'VI84NEJ',amount:150000,balance:0,rate:10,due:'2026-08-01'},
         ],
         loanApplications: [
-            {ref:'APP-001',memberId:'M003',amount:300000,reason:'Biashara',date:'2026-09-12',shares:8,score:72,
-             referees:[{memberId:'M001',consent:'agreed'},{memberId:'M002',consent:'agreed'},{memberId:'M004',consent:'agreed'}],status:'awaiting_approval'},
-            {ref:'APP-002',memberId:'M008',amount:150000,reason:'Elimu',date:'2026-09-14',shares:5,score:65,
-             referees:[{memberId:'M005',consent:'agreed'},{memberId:'M006',consent:'agreed'},{memberId:'M007',consent:'agreed'}],status:'awaiting_approval'},
+            {ref:'APP-001',memberId:'UM91PEK',amount:300000,reason:'Biashara',date:'2026-09-12',shares:8,score:72,
+             referees:[{memberId:'UM53JAM',consent:'agreed'},{memberId:'UM28FAH',consent:'agreed'},{memberId:'UM46AMS',consent:'agreed'}],status:'awaiting_approval'},
+            {ref:'APP-002',memberId:'VI84NEJ',amount:150000,reason:'Elimu',date:'2026-09-14',shares:5,score:65,
+             referees:[{memberId:'VI67BAN',consent:'agreed'},{memberId:'VI12GRM',consent:'agreed'},{memberId:'VI39HAO',consent:'agreed'}],status:'awaiting_approval'},
         ],
         membershipApplications: [],
         jamiiClaims: [],
@@ -371,34 +367,34 @@ function defaultState() {
         ],
         remindersLog: [],
         transactions: [
-            {id:'TXN-0998',memberId:'M002',type:'Akiba',amount:50000,date:'2026-08-20'},
-            {id:'TXN-0997',memberId:'M003',type:'Akiba',amount:50000,date:'2026-08-19'},
-            {id:'TXN-0996',memberId:'M001',type:'Hisa',amount:75000,date:'2026-08-18'},
-            {id:'TXN-0994',memberId:'M004',type:'Akiba',amount:50000,date:'2026-08-05'},
-            {id:'TXN-0991',memberId:'M007',type:'Akiba',amount:50000,date:'2026-09-02'},
-            {id:'TXN-0992',memberId:'M002',type:'Akiba',amount:50000,date:'2026-09-09'},
-            {id:'TXN-0988',memberId:'M001',type:'Akiba',amount:50000,date:'2026-07-06'},
-            {id:'TXN-0987',memberId:'M003',type:'Akiba',amount:50000,date:'2026-07-13'},
-            {id:'TXN-0986',memberId:'M008',type:'Akiba',amount:50000,date:'2026-07-20'},
-            {id:'TXN-0985',memberId:'M006',type:'Hisa',amount:75000,date:'2026-07-27'},
-            {id:'TXN-0980',memberId:'M002',type:'Akiba',amount:50000,date:'2026-06-01'},
-            {id:'TXN-0979',memberId:'M005',type:'Akiba',amount:50000,date:'2026-06-08'},
-            {id:'TXN-0978',memberId:'M007',type:'Hisa',amount:75000,date:'2026-06-15'},
-            {id:'TXN-0977',memberId:'M004',type:'Akiba',amount:50000,date:'2026-06-22'},
-            {id:'TXN-0972',memberId:'M003',type:'Akiba',amount:50000,date:'2026-05-04'},
-            {id:'TXN-0971',memberId:'M006',type:'Akiba',amount:50000,date:'2026-05-11'},
-            {id:'TXN-0970',memberId:'M001',type:'Hisa',amount:75000,date:'2026-05-18'},
-            {id:'TXN-0965',memberId:'M001',type:'Akiba',amount:50000,date:'2026-04-06'},
-            {id:'TXN-0964',memberId:'M002',type:'Akiba',amount:50000,date:'2026-04-13'},
-            {id:'TXN-0963',memberId:'M004',type:'Akiba',amount:75000,date:'2026-04-20'},
+            {id:'TXN-0998',memberId:'UM28FAH',type:'Akiba',amount:50000,date:'2026-08-20'},
+            {id:'TXN-0997',memberId:'UM91PEK',type:'Akiba',amount:50000,date:'2026-08-19'},
+            {id:'TXN-0996',memberId:'UM53JAM',type:'Hisa',amount:75000,date:'2026-08-18'},
+            {id:'TXN-0994',memberId:'UM46AMS',type:'Akiba',amount:50000,date:'2026-08-05'},
+            {id:'TXN-0991',memberId:'VI39HAO',type:'Akiba',amount:50000,date:'2026-09-02'},
+            {id:'TXN-0992',memberId:'UM28FAH',type:'Akiba',amount:50000,date:'2026-09-09'},
+            {id:'TXN-0988',memberId:'UM53JAM',type:'Akiba',amount:50000,date:'2026-07-06'},
+            {id:'TXN-0987',memberId:'UM91PEK',type:'Akiba',amount:50000,date:'2026-07-13'},
+            {id:'TXN-0986',memberId:'VI84NEJ',type:'Akiba',amount:50000,date:'2026-07-20'},
+            {id:'TXN-0985',memberId:'VI12GRM',type:'Hisa',amount:75000,date:'2026-07-27'},
+            {id:'TXN-0980',memberId:'UM28FAH',type:'Akiba',amount:50000,date:'2026-06-01'},
+            {id:'TXN-0979',memberId:'VI67BAN',type:'Akiba',amount:50000,date:'2026-06-08'},
+            {id:'TXN-0978',memberId:'VI39HAO',type:'Hisa',amount:75000,date:'2026-06-15'},
+            {id:'TXN-0977',memberId:'UM46AMS',type:'Akiba',amount:50000,date:'2026-06-22'},
+            {id:'TXN-0972',memberId:'UM91PEK',type:'Akiba',amount:50000,date:'2026-05-04'},
+            {id:'TXN-0971',memberId:'VI12GRM',type:'Akiba',amount:50000,date:'2026-05-11'},
+            {id:'TXN-0970',memberId:'UM53JAM',type:'Hisa',amount:75000,date:'2026-05-18'},
+            {id:'TXN-0965',memberId:'UM53JAM',type:'Akiba',amount:50000,date:'2026-04-06'},
+            {id:'TXN-0964',memberId:'UM28FAH',type:'Akiba',amount:50000,date:'2026-04-13'},
+            {id:'TXN-0963',memberId:'UM46AMS',type:'Akiba',amount:75000,date:'2026-04-20'},
         ],
         repayments: [
-            {id:'TXN-0995',memberId:'M005',loanId:'LN-040',amount:45000,interest:4091,date:'2026-08-19'},
-            {id:'TXN-0990',memberId:'M006',loanId:'LN-041',amount:80000,interest:7273,date:'2026-08-15'},
-            {id:'TXN-0982',memberId:'M001',loanId:'LN-039',amount:50000,interest:4545,date:'2026-07-15'},
-            {id:'TXN-0978',memberId:'M004',loanId:'LN-035',amount:100000,interest:9091,date:'2026-06-22'},
-            {id:'TXN-0971',memberId:'M002',loanId:'LN-034',amount:80000,interest:7273,date:'2026-05-11'},
-            {id:'TXN-0975',memberId:'M008',loanId:'LN-038',amount:75000,interest:6818,date:'2026-06-10'},
+            {id:'TXN-0995',memberId:'VI67BAN',loanId:'LN-040',amount:45000,interest:4091,date:'2026-08-19'},
+            {id:'TXN-0990',memberId:'VI12GRM',loanId:'LN-041',amount:80000,interest:7273,date:'2026-08-15'},
+            {id:'TXN-0982',memberId:'UM53JAM',loanId:'LN-039',amount:50000,interest:4545,date:'2026-07-15'},
+            {id:'TXN-0978',memberId:'UM46AMS',loanId:'LN-035',amount:100000,interest:9091,date:'2026-06-22'},
+            {id:'TXN-0971',memberId:'UM28FAH',loanId:'LN-034',amount:80000,interest:7273,date:'2026-05-11'},
+            {id:'TXN-0975',memberId:'VI84NEJ',loanId:'LN-038',amount:75000,interest:6818,date:'2026-06-10'},
         ],
         socialHelp: [
             {n:'Baraka Ngowi — Msiba',a:200000,invite:'VIJANA-3M8X'},
@@ -441,7 +437,7 @@ function loadState() {
         const old = Array.isArray(stored.pendingLoans) ? stored.pendingLoans : base.loanApplications;
         s.loanApplications = old.map(p => Object.assign({
             reason: '—', shares: 0, score: 0,
-            referees: [{memberId:'M002',consent:'agreed'},{memberId:'M004',consent:'agreed'},{memberId:'M006',consent:'agreed'}],
+            referees: [{memberId:'UM28FAH',consent:'agreed'},{memberId:'UM46AMS',consent:'agreed'},{memberId:'VI12GRM',consent:'agreed'}],
             status: 'awaiting_approval'
         }, p));
         delete s.pendingLoans;
@@ -464,6 +460,33 @@ function loadState() {
     (s.remindersLog || []).forEach(r => { if (!r.groupId) r.groupId = 'G1'; });
     (s.membershipApplications || []).forEach(a => { if (!Array.isArray(a.approvals)) a.approvals = []; if (!a.status) a.status = 'pending'; });
     (s.socialHelp || []).forEach(h => { if (!h.invite) h.invite = (s.groups[0] || {}).invite; });
+    // One-time: migrate old M00x member IDs to the group+initials format
+    if (!s._idfmt) {
+        const used = new Set();
+        const map = {};
+        s.members.forEach(m => {
+            const g = (s.groups || []).find(x => x.id === m.groupId) || {};
+            const gl = (((g.name || 'XX').trim().split(/\s+/)[0] || 'X').slice(0, 2) || 'XX').toUpperCase();
+            const ws = String(m.name || '').trim().split(/\s+/);
+            let ini = ws.slice(0, 3).map(w => (w[0] || 'X')).join('').toUpperCase();
+            while (ini.length < 3) ini += 'X';
+            let nid = m.id;
+            if (/^M\d+$/.test(String(m.id)) || !m.id) {
+                do { nid = gl + String(Math.floor(10 + Math.random() * 90)) + ini; }
+                while (used.has(nid) || s.members.some(x => x.id === nid));
+            }
+            used.add(nid);
+            map[m.id] = nid;
+            m.id = nid;
+        });
+        const remap = id => map[id] || id;
+        (s.loans || []).forEach(l => { l.memberId = remap(l.memberId); (l.referees || []).forEach(r => r.memberId = remap(r.memberId)); });
+        (s.transactions || []).forEach(t => t.memberId = remap(t.memberId));
+        (s.repayments || []).forEach(r => r.memberId = remap(r.memberId));
+        (s.loanApplications || []).forEach(a => { a.memberId = remap(a.memberId); (a.referees || []).forEach(r => r.memberId = remap(r.memberId)); });
+        (s.jamiiClaims || []).forEach(c => c.memberId = remap(c.memberId));
+        s._idfmt = 2;
+    }
     return s;
 }
 function save() {
@@ -475,13 +498,14 @@ let state = loadState();
 let currentRole = 'member';
 let currentSection = 'dashboard';
 let sidebarOpen = false;
-let currentMemberId = 'M001';
+let currentMemberId = null;
 let currentGroupId = 'G1';
 
 // ================= HELPERS =================
-const roleLabels = {admin:'Super Admin',chairperson:'Mwenyekiti',treasurer:'Mweka Hazina',secretary:'Katibu',member:'Mwanachama',auditor:'Mkaguzi'};
+const roleLabels = {admin:'Super Admin',chairperson:'Mwenyekiti',treasurer:'Mhasibu (Accountant)',secretary:'Katibu',member:'Mjumbe',auditor:'Mkaguzi','vice-chairperson':'Naibu Mwenyekiti','vice-secretary':'Naibu Katibu','vice-treasurer':'Naibu Mhasibu'};
+function isOfficer() { return ['chairperson','secretary','treasurer','admin'].indexOf(currentRole) > -1; }
 const roleIPs = {admin:'192.168.1.1',chairperson:'192.168.1.2',secretary:'192.168.1.3',treasurer:'192.168.1.4',member:'192.168.1.5',auditor:'192.168.1.6'};
-const demoPersonas = {admin:null, chairperson:'M002', treasurer:'M004', secretary:'M001', member:'M005', auditor:'M003'};
+const demoPersonas = {admin:'ADMIN', chairperson:'+255713456789', treasurer:'+255715678901', secretary:'+255712345678', member:'+255716789012', auditor:'+255714567890'};
 
 function groupById(id) { return state.groups.find(g => g.id === id); }
 function currentGroup() { return groupById(currentGroupId) || state.groups[0]; }
@@ -531,11 +555,21 @@ function nextLoanId() {
     });
     return 'LN-' + String(max + 1).padStart(3, '0');
 }
-function nextMemberId() {
-    let max = 0;
-    state.members.forEach(m => { const n = parseInt(m.id.replace('M', ''), 10); if (n > max) max = n; });
-    return 'M' + String(max + 1).padStart(3, '0');
+// Member ID: 2 letters from the group name + 2 random digits + 3 name initials (e.g. UM74JAM)
+function genMemberId(groupId, name, members) {
+    members = members || state.members;
+    const g = groupById(groupId) || {};
+    const gl = (((g.name || 'XX').trim().split(/\s+/)[0] || 'X').slice(0, 2) || 'XX').toUpperCase();
+    const words = String(name || '').trim().split(/\s+/);
+    let ini = words.slice(0, 3).map(w => (w[0] || 'X')).join('').toUpperCase();
+    while (ini.length < 3) ini += 'X';
+    for (let i = 0; i < 50; i++) {
+        const id = gl + String(Math.floor(10 + Math.random() * 90)) + ini;
+        if (!members.some(m => m.id === id)) return id;
+    }
+    return gl + String(Date.now()).slice(-2) + ini;
 }
+function validNames(n) { return String(n || '').trim().split(/\s+/).filter(Boolean).length >= 3; }
 function monthlySeries(entries) {
     const out = [], now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -626,7 +660,7 @@ function setPhotoData(dataUrl, previewId) {
 }
 function memberFormError(name, phone, nida, kinName, photo) {
     const errs = [];
-    if (!name) errs.push('jina kamili');
+    if (!validNames(name)) errs.push('majina matatu kamili (mf. Maria John Mhando)');
     if (!validPhone(phone)) errs.push('nambari ya simu sahihi (mf. +255712345678)');
     if (!validNida(nida)) errs.push('NIDA (tarakimu 8-20)');
     if (!kinName) errs.push('jina la mtuo wa karibu');
@@ -689,14 +723,15 @@ async function doPhoneLogin() {
             currentRole = 'admin';
             currentGroupId = currentGroupId || 'G1';
             currentMemberId = (groupMembers('G1')[0] || state.members[0] || {}).id;
-        } else if (m) {
+        } else if (m && m.groupId) {
             currentMemberId = m.id;
             currentRole = (m.role && roleLabels[m.role]) ? m.role : 'member';
             currentGroupId = m.groupId;
         } else {
-            await authSignOut();
-            show('Akaunti hii bado haijakubaliwa kwenye kikundi. Subiri idhini ya viongozi.');
-            return;
+            // registered platform user — no group yet (or awaiting acceptance)
+            currentMemberId = m ? m.id : null;
+            currentRole = 'member';
+            currentGroupId = null;
         }
         document.getElementById('pin').value = '';
         showPage('dashboard');
@@ -707,9 +742,7 @@ async function doPhoneLogin() {
 }
 
 function demoLogin(role) {
-    let phone = '';
-    if (role === 'admin') phone = ADMIN_PHONE;
-    else { const m = memberById(demoPersonas[role]); phone = m ? m.phone : ''; }
+    const phone = role === 'admin' ? ADMIN_PHONE : demoPersonas[role];
     document.getElementById('phone').value = phone;
     document.getElementById('pin').value = '123456';
     doPhoneLogin();
@@ -744,6 +777,7 @@ const navItems = {
         {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
         {icon:'shield',label:'Ukaguzi',section:'audit'},
         {icon:'alert-triangle',label:'Hatari',section:'risk'},
+        {icon:'vote',label:'Uchaguzi',section:'elections'},
         {icon:'settings',label:'Mipangilio',section:'settings'},
     ],
     chairperson: [
@@ -754,6 +788,7 @@ const navItems = {
         {icon:'banknote',label:'Mikopo',section:'loans'},
         {icon:'check-circle',label:'Idhini',section:'approvals'},
         {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'vote',label:'Uchaguzi',section:'elections'},
         {icon:'calendar',label:'Mikutano',section:'meetings'},
         {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
     ],
@@ -765,6 +800,7 @@ const navItems = {
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'receipt',label:'Malipo',section:'repayments'},
         {icon:'send',label:'SMS',section:'outbox'},
+        {icon:'vote',label:'Uchaguzi',section:'elections'},
         {icon:'calculator',label:'Hesabu',section:'accounting'},
         {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
     ],
@@ -775,6 +811,7 @@ const navItems = {
         {icon:'calendar',label:'Mikutano',section:'meetings'},
         {icon:'file-text',label:'Kumbukumbu',section:'audit'},
         {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'vote',label:'Uchaguzi',section:'elections'},
         {icon:'bell',label:'Arifa',section:'notifications'},
     ],
     member: [
@@ -782,6 +819,7 @@ const navItems = {
         {icon:'wallet',label:'Akiba Yangu',section:'my-savings'},
         {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
         {icon:'check-circle',label:'Miamvula',section:'consents'},
+        {icon:'vote',label:'Uchaguzi',section:'elections'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'heart',label:'Mfuko Jamii',section:'social'},
         {icon:'bell',label:'Arifa',section:'notifications'},
@@ -792,12 +830,16 @@ const navItems = {
         {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
         {icon:'alert-triangle',label:'Hatari',section:'risk'},
         {icon:'user-check',label:'Miamvula',section:'consents'},
+        {icon:'vote',label:'Uchaguzi',section:'elections'},
     ],
 };
 
 function buildSidebar() {
     const nav = document.getElementById('sidebar-nav');
-    const items = navItems[currentRole] || navItems.member;
+    const items = !currentGroupId ? [
+        {icon:'layout-dashboard',label:'Dashibodi Yangu',section:'dashboard'},
+        {icon:'bell',label:'Arifa',section:'notifications'},
+    ] : (navItems[currentRole] || navItems.member);
     nav.innerHTML = items.map(it => `
         <button onclick="navigateTo('${it.section}')" class="sidebar-link w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-gray-600 text-[13px] font-medium ${currentSection===it.section?'active':''}">
             <i data-lucide="${it.icon}" style="width:16px;height:16px"></i> ${it.label}
@@ -822,40 +864,54 @@ function navigateTo(section) {
 }
 
 function renderDashboard() {
-    document.getElementById('role-badge').textContent = roleLabels[currentRole] || 'Mwanachama';
-    const who = currentRole === 'member' ? me().name : (roleLabels[currentRole] || '');
+    document.getElementById('role-badge').textContent = roleLabels[currentRole] || 'Mjumbe';
+    const prof = readProfile();
+    const who = !currentGroupId
+        ? String((prof && prof.name) || (authSession && authSession.phone) || 'Mgeni')
+        : (currentRole === 'member' ? me().name : (roleLabels[currentRole] || ''));
     document.getElementById('user-avatar').textContent = who.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
     const gb = document.getElementById('group-badge');
     const gsw = document.getElementById('group-switch');
     const grp = currentGroup();
-    if (currentRole === 'admin') {
+    if (currentRole === 'admin' && currentGroupId) {
         gb.classList.add('hidden');
         gsw.innerHTML = state.groups.map(g => `<option value="${g.id}" ${g.id === currentGroupId ? 'selected' : ''}>${g.name}</option>`).join('');
         gsw.classList.remove('hidden');
     } else {
         gsw.classList.add('hidden');
-        gb.textContent = grp ? grp.name : '';
+        gb.textContent = currentGroupId ? (grp ? grp.name : '') : 'Hakuna Kikundi';
         gb.classList.remove('hidden');
     }
     currentSection = 'dashboard';
     buildSidebar();
     renderSection();
-    runReminders();
+    if (currentGroupId) runReminders();
 }
 
 function renderSection() {
     const mc = document.getElementById('main-content');
-    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)'};
+    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi'};
     document.getElementById('page-heading').textContent = titles[currentSection] || 'Dashibodi';
 
+    if (!currentGroupId && ['dashboard','notifications','settings'].indexOf(currentSection) === -1) {
+        mc.innerHTML = `<div class="fade-in bg-white rounded-xl p-8 border border-gray-100 text-center">
+            <p class="text-4xl mb-3">🔒</p>
+            <p class="text-sm text-gray-500 mb-4">Sehemu hii inapatikana baada ya kujiunga na kikundi au kutengeneza kikundi chako.</p>
+            <button onclick="navigateTo('dashboard')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">← Rudi Dashibodi</button>
+        </div>`;
+        lucide.createIcons();
+        updateBell();
+        return;
+    }
+
     const renderers = {
-        dashboard: () => currentRole === 'member' ? renderMemberDash() : renderGroupDash(),
+        dashboard: () => !currentGroupId ? renderNoGroupDash() : (currentRole === 'member' ? renderMemberDash() : renderGroupDash()),
         members: renderMembers, contributions: renderContributions, loans: renderLoans,
         'my-savings': renderMySavings, 'my-loans': renderMyLoans, groups: renderGroups,
         approvals: renderApprovals, meetings: renderMeetings, reports: renderReports,
         audit: renderAudit, social: renderSocial, notifications: renderNotifications,
         repayments: renderRepayments, accounting: renderAccounting, risk: renderRisk, settings: renderSettings,
-        memberapps: renderMemberApps, consents: renderConsents, outbox: renderOutbox
+        memberapps: renderMemberApps, consents: renderConsents, outbox: renderOutbox, elections: renderElections
     };
     mc.innerHTML = (renderers[currentSection] || renderGroupDash)();
     lucide.createIcons();
@@ -1003,12 +1059,142 @@ function renderMemberDash() {
     </div>`;
 }
 
+// ================= NO-GROUP DASHBOARD (platform users) =================
+function nextGroupId() {
+    let max = 0;
+    state.groups.forEach(g => { const n = parseInt(String(g.id).replace(/[^0-9]/g, ''), 10) || 0; if (n > max) max = n; });
+    return 'G' + (max + 1);
+}
+function newInviteCode(name) {
+    const base = (String(name || 'KIKUNDI').trim().split(/\s+/)[0] || 'KIKUNDI').toUpperCase().replace(/[^A-Z]/g, '') || 'KIKUNDI';
+    return base + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+
+function renderNoGroupDash() {
+    const prof = readProfile() || {};
+    const pending = localStorage.getItem('vicoba-pending-invite') || '';
+    const pg = pending ? groupByInvite(pending) : null;
+    setTimeout(loadInvitations, 50);
+    return `<div class="fade-in space-y-5">
+        <div class="bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-900 rounded-2xl p-6 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
+            <p class="text-sm text-emerald-200">Karibu VICOBA OS, ${String(prof.name || 'rafiki').split(' ')[0]}! 👋</p>
+            <p class="text-xl font-bold mt-2">Bado huko kwenye kikundi</p>
+            <p class="text-sm text-emerald-100/80 mt-1">Tengeneza kikundi chako, au subiri mwaliko wa kikundi kilichopo ili uanze kuchangia na shughuli za kikundi.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-5 border border-gray-100">
+                <h3 class="font-semibold text-gray-900 text-sm mb-2">➕ Tengeneza Kikundi</h3>
+                <p class="text-[12px] text-gray-500 mb-3">Mtu yeyote anaweza kutengeneza kikundi. Wewe huwa <strong>Mwenyekiti</strong> wa kwanza na kuweza kuwalika wanachama wengine.</p>
+                <button onclick="showCreateGroupModal()" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Anza Kikundi Chako</button>
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-100">
+                <h3 class="font-semibold text-gray-900 text-sm mb-2">📨 Mialiko Yako</h3>
+                <div id="invites-box" class="space-y-2"><p class="text-[12px] text-gray-400">Inapakia mialiko...</p></div>
+            </div>
+        </div>
+        ${pg ? `<div class="bg-emerald-50 rounded-xl p-5 border border-emerald-100">
+            <p class="text-sm font-semibold text-emerald-900">Umealikwa kwenye ${pg.name}! (${pg.invite})</p>
+            <p class="text-[12px] text-emerald-700 mt-1">Ombi lako litakubaliwa na mmoja wa viongozi 3 au kura ya 70% ya wanachama.</p>
+            <button onclick="submitInvitation('${pg.invite}')" class="mt-3 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">Wasilisha Ombi</button>
+        </div>` : ''}
+    </div>`;
+}
+
+async function loadInvitations() {
+    const box = document.getElementById('invites-box');
+    if (!box || !authSession) return;
+    const noneMsg = '<p class="text-[12px] text-gray-400">Hakuna mialiko kwa sasa. Waambie wanachama wa kikundi wakuale kwa namba yako: <strong>' + authSession.phone + '</strong></p>';
+    try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/membership_applications?phone=eq.' + encodeURIComponent(authSession.phone) + '&status=eq.pending&select=*', {headers: authHeaders()});
+        if (!r.ok) { box.innerHTML = noneMsg; return; }
+        const rows = await r.json();
+        if (!rows.length) { box.innerHTML = noneMsg; return; }
+        box.innerHTML = rows.map(row => {
+            const g = groupByInvite(row.invite_code);
+            const complete = row.national_id;
+            return `<div class="border rounded-lg p-3 ${complete ? 'border-emerald-200 bg-emerald-50/50' : 'border-gray-200'}">
+                <p class="text-[13px] font-medium text-gray-900">${g ? g.name : 'Kikundi'} ${complete ? '<span class="text-[10px] text-emerald-700 font-medium">(ombi limewasilishwa ✓ — linasubiri idhini)</span>' : ''}</p>
+                ${complete ? '' : `<button onclick="submitInvitation('${row.invite_code}')" class="mt-2 bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 transition">Kamilisha & Wasilisha Ombi</button>`}
+            </div>`;
+        }).join('');
+    } catch (e) { box.innerHTML = noneMsg; }
+}
+
+function showCreateGroupModal() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Tengeneza Kikundi</h3>
+        <form onsubmit="event.preventDefault(); createMyGroup()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Jina la Kikundi</label>
+            <input id="newg-name" type="text" placeholder="mf. Tushikamane VICOBA" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Eneo</label>
+            <input id="newg-loc" type="text" placeholder="mf. Morogoro" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <p class="text-[11px] text-gray-400 mb-4">Wewe utakuwa Mwenyekiti na mwanachama wa kwanza. Msimbo wa mwaliko utatengenezwa kiotomatiki.</p>
+            <p id="newg-error" class="text-xs text-red-600 mb-2 hidden"></p>
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Hifadhi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function createMyGroup() {
+    const name = document.getElementById('newg-name').value.trim();
+    const loc = document.getElementById('newg-loc').value.trim();
+    const err = document.getElementById('newg-error');
+    if (!name) { err.textContent = 'Weka jina la kikundi.'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    const prof = readProfile() || {};
+    const g = {id: nextGroupId(), name, location: loc || '—', members: 1, savings: 0, loans: 0, invite: newInviteCode(name), social: 0};
+    state.groups.push(g);
+    const m = {id: genMemberId(g.id, prof.name || authSession.phone), name: prof.name || authSession.phone, phone: authSession.phone, savings: 0, shares: 0, loan: 0, status: 'Active', groupId: g.id, role: 'chairperson', photo: prof.photo || null, nationalId: prof.nida || '', kinName: prof.kinName || '', kinRelation: prof.kinRelation || '—', kinPhone: prof.kinPhone || '—'};
+    state.members.push(m);
+    currentGroupId = g.id; currentMemberId = m.id; currentRole = 'chairperson';
+    addAudit('Ametengeneza kikundi — ' + name + ' (Mwenyekiti wa kwanza)');
+    notify('Kikundi kimeundwa! 🎉', name + ' • Wewe ni Mwenyekiti • Msimbo wa mwaliko: ' + g.invite, g.id);
+    save();
+    closeModal();
+    renderDashboard();
+}
+
+function showInviteModal() {
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Alika Mwanachama</h3>
+        <p class="text-[12px] text-gray-500 mb-4">Weka namba ya simu ya mtu aliyesha ajisajili VICOBA OS — ataona mwaliko wake akifunguka app, na atakamilisha taarifa zake mwenyewe.</p>
+        <form onsubmit="event.preventDefault(); processInvite()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Nambari ya Simu</label>
+            <input id="invite-phone" type="tel" placeholder="+255 7XX XXX XXX" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <p id="invite-error" class="text-xs text-red-600 mb-2 hidden"></p>
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Tuma Mwaliko</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+async function processInvite() {
+    const ph = (document.getElementById('invite-phone').value || '').replace(/\s+/g, '');
+    const err = document.getElementById('invite-error');
+    const show = m => { err.textContent = m; err.classList.remove('hidden'); };
+    if (!validPhone(ph)) { show('Weka nambari ya simu sahihi (mf. +255712345678).'); return; }
+    if (state.members.some(m => m.phone === ph)) { show('Namba hii tayari ni mwanachama wa kikundi kimoja.'); return; }
+    err.classList.add('hidden');
+    const g = currentGroup();
+    const payload = {ref_code: genTxId(), full_name: '', phone: ph, national_id: '', kin_name: '', invite_code: g.invite, status: 'pending'};
+    const ok = await fetch(SUPABASE_URL + '/rest/v1/membership_applications', {
+        method: 'POST',
+        headers: Object.assign({}, authHeaders(), {'Prefer': 'return=minimal'}),
+        body: JSON.stringify(payload)
+    }).then(r => r.ok).catch(() => false);
+    if (!ok) { show('Imeshindikana kutuma — hakikisha intaneti kisha jaribu tena.'); return; }
+    state.membershipApplications.push({ref: payload.ref_code, name: '(Mwaliko) ' + ph, phone: ph, nida: '', photo: null, kinName: '', kinRelation: '—', kinPhone: '—', invite: g.invite, groupName: g.name, date: todayISO(), status: 'pending', approvals: []});
+    notify('Mwaliko umetumwa', ph + ' → ' + g.name + '. Ataona mwaliko wake akifunguka app.');
+    save();
+    closeModal();
+    renderSection();
+}
+
 // ================= MEMBERS =================
 function renderMembers() {
     return `<div class="fade-in space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <input type="text" placeholder="Tafuta mwanachama..." oninput="filterMembers(this.value)" class="border border-gray-200 rounded-lg px-3.5 py-2 text-sm w-full sm:w-64 focus:ring-2 focus:ring-emerald-500 outline-none">
-            <button onclick="showAddMemberModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition whitespace-nowrap">+ Ongeza Mwanachama</button>
+            <div class="flex gap-2">
+                <button onclick="showInviteModal()" class="border border-emerald-300 text-emerald-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-50 transition whitespace-nowrap">📨 Alika</button>
+                <button onclick="showAddMemberModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition whitespace-nowrap">+ Ongeza</button>
+            </div>
         </div>
         <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
             <table class="w-full text-sm">
@@ -1042,6 +1228,13 @@ function showMemberProfile(id) {
             <p><span class="text-gray-500">Simu:</span> ${m.kinPhone || '—'}</p>
             <p class="border-t border-gray-200 pt-1.5 mt-1.5"><span class="text-gray-500">Akiba:</span> ${fmt(m.savings)} • <span class="text-gray-500">Hisa:</span> ${m.shares} • <span class="text-gray-500">Mkopo:</span> ${m.loan > 0 ? fmt(m.loan) : 'Hakuna'}</p>
         </div>
+        ${isOfficer() && id !== currentMemberId && m.groupId === currentGroupId ? `<div class="mt-3 border-t border-gray-100 pt-3 text-left">
+            <p class="text-[11px] font-semibold text-gray-600 uppercase tracking-wide mb-2">Teua nafasi (viongozi tu)</p>
+            <div class="flex gap-2">
+                <select id="appoint-pos" class="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500">${ELECTION_POSITIONS.filter(p => p.key.indexOf('vice-') === 0).map(p => `<option value="${p.key}">${p.label}</option>`).join('')}</select>
+                <button onclick="appointAssistant('${m.id}', document.getElementById('appoint-pos').value)" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition">Teua</button>
+            </div>
+        </div>` : ''}
         <button onclick="closeModal()" class="mt-4 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm">Funga</button>
     </div>`);
 }
@@ -1091,7 +1284,7 @@ function processAddMember() {
     const msg = memberFormError(name, phone, nida, kinName, photoDraft);
     if (msg) { err.textContent = msg; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
-    const m = {id: nextMemberId(), name, phone, savings: 0, shares: 0, loan: 0, status: 'Active',
+    const m = {id: genMemberId(currentGroupId, name), name, phone, savings: 0, shares: 0, loan: 0, status: 'Active',
         groupId: currentGroupId, role: 'member', photo: photoDraft, nationalId: nida,
         kinName, kinRelation: kinRelation || '—', kinPhone: kinPhone || '—'};
     state.members.push(m);
@@ -1557,10 +1750,15 @@ function approvalThreshold(gid) {
 function renderMemberApps() {
     const g = currentGroup();
     const apps = currentRole === 'admin' ? state.membershipApplications : state.membershipApplications.filter(a => a.invite === (g || {}).invite);
-    const officer = ['chairperson','secretary','treasurer','admin'].indexOf(currentRole) > -1;
+    const complete = apps.filter(a => a.nida);
+    const invited = apps.filter(a => !a.nida);
+    const officer = isOfficer();
     return `<div class="fade-in space-y-3">
-        <p class="text-sm text-gray-500">Maombi ya kujiunga ${currentRole === 'admin' ? '(vikundi vyote)' : '— ' + (g ? g.name : '')} (${apps.length}) • Yanakubaliwa na afisa (Mwenyekiti/Katibu/Mweka Hazina) au kura ya 70% ya wanachama</p>
-        ${apps.map(a=>{
+        <p class="text-sm text-gray-500">Maombi yanayosubiri idhini (${complete.length}) • Yanakubaliwa na afisa (Mwenyekiti/Katibu/Mhasibu) au kura ya 70% ya wanachama</p>
+        ${invited.length ? `<div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-[12px] text-blue-800">
+            📨 Mialiko ${invited.length} inayosubiri mmisioniwa kukamilisha taarifa zake: ${invited.map(a => a.phone).join(' • ')}
+        </div>` : ''}
+        ${complete.map(a=>{
             const grp = groupByInvite(a.invite);
             const th = grp ? approvalThreshold(grp.id) : {total: 0, need: 0};
             const votes = (a.approvals || []).length;
@@ -1596,7 +1794,8 @@ function finalizeMembership(app, ok, by) {
     deletePublicApplication(app.rowId);
     const group = groupByInvite(app.invite);
     if (ok) {
-        state.members.push({id: nextMemberId(), name: app.name, phone: app.phone || '—', savings: 0, shares: 0, loan: 0, status: 'Active', groupId: group ? group.id : currentGroupId, role: 'member', photo: app.photo || null, nationalId: app.nida || '', kinName: app.kinName || '', kinRelation: app.kinRelation || '—', kinPhone: app.kinPhone || '—'});
+        const gid = group ? group.id : currentGroupId;
+        state.members.push({id: genMemberId(gid, app.name), name: app.name, phone: app.phone || '—', savings: 0, shares: 0, loan: 0, status: 'Active', groupId: gid, role: 'member', photo: app.photo || null, nationalId: app.nida || '', kinName: app.kinName || '', kinRelation: app.kinRelation || '—', kinPhone: app.kinPhone || '—'});
         if (group) group.members += 1;
         addAudit('Amekubali mwanachama mpya — ' + app.name + (group ? ' (' + group.name + ')' : '') + ' [' + by + ']');
         notify('Mwanachama mpya amekubaliwa', app.name + (group ? ' → ' + group.name : '') + ' (' + by + ')', group ? group.id : currentGroupId);
@@ -1616,7 +1815,7 @@ function approveMembership(ref, ok) {
 
 function voteMembership(ref) {
     const app = state.membershipApplications.find(a => a.ref === ref);
-    if (!app || app.status !== 'pending') return;
+    if (!app || app.status !== 'pending' || !app.nida) return;
     if (!Array.isArray(app.approvals)) app.approvals = [];
     if (app.approvals.indexOf(currentMemberId) > -1) return;
     app.approvals.push(currentMemberId);
@@ -1632,23 +1831,10 @@ function voteMembership(ref) {
     renderSection();
 }
 
-// ================= PUBLIC FORMS =================
-function checkInvite(code) {
-    const g = groupByInvite(code);
-    const msg = document.getElementById('join-group');
-    const fields = document.getElementById('join-fields');
-    if (g) {
-        msg.innerHTML = '<span class="text-emerald-700">✓ ' + g.name + ' • ' + g.location + ' • ' + g.members + ' wanachama</span>';
-        fields.classList.remove('hidden');
-    } else {
-        msg.innerHTML = code ? '<span class="text-red-500">Msimbo haujulikani — uliza viongozi wa kikundi chako.</span>' : '';
-        fields.classList.add('hidden');
-    }
-}
+// ================= PUBLIC REGISTRATION & INVITATIONS =================
+function readProfile() { try { return JSON.parse(localStorage.getItem('vicoba-profile') || 'null'); } catch (e) { return null; } }
 
-async function submitJoin() {
-    const code = document.getElementById('join-code').value;
-    const g = groupByInvite(code);
+async function submitRegistration() {
     const name = document.getElementById('join-name').value.trim();
     const phone = document.getElementById('join-phone').value.trim();
     const nida = document.getElementById('join-nida').value.trim();
@@ -1656,33 +1842,53 @@ async function submitJoin() {
     const kinRelation = document.getElementById('join-kin-rel').value.trim();
     const kinPhone = document.getElementById('join-kin-phone').value.trim();
     const pin = (document.getElementById('join-pin').value || '').trim();
-    if (!g) return;
     const err = document.getElementById('join-error');
     const show = m => { err.textContent = m; err.classList.remove('hidden'); };
     const msg = memberFormError(name, phone, nida, kinName, photoDraft);
     if (msg) { show(msg); return; }
     if (pin.length < 6) { show('Tengeneza PIN yenye angalau tarakimu 6.'); return; }
     err.classList.add('hidden');
-
-    // create the applicant's account now (they can sign in once approved)
     const su = await authSignUp(phone, pin);
-    if (!su.ok && !su.exists) { show('Akaunti imeshindikana: ' + su.reason); return; }
-
-    // send the application to the group's queue (normalized table)
-    const payload = {ref_code: genTxId(), full_name: name, phone, national_id: nida,
-        photo_url: photoDraft, kin_name: kinName, kin_relation: kinRelation || '—',
-        kin_phone: kinPhone || '—', invite_code: g.invite, status: 'pending'};
-    const sent = await fetch(SUPABASE_URL + '/rest/v1/membership_applications', {
-        method: 'POST',
-        headers: Object.assign({}, authHeaders(), {'Prefer': 'return=minimal'}),
-        body: JSON.stringify(payload)
-    }).then(r => r.ok).catch(() => false);
-    if (!sent) { show('Imeshindikana kutuma maombi — hakikisha intaneti kisha jaribu tena.'); return; }
-
+    if (su.exists) { show('Namba hii imesajiliwa tayari — ingia kwa PIN yako.'); return; }
+    if (!su.ok) { show('Imeshindikana: ' + su.reason); return; }
+    try { localStorage.setItem('vicoba-profile', JSON.stringify({name, phone, nida, kinName, kinRelation: kinRelation || '—', kinPhone: kinPhone || '—', photo: photoDraft})); } catch (e) {}
+    regPin = pin;
     photoDraft = null;
-    document.getElementById('join-fields').classList.add('hidden');
     document.getElementById('join-done').classList.remove('hidden');
     lucide.createIcons();
+}
+
+let regPin = '';
+async function finishRegistration() {
+    document.getElementById('phone').value = document.getElementById('join-phone').value.trim();
+    document.getElementById('pin').value = regPin;
+    regPin = '';
+    await doPhoneLogin();
+}
+
+async function submitInvitation(code) {
+    const prof = readProfile();
+    if (!authSession) return;
+    if (!prof) { notify('Kamilisha taarifa', 'Taarifa zako hazipatikani — jisajili tena.'); renderDashboard(); return; }
+    const g = groupByInvite(code);
+    if (!g) return;
+    try {
+        // replace any earlier (possibly incomplete) row for this phone+group
+        const r0 = await fetch(SUPABASE_URL + '/rest/v1/membership_applications?phone=eq.' + encodeURIComponent(authSession.phone) + '&invite_code=eq.' + code + '&select=id', {headers: authHeaders()});
+        if (r0.ok) (await r0.json()).forEach(row => deletePublicApplication(row.id));
+        const r = await fetch(SUPABASE_URL + '/rest/v1/membership_applications', {
+            method: 'POST',
+            headers: Object.assign({}, authHeaders(), {'Prefer': 'return=minimal'}),
+            body: JSON.stringify({ref_code: genTxId(), full_name: prof.name, phone: authSession.phone,
+                national_id: prof.nida, photo_url: prof.photo, kin_name: prof.kinName,
+                kin_relation: prof.kinRelation, kin_phone: prof.kinPhone, invite_code: code, status: 'pending'})
+        });
+        if (!r.ok) throw new Error('send');
+        if (localStorage.getItem('vicoba-pending-invite') === code) { try { localStorage.removeItem('vicoba-pending-invite'); } catch (e) {} }
+        notify('Ombi limewasilishwa!', g.name + ' — linasubiri idhini ya viongozi 3 au kura ya 70% ya wanachama', g.id);
+        save();
+        renderDashboard();
+    } catch (e) { notify('Imeshindikana kutuma', 'Hakikisha intaneti kisha jaribu tena.'); }
 }
 
 async function pullPublicApplications() {
@@ -1691,17 +1897,27 @@ async function pullPublicApplications() {
         const r = await fetch(SUPABASE_URL + '/rest/v1/membership_applications?status=eq.pending&select=*', {headers: authHeaders()});
         if (!r.ok) return;
         const rows = await r.json();
-        let added = false;
+        let changed = false;
         rows.forEach(row => {
-            if (state.membershipApplications.some(a => a.rowId === row.id || a.ref === row.ref_code)) return;
-            const grp = groupByInvite(row.invite_code);
-            state.membershipApplications.push({rowId: row.id, ref: row.ref_code, name: row.full_name, phone: row.phone || '—',
-                nida: row.national_id || '', photo: row.photo_url || null, kinName: row.kin_name || '', kinRelation: row.kin_relation || '—',
-                kinPhone: row.kin_phone || '—', invite: row.invite_code, groupName: grp ? grp.name : '—',
-                date: String(row.created_at || '').slice(0, 10), status: 'pending', approvals: []});
-            added = true;
+            let ex = state.membershipApplications.find(a => a.rowId === row.id);
+            if (!ex && row.phone) ex = state.membershipApplications.find(a => a.phone === row.phone && a.invite === row.invite_code);
+            if (ex) {
+                // refresh in place (keeps accumulated votes when the applicant completes their data)
+                Object.assign(ex, {rowId: row.id, ref: row.ref_code, name: row.full_name || ex.name,
+                    nida: row.national_id || ex.nida, photo: row.photo_url || ex.photo,
+                    kinName: row.kin_name || ex.kinName, kinRelation: row.kin_relation || ex.kinRelation,
+                    kinPhone: row.kin_phone || ex.kinPhone});
+                changed = true;
+            } else {
+                const grp = groupByInvite(row.invite_code);
+                state.membershipApplications.push({rowId: row.id, ref: row.ref_code, name: row.full_name || row.phone, phone: row.phone || '—',
+                    nida: row.national_id || '', photo: row.photo_url || null, kinName: row.kin_name || '', kinRelation: row.kin_relation || '—',
+                    kinPhone: row.kin_phone || '—', invite: row.invite_code, groupName: grp ? grp.name : '—',
+                    date: String(row.created_at || '').slice(0, 10), status: 'pending', approvals: []});
+                changed = true;
+            }
         });
-        if (added) save();
+        if (changed) save();
     } catch (e) {}
 }
 
@@ -2309,6 +2525,137 @@ async function changePin() {
     } catch (e) { show('Imeshindikana — hakikisha intaneti.', false); }
 }
 
+// ================= ELECTIONS (Uchaguzi) =================
+const ELECTION_POSITIONS = [
+    {key:'chairperson', label:'Mwenyekiti'},
+    {key:'secretary', label:'Katibu'},
+    {key:'treasurer', label:'Mhasibu (Accountant)'},
+    {key:'auditor', label:'Mkaguzi'},
+    {key:'vice-chairperson', label:'Naibu Mwenyekiti'},
+    {key:'vice-secretary', label:'Naibu Katibu'},
+    {key:'vice-treasurer', label:'Naibu Mhasibu'},
+];
+
+function renderElections() {
+    const els = state.elections.filter(e => e.groupId === currentGroupId);
+    const open = els.filter(e => e.status === 'open');
+    const closed = els.filter(e => e.status === 'closed').slice(0, 5);
+    const gms = groupMembers();
+    return `<div class="fade-in space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-gray-500">Uchaguzi wazi (${open.length}) — kila mwanachama ana kura moja</p>
+            ${isOfficer() ? `<button onclick="showElectionModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Anza Uchaguzi</button>` : ''}
+        </div>
+        ${open.map(e => {
+            const pos = ELECTION_POSITIONS.find(p => p.key === e.position) || {label: e.position};
+            const myVote = e.votes.find(v => v.voter === currentMemberId);
+            return `<div class="bg-white rounded-xl p-5 border border-gray-100 border-l-4 border-l-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div><p class="font-semibold text-gray-900 text-sm">🗳️ Uchaguzi wa ${pos.label}</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Kura: ${e.votes.length}/${gms.length} • ${fmtDate(e.date)} • <span class="font-mono">${e.id}</span></p></div>
+                    ${isOfficer() ? `<button onclick="closeElection('${e.id}')" class="border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-50 transition">Funga & Hesabu</button>` : ''}
+                </div>
+                <div class="space-y-2">
+                    ${e.candidates.map(cid => {
+                        const voted = myVote && myVote.candidate === cid;
+                        return `<div class="flex items-center justify-between border border-gray-100 rounded-lg px-3 py-2">
+                            <p class="text-[13px] text-gray-800 flex items-center gap-2">${avatarHtml(memberById(cid), 'w-6 h-6')} ${memberName(cid)} ${voted ? '<span class="text-[10px] text-emerald-600 font-medium">✓ kura yako</span>' : ''}</p>
+                            ${myVote ? '' : `<button onclick="castVote('${e.id}','${cid}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Piga Kura</button>`}
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }).join('') || '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna uchaguzi wazi kwa sasa.</div>'}
+        ${closed.length ? `<div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-3">Uchaguzi Uliopita</h3>
+            ${closed.map(e => { const pos = ELECTION_POSITIONS.find(p => p.key === e.position) || {label: e.position}; return `<div class="flex justify-between py-2 border-b border-gray-50 text-[13px] last:border-0"><span class="text-gray-600">${pos.label} — ${fmtDate(e.date)}</span><span class="text-emerald-700 font-medium">🏆 ${memberName(e.winner)}</span></div>`; }).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+function showElectionModal() {
+    const gms = groupMembers();
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-4">Anza Uchaguzi</h3>
+        <form onsubmit="event.preventDefault(); startElection()">
+            <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Nafasi</label>
+            <select id="el-position" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${ELECTION_POSITIONS.map(p => `<option value="${p.key}">${p.label}</option>`).join('')}</select>
+            <p class="text-[11px] font-semibold text-gray-600 uppercase tracking-wide mt-3 mb-2">Wagombea (chagua angalau wawili)</p>
+            <div class="space-y-1.5 max-h-52 overflow-y-auto mb-3">
+                ${gms.map(m => `<label class="flex items-center gap-2.5 border border-gray-100 rounded-lg px-3 py-2 text-[13px] text-gray-800"><input type="checkbox" class="el-cand rounded" value="${m.id}"> ${avatarHtml(m, 'w-6 h-6')} <span>${m.name}</span> <span class="text-[10px] text-gray-400">(${roleLabels[m.role] || 'Mjumbe'})</span></label>`).join('')}
+            </div>
+            <p id="el-error" class="text-xs text-red-600 mb-2 hidden"></p>
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Anza Uchaguzi</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+
+function startElection() {
+    const position = document.getElementById('el-position').value;
+    const candidates = Array.from(new Set(Array.from(document.querySelectorAll('.el-cand:checked')).map(c => c.value)));
+    const err = document.getElementById('el-error');
+    if (candidates.length < 2) { err.textContent = 'Chagua wagombea angalau wawili.'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    state.elCounter = (state.elCounter || 0) + 1;
+    const el = {id: 'EL-' + String(state.elCounter).padStart(3, '0'), groupId: currentGroupId, position, candidates, votes: [], status: 'open', winner: null, startedBy: currentMemberId, date: todayISO()};
+    state.elections.unshift(el);
+    const pos = ELECTION_POSITIONS.find(p => p.key === position) || {label: position};
+    notify('🗳️ Uchaguzi umeanza', pos.label + ' — kila mwanachama apige kura yake (' + el.id + ')');
+    addAudit('Ameanza uchaguzi ' + el.id + ' — ' + pos.label + ' (wagombea ' + candidates.length + ')');
+    save();
+    closeModal();
+    renderSection();
+}
+
+function castVote(elId, candidateId) {
+    const el = state.elections.find(e => e.id === elId);
+    if (!el || el.status !== 'open') return;
+    if (el.votes.some(v => v.voter === currentMemberId)) return;
+    el.votes.push({voter: currentMemberId, candidate: candidateId});
+    addAudit('Amepiga kura ' + elId);
+    if (el.votes.length >= groupMembers().length) { closeElection(elId); return; }
+    save();
+    renderSection();
+}
+
+function closeElection(elId) {
+    const el = state.elections.find(e => e.id === elId);
+    if (!el || el.status !== 'open') return;
+    const counts = {};
+    el.votes.forEach(v => counts[v.candidate] = (counts[v.candidate] || 0) + 1);
+    let max = 0;
+    Object.values(counts).forEach(c => { if (c > max) max = c; });
+    const top = Object.keys(counts).filter(k => counts[k] === max);
+    const pos = ELECTION_POSITIONS.find(p => p.key === el.position) || {label: el.position};
+    if (top.length !== 1 || max === 0) {
+        el.votes = [];
+        notify('Kura zimefungana', pos.label + ' — uchaguzi umefunguliwa upya, pigeni kura tena (' + el.id + ')');
+        addAudit('Uchaguzi ' + el.id + ' umefunguliwa upya (kura zimefungana)');
+        save(); renderSection(); return;
+    }
+    const winner = top[0];
+    groupMembers().forEach(m => { if (m.id !== winner && m.role === el.position) m.role = 'member'; });
+    const wm = memberById(winner);
+    if (wm) wm.role = el.position;
+    el.status = 'closed';
+    el.winner = winner;
+    notify('🏆 Mshindi wa uchaguzi', memberName(winner) + ' — ' + pos.label + ' (' + el.id + ')');
+    addAudit('Amefunga uchaguzi ' + el.id + ' — mshindi: ' + memberName(winner) + ' (' + pos.label + ')');
+    save();
+    renderSection();
+}
+
+function appointAssistant(memberId, position) {
+    const m = memberById(memberId);
+    if (!m || !isOfficer() || m.groupId !== currentGroupId) return;
+    groupMembers().forEach(x => { if (x.id !== memberId && x.role === position) x.role = 'member'; });
+    m.role = position;
+    const pos = ELECTION_POSITIONS.find(p => p.key === position) || {label: position};
+    addAudit('Ameteua ' + m.name + ' — ' + pos.label);
+    notify('Teua rasmi', m.name + ' — ' + pos.label);
+    save();
+    closeModal();
+    renderSection();
+}
+
 // ================= MODALS =================
 function openModal(html) {
     document.getElementById('modal-content').innerHTML = html;
@@ -2431,9 +2778,8 @@ document.addEventListener('DOMContentLoaded', function() {
     runReminders();
     const inv = location.hash.match(/invite=([A-Za-z0-9-]+)/);
     if (inv) {
+        try { localStorage.setItem('vicoba-pending-invite', decodeURIComponent(inv[1]).toUpperCase()); } catch (e) {}
         showPage('join');
-        document.getElementById('join-code').value = decodeURIComponent(inv[1]).toUpperCase();
-        checkInvite(document.getElementById('join-code').value);
     } else {
         showPage('landing');
     }

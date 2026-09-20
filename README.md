@@ -34,6 +34,26 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
 - **PDF reports**, **audit log**, **loan estimate & contribution-trend cards** on the
   member dashboard.
 
+## How membership works
+
+1. **Anyone registers** on the platform ("Jisajili"): 3 full names, phone, PIN (6+),
+   passport photo, NIDA, and next of kin.
+2. **Groups are invite-only**: an existing member invites by phone (or shares the
+   group's invite-code link); the invited person completes the application in their app.
+3. **Acceptance**: any of the 3 leaders (Mwenyekiti / Katibu / Mhasibu) approves,
+   **or** 70% of members vote yes.
+4. **Anyone can create a group** — the creator becomes its first Mwenyekiti.
+5. **Member IDs**: 2 letters of the group name + 2 random digits + 3 name initials
+   (e.g. `UM74JAM` = Umoja + Juma Ali Mwalimu).
+
+## Leadership & elections (Uchaguzi)
+
+Every group elects a **Mwenyekiti** (chairman), **Katibu** (secretary), and
+**Mhasibu** (accountant); **Mkaguzi** (auditor) is an optional elected title.
+Leaders can appoint assistants (Naibu) directly. Everyone else is **Mjumbe**.
+Leaders start elections; each member casts one vote; most votes wins
+(a tie re-opens voting).
+
 ## Demo sign-ins (phone + PIN `123456`)
 
 Real Supabase Auth accounts are created lazily on first sign-in. Officers can
