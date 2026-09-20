@@ -78,6 +78,19 @@ Leaders can appoint assistants (Naibu) directly. Everyone else is **Mjumbe**.
 Leaders start elections; each member casts one vote; most votes wins
 (a tie re-opens voting).
 
+## Subscription
+
+Per-member monthly pricing, billed to the group (the pricing page shows the
+per-member figure): **Msingi** ≤30 members — TSh 500/member/mo • **Biashara**
+31–50 — TSh 450 • **Taasisi** 51+ — TSh 400. Every group gets a **2-week free
+trial**; paying **6 months upfront gives −10%**, **12 months −15%**. Included:
+the platform plus ~10 SMS reminders per member per month; mobile-money
+processing fees are paid by the payer at checkout, extra SMS sold as bundles
+(TSh 5,000 ≈ 200 SMS). Unpaid after the trial plus a 7-day grace period, the
+group becomes **view-only** — full read access, writes blocked behind a
+"Lipa Usajili" prompt (officers can pay from the billing card in Settings;
+the Super Admin bypasses).
+
 ## Demo sign-ins (phone + PIN `123456`)
 
 Real Supabase Auth accounts are created lazily on first sign-in. Officers can
