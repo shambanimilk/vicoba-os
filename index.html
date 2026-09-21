@@ -165,7 +165,7 @@
     <section id="bei" class="py-16 bg-gray-50">
      <div class="max-w-7xl mx-auto px-4 sm:px-6">
       <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-3">Bei Rahisi, Thamani Kubwa</h2>
-      <p class="text-center text-[13px] text-gray-500 mb-8">Kwa mwanachama kwa mwezi — kikundi kinawalipa kwa pamoja. Majaribio ya wiki 2 bure • Miezi 6 mbele −10% • Miezi 12 −15%</p>
+      <p class="text-center text-[13px] text-gray-500 mb-8" id="pub-disc-line">Kwa mwanachama kwa mwezi — kikundi kinawalipa kwa pamoja. <span id="pub-disc-detail">Majaribio ya siku 14 bure • Miezi 6 mbele −10% • Miezi 12 −15%</span></p>
       <div class="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
         <h3 class="font-semibold text-gray-900">Msingi</h3>
@@ -340,6 +340,7 @@ function defaultState() {
         ],
         elections: [],
         billing: [],
+        systemStatus: {lastRun: null, services: []},
         integrations: {payment: {}, sms: {}, whatsapp: {}},
         rulesVersion: 1,
         groups: [
@@ -432,6 +433,7 @@ function defaultState() {
             remindLeadDays: 3, contributionDay: 0,
             jamiiMsiba: 200000, jamiiUgonjwa: 150000, jamiiHarusi: 100000,
             pricing: {basic: 500, business: 450, institution: 400},
+            platform: {trialDays: 14, graceDays: 7, disc6Pct: 10, disc12Pct: 15, subRemindDays: 7},
         },
         txCounter: 1000,
     };
@@ -514,6 +516,8 @@ function loadState() {
     if (!s.integrations) s.integrations = {payment: {}, sms: {}, whatsapp: {}};
     if (!Array.isArray(s.billing)) s.billing = [];
     if (!s.settings.pricing || !s.settings.pricing.basic) s.settings.pricing = {basic: 500, business: 450, institution: 400};
+    if (!s.settings.platform || !s.settings.platform.trialDays) s.settings.platform = {trialDays: 14, graceDays: 7, disc6Pct: 10, disc12Pct: 15, subRemindDays: 7};
+    if (!s.systemStatus) s.systemStatus = {lastRun: null, services: []};
     return s;
 }
 function save() {
@@ -681,16 +685,21 @@ function renderPublicPricing() {
     set('pub-p-basic', p.basic || 500);
     set('pub-p-business', p.business || 450);
     set('pub-p-institution', p.institution || 400);
+    const cfg = platformCfg();
+    const dl = document.getElementById('pub-disc-detail');
+    if (dl) dl.textContent = 'Majaribio ya siku ' + cfg.trialDays + ' bure • Miezi 6 mbele \u2212' + cfg.disc6Pct + '% • Miezi 12 \u2212' + cfg.disc12Pct + '%';
 }
+function platformCfg() { return Object.assign({trialDays: 14, graceDays: 7, disc6Pct: 10, disc12Pct: 15, subRemindDays: 7}, (state.settings && state.settings.platform) || {}); }
 function subStatus(g) {
     const sub = g && g.subscription;
     if (!sub) return {s: 'active', days: 0};
+    const cfg = platformCfg();
     const today = new Date(todayISO());
     if (sub.paidUntil && new Date(sub.paidUntil) >= today) return {s: 'active', days: Math.ceil((new Date(sub.paidUntil) - today) / 86400000)};
     if (sub.trialStart) {
-        const trialEnd = new Date(sub.trialStart); trialEnd.setDate(trialEnd.getDate() + 14);
+        const trialEnd = new Date(sub.trialStart); trialEnd.setDate(trialEnd.getDate() + Number(cfg.trialDays) || 14);
         if (trialEnd >= today) return {s: 'trial', days: Math.ceil((trialEnd - today) / 86400000)};
-        trialEnd.setDate(trialEnd.getDate() + 7);
+        trialEnd.setDate(trialEnd.getDate() + (Number(cfg.graceDays) || 7));
         if (trialEnd >= today) return {s: 'grace', days: Math.ceil((trialEnd - today) / 86400000)};
     }
     return {s: 'expired', days: 0};
@@ -707,14 +716,17 @@ function showBillingModal() {
     const n = groupMembers().length;
     const tier = subTier(n);
     const st = subStatus(g);
+    const cfg = platformCfg();
     const base = n * tier.perMember;
+    const d6 = Math.round(base * 6 * (1 - cfg.disc6Pct / 100));
+    const d12 = Math.round(base * 12 * (1 - cfg.disc12Pct / 100));
     openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">💳 Usajili wa VICOBA OS — ${g.name}</h3>
         <p class="text-[12px] text-gray-500 mb-4">Mpango: <strong>${tier.name}</strong> • wanachama ${n} × ${fmt(tier.perMember)}/mwanachama/mwezi = <strong>${fmt(base)}/mwezi</strong></p>
         <p class="text-[12px] text-gray-500 mb-3">Hali: <span class="font-medium ${st.s === 'active' ? 'text-emerald-600' : st.s === 'trial' ? 'text-blue-600' : 'text-red-600'}">${st.s === 'active' ? 'Imelipwa (siku ' + st.days + ' zimebaki)' : st.s === 'trial' ? 'Majaribio — siku ' + st.days : st.s === 'grace' ? 'Rehema — siku ' + st.days : 'Haujalipwa'}</span>${g.subscription.paidUntil ? ' • imelipwa hadi ' + fmtDate(g.subscription.paidUntil) : ''}</p>
         <div class="space-y-2">
             <button onclick="paySubscription(1)" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition">Lipa Mwezi 1 — ${fmt(base)}</button>
-            <button onclick="paySubscription(6)" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 transition">Lipa Miezi 6 (−10%) — ${fmt(Math.round(base * 6 * 0.9))}</button>
-            <button onclick="paySubscription(12)" class="w-full bg-amber-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-amber-700 transition">Lipa Miezi 12 (−15%) — ${fmt(Math.round(base * 12 * 0.85))}</button>
+            <button onclick="paySubscription(6)" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 transition">Lipa Miezi 6 (−${cfg.disc6Pct}%) — ${fmt(d6)}</button>
+            <button onclick="paySubscription(12)" class="w-full bg-amber-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-amber-700 transition">Lipa Miezi 12 (−${cfg.disc12Pct}%) — ${fmt(d12)}</button>
         </div>
         <p class="text-[10px] text-gray-400 mt-3">Inajumuisha jukwaa + kumbusho ~10 SMS/kwanachama/mwezi. Ada za malipo ya simu hulipwa na mtumiaji wakati wa malipo. SMS za ziada: bundles TSh 5,000 ≈ 200 SMS.</p>
         <button onclick="closeModal()" class="mt-3 w-full border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Funga</button>`);
@@ -723,7 +735,8 @@ function paySubscription(months) {
     const g = currentGroup();
     const n = groupMembers().length;
     const tier = subTier(n);
-    const disc = months >= 12 ? 0.15 : months >= 6 ? 0.10 : 0;
+    const cfg = platformCfg();
+    const disc = months >= 12 ? cfg.disc12Pct / 100 : months >= 6 ? cfg.disc6Pct / 100 : 0;
     const amount = Math.round(n * tier.perMember * months * (1 - disc));
     const sub = g.subscription = g.subscription || {trialStart: todayISO()};
     const from = sub.paidUntil && new Date(sub.paidUntil) > new Date() ? new Date(sub.paidUntil) : new Date();
@@ -824,6 +837,21 @@ function avatarHtml(m, cls) {
     if (m && m.photo) return `<img src="${m.photo}" class="${cls} rounded-full object-cover inline-block" alt="">`;
     const init = (m && m.name ? m.name : '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     return `<span class="${cls} rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] font-bold">${init}</span>`;
+}
+// Nafasi ya mwanachama (chip) — Mwenyekiti/Mhasibu/Katibu/Mkaguzi/Naibu/Mjumbe
+function roleChip(role) {
+    const map = {
+        chairperson: ['bg-emerald-600 text-white', 'Mwenyekiti'],
+        treasurer: ['bg-blue-50 text-blue-700 border border-blue-200', 'Mhasibu'],
+        secretary: ['bg-amber-50 text-amber-800 border border-amber-200', 'Katibu'],
+        auditor: ['bg-purple-50 text-purple-700 border border-purple-200', 'Mkaguzi'],
+        'vice-chairperson': ['bg-emerald-50 text-emerald-700 border border-emerald-200', 'Naibu Mwenyekiti'],
+        'vice-secretary': ['bg-amber-50 text-amber-700 border border-amber-200', 'Naibu Katibu'],
+        'vice-treasurer': ['bg-blue-50 text-blue-700 border border-blue-200', 'Naibu Mhasibu'],
+        admin: ['bg-gray-900 text-white', 'Super Admin']
+    };
+    const c = map[role] || ['bg-gray-100 text-gray-500', 'Mjumbe'];
+    return `<span class="text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${c[0]}">${c[1]}</span>`;
 }
 let photoDraft = null;
 function pickPhoto(inputId, previewId) {
@@ -966,10 +994,15 @@ const navItems = {
         {icon:'user',label:'Wanachama Wote',section:'members'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'plug',label:'API, Gateway & Bei',section:'integrations'},
+        {icon:'send',label:'SMS Outbox (Jukwaa)',section:'outbox'},
+        {icon:'bell',label:'Arifa za Jukwaa',section:'notifications'},
         {icon:'shield',label:'Ukaguzi',section:'audit'},
     ],
     chairperson: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'smile',label:'Dashibodi Yangu',section:'member-dash'},
+        {icon:'piggy-bank',label:'Akiba Yangu',section:'my-savings'},
+        {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
         {icon:'users',label:'Wanachama',section:'members'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'wallet',label:'Michango',section:'contributions'},
@@ -982,6 +1015,9 @@ const navItems = {
     ],
     treasurer: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'smile',label:'Dashibodi Yangu',section:'member-dash'},
+        {icon:'piggy-bank',label:'Akiba Yangu',section:'my-savings'},
+        {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
         {icon:'wallet',label:'Michango',section:'contributions'},
         {icon:'banknote',label:'Mikopo',section:'loans'},
         {icon:'user-check',label:'Miamvula',section:'consents'},
@@ -994,6 +1030,9 @@ const navItems = {
     ],
     secretary: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'smile',label:'Dashibodi Yangu',section:'member-dash'},
+        {icon:'piggy-bank',label:'Akiba Yangu',section:'my-savings'},
+        {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
         {icon:'users',label:'Wanachama',section:'members'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'calendar',label:'Mikutano',section:'meetings'},
@@ -1014,6 +1053,9 @@ const navItems = {
     ],
     auditor: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
+        {icon:'smile',label:'Dashibodi Yangu',section:'member-dash'},
+        {icon:'piggy-bank',label:'Akiba Yangu',section:'my-savings'},
+        {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
         {icon:'shield',label:'Ukaguzi',section:'audit'},
         {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
         {icon:'alert-triangle',label:'Hatari',section:'risk'},
@@ -1079,11 +1121,11 @@ function renderDashboard() {
 
 function renderSection() {
     const mc = document.getElementById('main-content');
-    const titles = {dashboard:'Dashibodi',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API, Gateway & Bei (Super Admin)'};
+    const titles = {dashboard:'Dashibodi','member-dash':'Dashibodi Yangu',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API, Gateway & Bei (Super Admin)'};
     document.getElementById('page-heading').textContent = titles[currentSection] || 'Dashibodi';
 
     // Super Admin (mmiliki) ana sehemu zake za jukwaa bila kikundi
-    const adminSections = ['dashboard','groups','members','memberapps','audit','integrations','notifications'];
+    const adminSections = ['dashboard','groups','members','memberapps','audit','integrations','notifications','outbox'];
     if (!currentGroupId && !(currentRole === 'admin' && adminSections.indexOf(currentSection) > -1) && ['dashboard','notifications','settings'].indexOf(currentSection) === -1) {
         mc.innerHTML = `<div class="fade-in bg-white rounded-xl p-8 border border-gray-100 text-center">
             <p class="text-4xl mb-3">🔒</p>
@@ -1097,6 +1139,7 @@ function renderSection() {
 
     const renderers = {
         dashboard: () => !currentGroupId ? (currentRole === 'admin' ? renderPlatformDash() : renderNoGroupDash()) : (currentRole === 'member' ? renderMemberDash() : renderGroupDash()),
+        'member-dash': renderMemberDash,
         members: renderMembers, contributions: renderContributions, loans: renderLoans,
         'my-savings': renderMySavings, 'my-loans': renderMyLoans, groups: renderGroups,
         approvals: renderApprovals, meetings: renderMeetings, reports: renderReports,
@@ -1106,6 +1149,8 @@ function renderSection() {
         elections: renderElections, integrations: () => currentRole === 'admin' ? renderIntegrations() : '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Sehemu ya Super Admin tu.</div>'
     };
     mc.innerHTML = (renderers[currentSection] || renderGroupDash)();
+    // VOS health check inayoendelea yenyewe (throttled dakika 10) kwenye dashibodi ya mmiliki
+    if (currentRole === 'admin' && currentSection === 'dashboard' && !currentGroupId) runHealthChecks(false);
     // Subscription gate: unpaid groups become VIEW-ONLY (admins are the platform and bypass)
     if (currentGroupId && currentRole !== 'admin' && subStatus(currentGroup()).s === 'expired') {
         mc.classList.add('relative');
@@ -1147,7 +1192,8 @@ function renderBarChart(series, label, color='emerald') {
 function updateBell() {
     const b = document.getElementById('bell-badge');
     if (!b) return;
-    const n = state.notifications.filter(x => !x.read && x.groupId === currentGroupId).length;
+    // Mmiliki anaona arifa za jukwaa (PLATFORM); vikundi vinaona arifa zao tu
+    const n = state.notifications.filter(x => !x.read && (currentRole === 'admin' ? x.groupId === 'PLATFORM' : x.groupId === currentGroupId)).length;
     b.textContent = n;
     b.classList.toggle('hidden', n === 0);
 }
@@ -1170,6 +1216,7 @@ function renderPlatformDash() {
     const tiers = gs.map(g => subTier(groupStats(g).members));
     const nActive = gs.filter(g => subStatus(g).s === 'active').length;
     const nTrial = gs.filter(g => subStatus(g).s === 'trial').length;
+    const nGrace = gs.filter(g => subStatus(g).s === 'grace').length;
     const nExpired = gs.filter(g => subStatus(g).s === 'expired').length;
     const revenue = (state.billing || []).reduce((s, b) => s + (b.amount || 0), 0);
     const p = state.settings.pricing || {};
@@ -1177,16 +1224,22 @@ function renderPlatformDash() {
         <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900 rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden">
             <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-12 -mt-12"></div>
             <p class="text-sm text-emerald-300 font-medium">👑 Mmiliki wa Jukwaa — Super Admin</p>
-            <p class="text-2xl sm:text-3xl font-bold mt-1">VICOBA OS — Mtazamo wa Jukwaa</p>
-            <p class="text-[12px] text-gray-300 mt-1.5">Akaunti hii ni ya mmiliki tu. Haingii kwenye kikundi chochote na hakikundi kinaweza kuifikia. Unadhibiti gateway za malipo/SMS, bei za usajili, na uhakiki wa jumla.</p>
+            <p class="text-2xl sm:text-3xl font-bold mt-1">VICOBA OS (VOS) — Biashara Yako kwa Picha</p>
+            <p class="text-[12px] text-gray-300 mt-1.5">Akaunti hii ni ya mmiliki tu. Haingii kwenye kikundi chochote na hakikundi kinaweza kuifikia. Unadhibiti gateway za malipo/SMS, bei za usajili, ujumbe kwa wote, na hali ya mfumo mzima.</p>
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            ${statCard('Vikundi',gs.length,'layers','emerald')}
-            ${statCard('Wanachama Wote',state.members.length,'users','blue')}
-            ${statCard('Usajili Hai/ Jaribio',nActive + ' / ' + nTrial,'badge-check','purple')}
+            ${statCard('Vikundi Vilivyosajiliwa',gs.length,'layers','emerald')}
+            ${statCard('Wanachama Waliosajiliwa',state.members.length,'users','blue')}
             ${statCard('Mapato ya Usajili',fmt(revenue),'wallet','amber')}
+            ${statCard('Vikundi Wamelipa',nActive + '/' + gs.length,'badge-check','purple')}
         </div>
-        ${nExpired ? `<div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-[12px] text-red-900">⚠️ Vikundi ${nExpired} vina usajili ulioisha (wanaangalia tu). Waunganishie malipo au wakumbushe.</div>` : ''}
+        <div class="grid grid-cols-3 gap-3 sm:gap-4">
+            ${statCard('Kwenye Majaribio',nTrial,'clock','blue')}
+            ${statCard('Kwenye Rehema',nGrace,'alert-triangle','amber')}
+            ${statCard('Muda Umeisha',nExpired + nGrace,'lock','red')}
+        </div>
+        ${(nExpired || nGrace) ? `<div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-[12px] text-red-900">⚠️ Vikundi ${nExpired + nGrace} vina usajili ambao haujalipwa (${nExpired} vimeisha kabisa — wanaangalia tu; ${nGrace} kwenye rehema). Tuma ujumbe wa kumbusho au waunganishie malipo.</div>` : ''}
+        ${renderHealthCard()}
         <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
             <div class="px-4 pt-4 pb-2 flex flex-wrap items-center justify-between gap-2">
                 <h3 class="font-semibold text-gray-900 text-sm">🏛️ Vikundi Vyote (${gs.length})</h3>
@@ -1215,6 +1268,72 @@ function renderPlatformDash() {
         </div>
     </div>`;
 }
+// ---- System Health (VOS backend operations) ----
+const VOS_REPO = 'shambanimilk/vicoba-os';
+const VOS_PAGES = 'https://shambanimilk.github.io/vicoba-os/';
+const HEALTH_SOURCES = [
+    {key: 'sb-rest', label: 'Supabase — REST API (hifadhi)', check: async () => {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/app_state?select=id&limit=1', {headers: {apikey: SUPABASE_ANON_KEY}, cache: 'no-store'});
+        if (r.status >= 500) throw new Error('HTTP ' + r.status);
+        return 'inajibu (HTTP ' + r.status + (r.status === 401 ? ' — inahitaji kuingia, kiendelezi sahihi' : '') + ')';
+    }},
+    {key: 'sb-auth', label: 'Supabase — Auth (uingiaji)', check: async () => {
+        const base = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '');
+        const r = await fetch(base + '/auth/v1/health', {headers: {apikey: SUPABASE_ANON_KEY}, cache: 'no-store'});
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json().catch(() => ({}));
+        return 'inajibu' + (j.version ? ' • v' + j.version : '');
+    }},
+    {key: 'gh-repo', label: 'GitHub — Code (repo)', check: async () => {
+        const h = await fetch('https://api.github.com/repos/' + VOS_REPO, {headers: {Accept: 'application/vnd.github+json'}, cache: 'no-store'});
+        if (!h.ok) throw new Error('HTTP ' + h.status);
+        const j = await h.json();
+        const c = await (await fetch('https://api.github.com/repos/' + VOS_REPO + '/commits/main', {cache: 'no-store'})).json();
+        const when = c.commit && c.commit.committer ? String(c.commit.committer.date).slice(0, 10) : '';
+        return (j.open_issues_count || 0) + ' issues • commit ' + String(c.sha || '').slice(0, 7) + (when ? ' • ' + when : '');
+    }},
+    {key: 'gh-pages', label: 'GitHub Pages — Tovuti ya VOS', check: async () => {
+        await fetch(VOS_PAGES, {mode: 'no-cors', cache: 'no-store'});
+        return 'tovuti inafikiwa';
+    }}
+];
+function renderHealthCard() {
+    const ss = state.systemStatus || {services: []};
+    const sizeKb = (Math.round(JSON.stringify(state).length / 102.4) / 10).toLocaleString();
+    const rows = (ss.services || []).map(s => `<div class="flex items-center justify-between border-b border-gray-50 py-2 last:border-0 gap-2">
+        <span class="flex items-center gap-2 text-[13px] text-gray-700 min-w-0"><span class="w-2 h-2 rounded-full flex-shrink-0 ${s.up ? 'bg-emerald-500' : 'bg-red-500'}"></span><span class="truncate">${s.label}</span></span>
+        <span class="text-[11px] ${s.up ? 'text-gray-400' : 'text-red-600 font-medium'} flex-shrink-0">${s.up ? '✓ ' + (s.ms || '') + 'ms — ' + (s.info || '') : '✗ IMEZIMA — ' + (s.info || '')}</span>
+    </div>`).join('') || '<p class="text-[12px] text-gray-400 py-2">Bado hakuna ukaguzi umefanyika — bonyeza "Kagua Sasa".</p>';
+    const down = (ss.services || []).filter(s => !s.up).length;
+    return `<div class="bg-white rounded-xl p-5 border ${down ? 'border-red-200' : 'border-gray-100'}">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <h3 class="font-semibold text-gray-900 text-sm">🩺 Hali ya Mfumo (VOS) ${down ? '<span class="text-[11px] text-red-600 font-medium">— huduma ' + down + ' imezima</span>' : ''}</h3>
+            <button onclick="runHealthChecks(true)" class="border border-emerald-300 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-50 transition">Kagua Sasa</button>
+        </div>
+        <div>${rows}</div>
+        <p class="text-[10px] text-gray-400 mt-2">Ukaguzi wa mwisho: ${ss.lastRun ? nowStamp() + ' • ' + fmtDate(ss.lastRun) : '—'} • Data iliyosawazishwa: ${sizeKb} KB • Matumizi ya kifurushi cha Supabase (quota/plan) yaonekana kwenye dashibodi ya Supabase yako.</p>
+    </div>`;
+}
+async function runHealthChecks(force) {
+    const lastMs = state.systemStatus && state.systemStatus.lastRun ? new Date(state.systemStatus.lastRun).getTime() : 0;
+    if (!force && Date.now() - lastMs < 10 * 60 * 1000) return; // auto-throttle: mara kwa dakika 10 tu
+    const services = await Promise.all(HEALTH_SOURCES.map(async src => {
+        const t0 = Date.now();
+        try { const info = await src.check(); return {key: src.key, label: src.label, up: true, ms: Date.now() - t0, info: String(info)}; }
+        catch (e) { return {key: src.key, label: src.label, up: false, ms: Date.now() - t0, info: String((e && e.message) || e)}; }
+    }));
+    state.systemStatus = {lastRun: new Date().toISOString(), services};
+    services.filter(s => !s.up).forEach(s => platformAlert('⚠️ VOS: ' + s.label + ' imezima', s.info));
+    save();
+    if (currentRole === 'admin' && currentSection === 'dashboard' && !currentGroupId) renderSection();
+}
+// Arifa ya mmiliki huduma ikizima — kwa arifa + SMS outbox (dedupe kwa saa)
+function platformAlert(t, d) {
+    const key = 'SYS-' + t + '-' + new Date().toISOString().slice(0, 13);
+    if (state.remindersLog.some(r => r.id === key)) return;
+    state.remindersLog.unshift({id: key, to: 'Mmiliki (Super Admin)', phone: ADMIN_PHONE, msg: t + ' — ' + d, date: todayISO(), time: nowStamp(), kind: 'system-alert', groupId: 'PLATFORM'});
+    notify(t, d, 'PLATFORM');
+}
 function renderGroupDash() {
     const g = currentGroup() || state.groups[0];
     const gs = groupStats(g);
@@ -1228,6 +1347,7 @@ function renderGroupDash() {
         <div class="flex flex-wrap items-center gap-2">
             <span class="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-[11px] font-semibold px-3 py-1.5 rounded-full">🗓️ Mwezi wa ${groupMonthIndex(g)}</span>
             <span class="text-[11px] text-gray-400">kuanzia ${fmtDate(g.startedAt || todayISO())}</span>
+            ${currentRole !== 'member' ? `<button onclick="navigateTo('member-dash')" class="ml-auto text-[11px] text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full font-medium hover:bg-emerald-50 transition">😊 Mimi pia ni mwanachama — Dashibodi Yangu →</button>` : ''}
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             ${statCard('Akiba Jumla',fmt(gs.savings),'wallet','emerald')}
@@ -1517,8 +1637,8 @@ function renderMembers() {
             </div>
             <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Jina</th><th class="px-4 py-3 text-left hidden sm:table-cell">Kikundi</th><th class="px-4 py-3 text-left hidden md:table-cell">Simu</th><th class="px-4 py-3 text-right">Akiba</th><th class="px-4 py-3 text-right hidden md:table-cell">Hisa</th></tr></thead>
-                    <tbody id="members-tbody">${state.members.map(m=>`<tr onclick="showMemberProfile('${m.id}')" class="border-t border-gray-50 hover:bg-gray-50/50 transition cursor-pointer"><td class="px-4 py-3 font-mono text-xs text-gray-400">${m.id}</td><td class="px-4 py-3 font-medium text-gray-900"><span class="inline-flex items-center gap-2">${avatarHtml(m)} ${m.name}</span></td><td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${(groupById(m.groupId) || {}).name || '—'}</td><td class="px-4 py-3 text-gray-500 hidden md:table-cell">${m.phone}</td><td class="px-4 py-3 text-right font-medium">${fmt(m.savings)}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.shares}</td></tr>`).join('')}</tbody>
+                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Jina</th><th class="px-4 py-3 text-left">Nafasi</th><th class="px-4 py-3 text-left hidden sm:table-cell">Kikundi</th><th class="px-4 py-3 text-left hidden md:table-cell">Simu</th><th class="px-4 py-3 text-right">Akiba</th><th class="px-4 py-3 text-right hidden md:table-cell">Hisa</th></tr></thead>
+                    <tbody id="members-tbody">${state.members.map(m=>`<tr onclick="showMemberProfile('${m.id}')" class="border-t border-gray-50 hover:bg-gray-50/50 transition cursor-pointer"><td class="px-4 py-3 font-mono text-xs text-gray-400">${m.id}</td><td class="px-4 py-3 font-medium text-gray-900"><span class="inline-flex items-center gap-2">${avatarHtml(m)} ${m.name}</span></td><td class="px-4 py-3">${roleChip(m.role)}</td><td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${(groupById(m.groupId) || {}).name || '—'}</td><td class="px-4 py-3 text-gray-500 hidden md:table-cell">${m.phone}</td><td class="px-4 py-3 text-right font-medium">${fmt(m.savings)}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.shares}</td></tr>`).join('')}</tbody>
                 </table>
             </div>
         </div>`;
@@ -1533,8 +1653,8 @@ function renderMembers() {
         </div>
         <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Jina</th><th class="px-4 py-3 text-left hidden sm:table-cell">Simu</th><th class="px-4 py-3 text-right">Akiba</th><th class="px-4 py-3 text-right hidden md:table-cell">Hisa</th><th class="px-4 py-3 text-right hidden md:table-cell">Mkopo</th><th class="px-4 py-3 text-center">Hali</th></tr></thead>
-                <tbody id="members-tbody">${groupMembers().map(m=>`<tr onclick="showMemberProfile('${m.id}')" class="border-t border-gray-50 hover:bg-gray-50/50 transition cursor-pointer"><td class="px-4 py-3 font-mono text-xs text-gray-400">${m.id}</td><td class="px-4 py-3 font-medium text-gray-900"><span class="inline-flex items-center gap-2">${avatarHtml(m)} ${m.name}</span></td><td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${m.phone}</td><td class="px-4 py-3 text-right font-medium">${fmt(m.savings)}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.shares}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.loan>0?fmt(m.loan):'—'}</td><td class="px-4 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5 rounded-full font-medium">${m.status}</span></td></tr>`).join('')}</tbody>
+                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">ID</th><th class="px-4 py-3 text-left">Jina</th><th class="px-4 py-3 text-left">Nafasi</th><th class="px-4 py-3 text-left hidden sm:table-cell">Simu</th><th class="px-4 py-3 text-right">Akiba</th><th class="px-4 py-3 text-right hidden md:table-cell">Hisa</th><th class="px-4 py-3 text-right hidden md:table-cell">Mkopo</th><th class="px-4 py-3 text-center">Hali</th></tr></thead>
+                    <tbody id="members-tbody">${groupMembers().map(m=>`<tr onclick="showMemberProfile('${m.id}')" class="border-t border-gray-50 hover:bg-gray-50/50 transition cursor-pointer"><td class="px-4 py-3 font-mono text-xs text-gray-400">${m.id}</td><td class="px-4 py-3 font-medium text-gray-900"><span class="inline-flex items-center gap-2">${avatarHtml(m)} ${m.name}</span></td><td class="px-4 py-3">${roleChip(m.role)}</td><td class="px-4 py-3 text-gray-500 hidden sm:table-cell">${m.phone}</td><td class="px-4 py-3 text-right font-medium">${fmt(m.savings)}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.shares}</td><td class="px-4 py-3 text-right hidden md:table-cell">${m.loan>0?fmt(m.loan):'—'}</td><td class="px-4 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5 rounded-full font-medium">${m.status}</span></td></tr>`).join('')}</tbody>
             </table>
         </div>
     </div>`;
@@ -2525,20 +2645,38 @@ function runReminders() {
                 '⚠ Mkopo ' + l.id + ' wa ' + memberName(l.memberId) + ': analipa ~' + fmt(exp.monthlyRate) + '/mwezi badala ya ' + fmt(exp.required) + ' inayohitajika' + (overdue ? ' (umechelewa)' : '') + '. Kama ataendelea hivi, udhamini wako unaweza kupoteza ~' + fmt(exp.perReferee) + '.', 'referee-risk');
         });
     });
+    // Subscription reminders: kumbusha VIONGOZI wa kikundi usajili ukikaribia kuisha / ukiwa haujalipwa
+    const cfg = platformCfg();
+    (state.groups || []).forEach(g => {
+        const st = subStatus(g);
+        const needsReminder = (st.s === 'trial' && st.days <= Number(cfg.subRemindDays)) || st.s === 'grace' || st.s === 'expired';
+        if (!needsReminder) return;
+        const n = groupStats(g).members;
+        const due = fmt(n * subTier(n).perMember);
+        const tone = st.s === 'trial' ? 'Majaribio yanaisha baada ya siku ' + st.days
+            : st.s === 'grace' ? 'REHEMA ya siku ' + st.days + ' inaisha — kikundi kitaangalia tu'
+            : 'Usajili UMEISHA — kikundi kinaangalia tu (view-only)';
+        state.members.filter(m => m.groupId === g.id && ['chairperson','treasurer','secretary'].indexOf(m.role) > -1).forEach(off => {
+            push('SUB-' + g.id + '-' + off.id + '-' + iso, off.id,
+                '💳 ' + g.name + ': ' + tone + '. Lipa usajili (' + n + ' × ' + fmt(subTier(n).perMember) + ' = ' + due + '/mwezi) kwenye Mipangilio → Lipa Usajili.', 'subscription');
+        });
+    });
     if (changed) save();
 }
 
 function renderOutbox() {
-    const kindBadge = k => ({'loan-due':['bg-amber-50 text-amber-700','Kumbusho la Mkopo'],'overdue':['bg-red-50 text-red-600','Chelewa + Adhabu'],'contribution':['bg-emerald-50 text-emerald-700','Kumbusho la Mchango'],'referee-risk':['bg-red-50 text-red-600','Hatari ya Udhamini']}[k] || ['bg-gray-100 text-gray-500', k]);
+    const kindBadge = k => ({'loan-due':['bg-amber-50 text-amber-700','Kumbusho la Mkopo'],'overdue':['bg-red-50 text-red-600','Chelewa + Adhabu'],'contribution':['bg-emerald-50 text-emerald-700','Kumbusho la Mchango'],'referee-risk':['bg-red-50 text-red-600','Hatari ya Udhamini'],'subscription':['bg-blue-50 text-blue-700','Kumbusho la Usajili'],'broadcast':['bg-purple-50 text-purple-700','Ujumbe wa Mmiliki'],'system-alert':['bg-red-50 text-red-600','Huduma Imezima']}[k] || ['bg-gray-100 text-gray-500', k]);
+    // Mmiliki anaona kila kitu (jukwaa nzima); kikundi kinaona chenye chake tu
+    const rows = currentRole === 'admin' ? state.remindersLog : state.remindersLog.filter(r => r.groupId === currentGroupId);
     return `<div class="fade-in space-y-4">
         <div class="flex items-center justify-between">
-            <p class="text-sm text-gray-500">Ujumbe wa kumbusho (${state.remindersLog.length}) — simulation ya SMS</p>
+            <p class="text-sm text-gray-500">Ujumbe wa kumbusho (${rows.length}${currentRole === 'admin' ? ' — jukwaa nzima' : ''}) — simulation ya SMS</p>
             <span class="text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-500 font-medium">Gateway halisi: docs/payments-integration-spec.md</span>
         </div>
         <div class="bg-white rounded-xl border border-gray-100 overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide"><tr><th class="px-4 py-3 text-left">Wakati</th><th class="px-4 py-3 text-left">Mpokeaji</th><th class="px-4 py-3 text-left">Ujumbe</th><th class="px-4 py-3 text-left hidden sm:table-cell">Aina</th></tr></thead>
-                <tbody>${state.remindersLog.filter(r => r.groupId === currentGroupId).slice(0, 30).map(r => { const b = kindBadge(r.kind); return `<tr class="border-t border-gray-50">
+                <tbody>${rows.slice(0, 30).map(r => { const b = kindBadge(r.kind); return `<tr class="border-t border-gray-50">
                     <td class="px-4 py-3 font-mono text-[11px] text-gray-400 whitespace-nowrap">${r.time}</td>
                     <td class="px-4 py-3 text-[13px] whitespace-nowrap">${r.to}${r.phone ? '<br><span class="text-[10px] text-gray-400 font-mono">' + r.phone + '</span>' : ''}</td>
                     <td class="px-4 py-3 text-gray-600 text-[13px]">${r.msg}</td>
@@ -2921,7 +3059,7 @@ function approveJamiiClaim(ref, ok) {
 
 // ================= NOTIFICATIONS =================
 function renderNotifications() {
-    const feed = state.notifications.filter(n => n.groupId === currentGroupId);
+    const feed = state.notifications.filter(n => currentRole === 'admin' ? n.groupId === 'PLATFORM' : n.groupId === currentGroupId);
     const html = feed.map(n=>`
         <div class="bg-white rounded-xl p-4 border ${n.read?'border-gray-100':'border-emerald-200'} flex items-start gap-3">
             <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read?'bg-gray-300':'bg-emerald-500'}"></div>
@@ -3254,6 +3392,7 @@ function renderIntegrations() {
     const it = state.integrations || {};
     const pay = it.payment || {}, sms = it.sms || {}, wa = it.whatsapp || {};
     const pr = state.settings.pricing || {};
+    const cfg = platformCfg();
     const mask = v => v ? String(v).slice(0, 4) + '••••••••' + String(v).slice(-4) : '';
     const customWrap = (kind, cfg) => `<div id="it-${kind}-custom" class="grid sm:grid-cols-2 gap-3 mt-3 ${cfg.provider === 'Custom' ? '' : 'hidden'}">
         <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Jina la Provider</label>
@@ -3278,6 +3417,43 @@ function renderIntegrations() {
                 <input id="price-institution" type="number" min="1" value="${pr.institution || 400}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
             </div>
             <button onclick="savePricing()" class="mt-3 bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-gray-800 transition">Hifadhi Bei</button>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm mb-1">⚙️ Mipangilio ya Jukwaa (Backend)</h3>
+            <p class="text-[11px] text-gray-400 mb-3">Sheria za biashara ya VOS zinazotumika kwa vikundi vyote — majaribio, rehema, punguzo na siku za kumbusho la usajili.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Majaribio (siku)</label>
+                <input id="pcfg-trial" type="number" min="1" value="${cfg.trialDays}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Rehema (siku)</label>
+                <input id="pcfg-grace" type="number" min="0" value="${cfg.graceDays}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Punguzo Miezi 6 (%)</label>
+                <input id="pcfg-disc6" type="number" min="0" max="90" value="${cfg.disc6Pct}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Punguzo Miezi 12 (%)</label>
+                <input id="pcfg-disc12" type="number" min="0" max="90" value="${cfg.disc12Pct}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Kumbusha Usajili (siku kabla)</label>
+                <input id="pcfg-subremind" type="number" min="1" value="${cfg.subRemindDays}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            </div>
+            <button onclick="savePlatformCfg()" class="mt-3 bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-gray-800 transition">Hifadhi Mipangilio</button>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-purple-200">
+            <h3 class="font-semibold text-gray-900 text-sm mb-1">📣 Tuma Ujumbe (Broadcast)</h3>
+            <p class="text-[11px] text-gray-400 mb-3">Ujumbe wa mmiliki kwa wanachama wote waliosajiliwa au kwa viongozi tu (Mwenyekiti, Mhasibu, Katibu, Mkaguzi na Manibu). Unaonekana kwenye SMS Outbox na mfumo wa arifa.</p>
+            <textarea id="bc-msg" rows="3" placeholder="Mf: VICOBA OS itafanya matengenezo Jumamosi asubuhi..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+            <div class="grid sm:grid-cols-2 gap-3 mt-3 text-sm">
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Wapokeaji</label>
+                <select id="bc-audience" onchange="updateBroadcastCount()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="members">Wanachama Wote (vikundi vyote)</option>
+                    <option value="leaders">Viongozi Wote (vikundi vyote)</option>
+                    <option value="group">Kikundi Kimoja — kila mtu</option>
+                    <option value="group-leaders">Viongozi wa Kikundi Kimoja</option>
+                </select></div>
+                <div id="bc-group-wrap" class="hidden"><label class="text-[11px] text-gray-500 uppercase block mb-1">Kikundi</label>
+                <select id="bc-group" onchange="updateBroadcastCount()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${state.groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('')}</select></div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 mt-3">
+                <button onclick="sendBroadcast()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-purple-700 transition">📤 Tuma Ujumbe</button>
+                <p id="bc-count" class="text-[11px] text-gray-400">Wapokeaji: 0</p>
+            </div>
         </div>
         <div class="bg-white rounded-xl p-5 border border-gray-100">
             <h3 class="font-semibold text-gray-900 text-sm mb-3">💰 Malipo (Payment Gateway)</h3>
@@ -3350,6 +3526,59 @@ function saveIntegrations() {
     renderSection();
 }
 function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function savePlatformCfg() {
+    const nums = {
+        trialDays: Number(val('pcfg-trial')), graceDays: Number(val('pcfg-grace')),
+        disc6Pct: Number(val('pcfg-disc6')), disc12Pct: Number(val('pcfg-disc12')), subRemindDays: Number(val('pcfg-subremind'))
+    };
+    if (!(nums.trialDays > 0) || !(nums.graceDays >= 0) || !(nums.subRemindDays > 0) ||
+        !(nums.disc6Pct >= 0) || !(nums.disc12Pct >= 0) || nums.disc6Pct > 90 || nums.disc12Pct > 90) {
+        notify('Mipangilio si sahihi', 'Weka namba sahihi (punguzo 0–90%)'); return;
+    }
+    state.settings.platform = nums;
+    addAudit('Amebadilisha mipangilio ya jukwaa — majaribio ' + nums.trialDays + 's, rehema ' + nums.graceDays + 's, punguzo ' + nums.disc6Pct + '%/' + nums.disc12Pct + '%');
+    notify('⚙️ Mipangilio ya jukwaa yamehifadhiwa', 'Majaribio ' + nums.trialDays + 's • Rehema ' + nums.graceDays + 's • Punguzo ' + nums.disc6Pct + '% na ' + nums.disc12Pct + '%');
+    save();
+    renderPublicPricing();
+    renderSection();
+}
+
+// ---- Broadcast (ujumbe wa mmiliki) ----
+const LEADER_ROLES = ['chairperson', 'treasurer', 'secretary', 'auditor', 'vice-chairperson', 'vice-secretary', 'vice-treasurer'];
+function broadcastRecipients() {
+    const aud = val('bc-audience') || 'members';
+    const gid = val('bc-group');
+    const wrap = document.getElementById('bc-group-wrap');
+    if (wrap) wrap.classList.toggle('hidden', aud.indexOf('group') !== 0);
+    let list = state.members;
+    if (aud === 'leaders') list = list.filter(m => LEADER_ROLES.indexOf(m.role) > -1);
+    if (aud === 'group') list = list.filter(m => m.groupId === gid);
+    if (aud === 'group-leaders') list = list.filter(m => m.groupId === gid && LEADER_ROLES.indexOf(m.role) > -1);
+    return list;
+}
+function updateBroadcastCount() {
+    const el = document.getElementById('bc-count');
+    if (el) el.textContent = 'Wapokeaji: ' + broadcastRecipients().length;
+}
+function sendBroadcast() {
+    const msg = val('bc-msg');
+    const list = broadcastRecipients();
+    const aud = val('bc-audience') || 'members';
+    if (msg.length < 3) { notify('Ujumbe mfupi sana', 'Andika ujumbe wako kwanza'); return; }
+    if (!list.length) { notify('Hakuna wapokeaji', 'Chagua wapokeaji sahihi'); return; }
+    const iso = todayISO(), stamp = nowStamp();
+    const audLabel = {members: 'Wanachama wote', leaders: 'Viongozi wote', group: 'kikundi ' + ((groupById(val('bc-group')) || {}).name || ''), 'group-leaders': 'viongozi ' + ((groupById(val('bc-group')) || {}).name || '')}[aud];
+    const batch = 'BC-' + Date.now().toString(36).toUpperCase();
+    list.forEach(m => {
+        state.remindersLog.unshift({id: batch + '-' + m.id, to: m.name, phone: m.phone, msg, date: iso, time: stamp, kind: 'broadcast', groupId: m.groupId || 'G1'});
+    });
+    state.remindersLog = state.remindersLog.slice(0, 500);
+    addAudit('Amemtumia ujumbe wa broadcast — ' + audLabel + ' (' + list.length + ' wapokeaji)');
+    notify('📣 Ujumbe umetumwa', list.length + ' wapokeaji — ' + audLabel, 'PLATFORM');
+    save();
+    navigateTo('outbox');
+}
 
 function resetDemo() {
     if (!confirm('Rudisha data yote ya awali? Shughuli zote zilizorekodiwa zitafutika.')) return;

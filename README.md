@@ -96,11 +96,28 @@ extra SMS sold as bundles (TSh 5,000 ≈ 200 SMS). Unpaid after the trial plus a
 blocked behind a "Lipa Usajili" prompt (officers can pay from the billing card
 in Settings; the Super Admin platform is never gated).
 
-## Super Admin: gateways & pricing
+## Super Admin: the VOS business cockpit (owner only)
 
-Owner-only panel (no group can access it) to connect the platform's
-integrations and set subscription prices:
+The Super Admin account (+255700000001) is a group-less platform workspace — it
+never enters a group and no group can reach it. It now runs VICOBA OS as a
+business:
 
+- **Business dashboard** — total groups registered, total members registered,
+  subscription revenue, and the split: groups paid / on trial / on grace /
+  expired, plus the all-groups table and billing history.
+- **System Health (🩺)** — live checks of Supabase REST + Auth (with latency),
+  the GitHub repo (latest commit, open issues) and the GitHub Pages site, with
+  a "Kagua Sasa" button and a 10-minute auto-throttle. Any service down fires
+  a platform notification + an SMS-outbox alert to the owner (deduped hourly).
+  Supabase plan/quota usage itself lives in the Supabase console.
+- **Broadcast (📣)** — send a text to all registered members, all leaders
+  (Mwenyekiti/Mhasibu/Katibu/Mkaguzi/Naibu), or one group's members/leaders;
+  messages land in the SMS Outbox ready for a real gateway.
+- **Backend settings (⚙️)** — trial days, grace days, 6/12-month discounts and
+  the subscription-reminder lead time are editable and apply platform-wide.
+- **Subscription auto-reminders** — leaders of groups whose trial is ending,
+  in grace, or expired get an automatic SMS with the due amount
+  (Mipangilio → Lipa Usajili).
 - **Payment gateway** — Selcom, **PalmPesa**, **Snippe**, Flutterwave, DPO,
   AzamPay, or **any custom provider** (choose "Nyingine (Desturi)" and enter
   the provider name + API base URL + key/secret).
@@ -109,6 +126,17 @@ integrations and set subscription prices:
 - **WhatsApp API** — WhatsApp Cloud API, Twilio, or custom.
 - **Prices** — the three subscription tier prices, editable and applied
   platform-wide immediately.
+- Platform-wide SMS outbox and audit log.
+
+## Leaders are members too
+
+Mwenyekiti, Mhasibu, Katibu and Mkaguzi oversee administration, but they
+participate in the group's finances exactly like every member — contributions,
+shares, loans, fines, interest and estimates. Every leader's sidebar now has
+**Dashibodi Yangu / Akiba Yangu / Mkopo Wangu** (their personal member
+dashboard) alongside the management dashboard, and the members lists
+(Wanachama / Wanachama Wote) show a **Nafasi** chip identifying who is
+Mwenyekiti, Mhasibu, Katibu, Mkaguzi or Mjumbe.
 
 ## Demo sign-ins (phone + PIN `123456`)
 
