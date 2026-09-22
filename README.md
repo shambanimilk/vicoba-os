@@ -36,6 +36,21 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
   (simulated SMS outbox).
 - **PDF reports**, **audit log**, **loan estimate & contribution-trend cards** on the
   member dashboard.
+- **New hero & theme** — the landing page matches the "Vikoba OS hero section" design
+  (navy→blue gradient, dot pattern, sparkles, orange CTAs, the 3D illustration), with a
+  typing-and-deleting animation cycling **ViCOBA ↔ Kikoba** in the headline; the app
+  sidebar uses the same gradient.
+- **External loans (Mikopo ya Nje)** — the Mwenyekiti initiates a request with the
+  **agreed interest rate and months of payment**, from **Super Admin (VOS)**, a
+  **bank**, or **another group on VOS**. Members must pass it with **>70% of all
+  votes**; then the lender decides (VOS requests are approved in the Super Admin
+  panel, bank disbursement is confirmed by the group's leaders, group-to-group
+  requests by the lending group's officers). Active external debt shows on the group
+  dashboard ("Deni la Nje"), repayments are recorded as expenses, and leaders get a
+  monthly payment reminder.
+- **Member loans with agreed term** — the loan application form includes
+  **Miezi ya Malipo** (months of payment, 1–36, with a live monthly-payment hint);
+  the approved loan's due date follows the agreed months (was hardcoded 6).
 
 ## Group constitution (rules)
 

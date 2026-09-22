@@ -16,9 +16,10 @@
             --charcoal: #111827;
         }
         .sidebar-link { transition: all 0.15s; border-radius: 8px; }
-        .sidebar-link:hover { background: #ecfdf5; color: #059669; }
-        .sidebar-link.active { background: #059669; color: #fff; }
+        .sidebar-link:hover { background: rgba(255,255,255,0.10); color: #fff; }
+        .sidebar-link.active { background: #1f6fe0; color: #fff; }
         .sidebar-link.active i { color: #fff; }
+        .sidebar-gradient { background: linear-gradient(160deg, #0a1f44 0%, #0d2a5c 40%, #1258c8 78%, #1f6fe0 100%); }
         .card-hover { transition: transform 0.15s, box-shadow 0.15s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
         .fade-in { animation: fadeIn 0.25s ease; }
@@ -31,7 +32,13 @@
         .stat-card-blue { border-left-color: #2563eb; }
         .stat-card-red { border-left-color: #dc2626; }
         .stat-card-purple { border-left-color: #7c3aed; }
-        .gradient-hero { background: linear-gradient(135deg, #062e1b 0%, #0d4a2e 50%, #065f46 100%); }
+        /* Hero — kama "Vikoba OS hero section" (navy → bright blue, dots, sparkles) */
+        .gradient-hero { background: linear-gradient(135deg, #0a1f44 0%, #0d2a5c 35%, #1258c8 72%, #1f6fe0 100%); }
+        .hero-dots { background-image: radial-gradient(rgba(255,255,255,0.16) 1.5px, transparent 1.5px); background-size: 22px 22px; }
+        .hero-sparkle { position: absolute; color: #ffd76a; animation: twinkle 2.6s ease-in-out infinite; text-shadow: 0 0 8px rgba(255,215,106,0.65); }
+        @keyframes twinkle { 0%,100%{opacity:0.15;transform:scale(0.7)} 50%{opacity:1;transform:scale(1.15)} }
+        .typed-cursor { display: inline-block; width: 3px; background: #f4772e; margin-left: 2px; animation: blink 0.85s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
         .glass-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); }
         section[id] { scroll-margin-top: 72px; }
     </style>
@@ -52,36 +59,43 @@
      </div>
     </nav><!-- Hero -->
     <section class="gradient-hero relative overflow-hidden">
-     <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, rgba(5,150,105,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(217,119,6,0.2) 0%, transparent 40%);"></div>
-     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24 lg:py-28 relative z-10">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-       <div>
-        <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur text-emerald-200 text-xs font-medium px-3.5 py-1.5 rounded-full mb-6 border border-white/10"><span>🇹🇿</span> Kwa VICOBA, Kikoba, SACCOS &amp; MFIs • Changia kutoka mtandao wowote
+      <div class="absolute inset-0 hero-dots opacity-25" style="mask-image: linear-gradient(115deg, transparent 10%, rgba(0,0,0,.9) 45%, rgba(0,0,0,.5) 100%); -webkit-mask-image: linear-gradient(115deg, transparent 10%, rgba(0,0,0,.9) 45%, rgba(0,0,0,.5) 100%);"></div>
+      <div class="absolute -top-24 right-[8%] w-[420px] h-[420px] rounded-full bg-[#3f83f1]/25 blur-3xl"></div>
+      <div class="absolute bottom-[-140px] left-[-80px] w-[380px] h-[380px] rounded-full bg-[#7c5cff]/15 blur-3xl"></div>
+      <span class="hero-sparkle text-lg" style="top:18%;left:44%;animation-delay:.2s">✦</span>
+      <span class="hero-sparkle text-sm" style="top:64%;left:6%;animation-delay:1.1s">✦</span>
+      <span class="hero-sparkle text-base" style="top:24%;right:34%;animation-delay:1.9s">✦</span>
+      <span class="hero-sparkle text-xs" style="bottom:20%;right:44%;animation-delay:.7s">✦</span>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-20 lg:py-24 relative z-10">
+        <div class="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-8 items-center">
+          <div>
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur text-white text-xs font-medium px-3.5 py-1.5 rounded-full mb-6 border border-white/20"><span class="text-[#ffd76a]">✦</span> New: VICOBA, Bima, NaCOOP &amp; PESA — huduma mpya zinakuja
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-[3.1rem] font-extrabold text-white leading-[1.08] mb-5">Mfumo Kamili wa<br>Kifedha kwa <span class="text-[#f4772e]"><span id="hero-typed">ViCOBA</span><span class="typed-cursor" style="height:0.82em;vertical-align:-0.06em"></span></span></h1>
+            <p class="text-base sm:text-lg text-blue-100/85 mb-8 max-w-lg">Simamia michango, mikopo, gawio na ripoti za kikundi chako — kwa urahisi, uwezo na udhibiti. Teknolojia ya kisasa kwa jamii za kifedha Tanzania.</p>
+            <div class="flex flex-wrap gap-3 mb-10"><button onclick="showPage('login')" class="text-white px-6 py-3 rounded-lg font-bold text-sm transition hover:brightness-110 shadow-lg shadow-orange-500/25" style="background:linear-gradient(135deg,#f5932f 0%,#f4772e 100%)">Anza Sasa — Bure</button> <button onclick="demoLogin('member')" class="border border-white/60 text-white px-6 py-3 rounded-lg font-medium text-sm hover:bg-white/10 transition-colors">▶ Angalia Demo</button>
+            </div>
+            <div class="grid grid-cols-3 gap-4 max-w-sm">
+              <div class="text-center">
+                <p class="text-2xl font-bold text-white">2,400+</p>
+                <p class="text-xs text-blue-200/70">Vikundi</p>
+              </div>
+              <div class="text-center">
+                <p class="text-2xl font-bold text-white">85K+</p>
+                <p class="text-xs text-blue-200/70">Watumiaji</p>
+              </div>
+              <div class="text-center">
+                <p class="text-2xl font-bold text-white">4.2B</p>
+                <p class="text-xs text-blue-200/70">TSh Inayosimamiwa</p>
+              </div>
+            </div>
+          </div>
+          <div class="relative hidden lg:block h-[440px] xl:h-[500px]">
+            <div class="absolute right-[5%] top-1/2 -translate-y-1/2 w-[440px] h-[440px] rounded-full bg-[#3f83f1]/25 blur-3xl"></div>
+            <img src="hero-illustration.png" alt="Watu wanaposimamia fedha za kikundi kwa teknolojia ya kisasa" class="absolute right-0 top-0 h-full w-auto max-w-none select-none pointer-events-none" draggable="false">
+          </div>
         </div>
-        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.1] mb-5">Mfumo Kamili wa Kifedha kwa VICOBA na Kikoba</h1>
-        <p class="text-base sm:text-lg text-emerald-100/80 mb-8 max-w-lg">Simamia akiba, mikopo, gawio, na ripoti za kikundi chako — kwa urahisi, uwazi, na usalama. Teknolojia ya kisasa kwa jamii za kifedha Tanzania.</p>
-        <div class="flex flex-wrap gap-3 mb-10"><button onclick="showPage('login')" class="bg-white text-emerald-800 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-emerald-50 transition-colors shadow-lg">Anza Sasa — Bure</button> <button onclick="demoLogin('member')" class="glass-card text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-white/15 transition-colors">▶ Angalia Demo</button>
-        </div>
-        <div class="grid grid-cols-3 gap-4 max-w-sm">
-         <div class="text-center">
-          <p class="text-2xl font-bold text-white">2,400+</p>
-          <p class="text-xs text-emerald-200/70">Vikundi</p>
-         </div>
-         <div class="text-center">
-          <p class="text-2xl font-bold text-white">85K+</p>
-          <p class="text-xs text-emerald-200/70">Wanachama</p>
-         </div>
-         <div class="text-center">
-          <p class="text-2xl font-bold text-white">4.2B</p>
-          <p class="text-xs text-emerald-200/70">TSh Inayosimamiwa</p>
-         </div>
-        </div>
-       </div>
-       <div class="relative hidden lg:block">
-        <div class="absolute -inset-4 bg-gradient-to-br from-emerald-400/20 to-amber-400/10 rounded-3xl blur-2xl"></div><img class="relative w-full rounded-2xl shadow-2xl" loading="lazy" src="https://images.pexels.com/photos/7433325/pexels-photo-7433325.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1280" alt="Mwanamke anayetumia simu yake kwa makini.">
-       </div>
       </div>
-     </div>
     </section><!-- Social proof images -->
     <section id="huduma" class="py-16 bg-white">
      <div class="max-w-7xl mx-auto px-4 sm:px-6">
@@ -239,15 +253,15 @@
    </div><!-- ========== DASHBOARD ========== -->
    <div id="page-dashboard" class="page-view hidden">
     <div class="flex min-h-screen"><!-- Sidebar (desktop) -->
-     <aside id="sidebar" class="w-60 bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-200 flex flex-col">
-      <div class="p-4 border-b border-gray-100 flex items-center gap-2.5 cursor-pointer select-none" onclick="goHome()" title="Nyumbani">
-       <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center"><span class="text-white font-bold text-xs">V</span>
-       </div><span class="font-bold text-gray-900 text-sm">VICOBA OS</span>
+     <aside id="sidebar" class="w-60 sidebar-gradient border-r border-white/10 fixed inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-200 flex flex-col">
+      <div class="p-4 border-b border-white/10 flex items-center gap-2.5 cursor-pointer select-none" onclick="goHome()" title="Nyumbani">
+       <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center"><span class="text-[#1258c8] font-bold text-xs">V</span>
+       </div><span class="font-bold text-white text-sm">VICOBA OS</span>
       </div>
       <nav class="flex-1 p-3 space-y-0.5 text-sm overflow-y-auto" id="sidebar-nav"></nav>
-      <div class="p-3 border-t border-gray-100">
-       <div class="flex items-center gap-2 text-xs text-gray-400 mb-2 px-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> <span id="sync-status">Synced • Offline-ready</span>
-       </div><button onclick="doLogout()" class="w-full text-left px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 flex items-center gap-2 text-sm font-medium transition"> <i data-lucide="log-out" style="width:15px;height:15px"></i> Toka </button>
+      <div class="p-3 border-t border-white/10">
+       <div class="flex items-center gap-2 text-xs text-blue-200/80 mb-2 px-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> <span id="sync-status">Synced • Offline-ready</span>
+       </div><button onclick="doLogout()" class="w-full text-left px-3 py-2 rounded-lg text-red-300 hover:bg-white/10 flex items-center gap-2 text-sm font-medium transition"> <i data-lucide="log-out" style="width:15px;height:15px"></i> Toka </button>
       </div>
      </aside><!-- Main -->
      <div class="flex-1 md:ml-60 pb-16 md:pb-0"><!-- Top bar -->
@@ -340,6 +354,10 @@ function defaultState() {
         ],
         elections: [],
         billing: [],
+        externalLoans: [
+            {id:'EX-001', groupId:'G2', source:'vos', amount:2000000, interestPct:8, months:12, purpose:'Kuongeza fedha za uwekezaji wa kikundi', by:'VI12GRM', date:'2026-09-15', votes:[{voter:'VI39HAO', vote:true}], status:'voting', balance:0, repayments:[]},
+        ],
+        extCounter: 1,
         systemStatus: {lastRun: null, services: []},
         integrations: {payment: {}, sms: {}, whatsapp: {}},
         rulesVersion: 1,
@@ -515,6 +533,8 @@ function loadState() {
     if (!Array.isArray(s.ruleProposals)) s.ruleProposals = [];
     if (!s.integrations) s.integrations = {payment: {}, sms: {}, whatsapp: {}};
     if (!Array.isArray(s.billing)) s.billing = [];
+    if (!Array.isArray(s.externalLoans)) s.externalLoans = [];
+    if (!s.extCounter) s.extCounter = 1;
     if (!s.settings.pricing || !s.settings.pricing.basic) s.settings.pricing = {basic: 500, business: 450, institution: 400};
     if (!s.settings.platform || !s.settings.platform.trialDays) s.settings.platform = {trialDays: 14, graceDays: 7, disc6Pct: 10, disc12Pct: 15, subRemindDays: 7};
     if (!s.systemStatus) s.systemStatus = {lastRun: null, services: []};
@@ -913,6 +933,28 @@ function goHome() {
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+// Hero: andika na kufuta maneno "ViCOBA" ↔ "Kikoba" (typing animation)
+function startHeroTyping() {
+    const el = document.getElementById('hero-typed');
+    if (!el) return;
+    const words = ['ViCOBA', 'Kikoba'];
+    let w = 0, i = words[0].length, del = true; // anza kwa kufuta neno la kwanza
+    (function tick() {
+        const word = words[w];
+        if (!del) {
+            i++;
+            el.textContent = word.slice(0, i);
+            if (i >= word.length) { del = true; setTimeout(tick, 1700); return; }
+            setTimeout(tick, 130);
+        } else {
+            i--;
+            el.textContent = word.slice(0, Math.max(0, i));
+            if (i <= 0) { del = false; w = (w + 1) % words.length; setTimeout(tick, 320); return; }
+            setTimeout(tick, 65);
+        }
+    })();
+}
+
 async function doPhoneLogin() {
     const err = document.getElementById('login-error');
     const show = m => { if (err) { err.textContent = m; err.classList.remove('hidden'); } };
@@ -991,6 +1033,7 @@ const navItems = {
     admin: [
         {icon:'layout-dashboard',label:'Dashibodi',section:'dashboard'},
         {icon:'users-round',label:'Vikundi (Jukwaa)',section:'groups'},
+        {icon:'landmark',label:'Mikopo ya Nje',section:'extloans'},
         {icon:'user',label:'Wanachama Wote',section:'members'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'plug',label:'API, Gateway & Bei',section:'integrations'},
@@ -1007,6 +1050,7 @@ const navItems = {
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'wallet',label:'Michango',section:'contributions'},
         {icon:'banknote',label:'Mikopo',section:'loans'},
+        {icon:'landmark',label:'Mikopo ya Nje',section:'extloans'},
         {icon:'check-circle',label:'Idhini',section:'approvals'},
         {icon:'user-check',label:'Miamvula',section:'consents'},
         {icon:'vote',label:'Uchaguzi',section:'elections'},
@@ -1020,6 +1064,7 @@ const navItems = {
         {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
         {icon:'wallet',label:'Michango',section:'contributions'},
         {icon:'banknote',label:'Mikopo',section:'loans'},
+        {icon:'landmark',label:'Mikopo ya Nje',section:'extloans'},
         {icon:'user-check',label:'Miamvula',section:'consents'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'receipt',label:'Malipo',section:'repayments'},
@@ -1033,6 +1078,7 @@ const navItems = {
         {icon:'smile',label:'Dashibodi Yangu',section:'member-dash'},
         {icon:'piggy-bank',label:'Akiba Yangu',section:'my-savings'},
         {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
+        {icon:'landmark',label:'Mikopo ya Nje',section:'extloans'},
         {icon:'users',label:'Wanachama',section:'members'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
         {icon:'calendar',label:'Mikutano',section:'meetings'},
@@ -1045,6 +1091,7 @@ const navItems = {
         {icon:'layout-dashboard',label:'Dashibodi Yangu',section:'dashboard'},
         {icon:'wallet',label:'Akiba Yangu',section:'my-savings'},
         {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
+        {icon:'landmark',label:'Mikopo ya Nje',section:'extloans'},
         {icon:'check-circle',label:'Miamvula',section:'consents'},
         {icon:'vote',label:'Uchaguzi',section:'elections'},
         {icon:'user-plus',label:'Maombi Uanachama',section:'memberapps'},
@@ -1056,6 +1103,7 @@ const navItems = {
         {icon:'smile',label:'Dashibodi Yangu',section:'member-dash'},
         {icon:'piggy-bank',label:'Akiba Yangu',section:'my-savings'},
         {icon:'banknote',label:'Mkopo Wangu',section:'my-loans'},
+        {icon:'landmark',label:'Mikopo ya Nje',section:'extloans'},
         {icon:'shield',label:'Ukaguzi',section:'audit'},
         {icon:'bar-chart-3',label:'Ripoti',section:'reports'},
         {icon:'alert-triangle',label:'Hatari',section:'risk'},
@@ -1072,7 +1120,7 @@ function buildSidebar() {
             {icon:'bell',label:'Arifa',section:'notifications'},
         ] : (navItems[currentRole] || navItems.member));
     nav.innerHTML = items.map(it => `
-        <button onclick="navigateTo('${it.section}')" class="sidebar-link w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-gray-600 text-[13px] font-medium ${currentSection===it.section?'active':''}">
+        <button onclick="navigateTo('${it.section}')" class="sidebar-link w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-white/75 text-[13px] font-medium ${currentSection===it.section?'active':''}">
             <i data-lucide="${it.icon}" style="width:16px;height:16px"></i> ${it.label}
         </button>
     `).join('');
@@ -1121,11 +1169,11 @@ function renderDashboard() {
 
 function renderSection() {
     const mc = document.getElementById('main-content');
-    const titles = {dashboard:'Dashibodi','member-dash':'Dashibodi Yangu',members:'Wanachama',contributions:'Michango',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API, Gateway & Bei (Super Admin)'};
+    const titles = {dashboard:'Dashibodi','member-dash':'Dashibodi Yangu',members:'Wanachama',contributions:'Michango',loans:'Mikopo',extloans:'Mikopo ya Nje',loans:'Mikopo','my-savings':'Akiba Yangu','my-loans':'Mkopo Wangu',groups:'Vikundi',approvals:'Idhini za Mikopo',meetings:'Mikutano',reports:'Ripoti',audit:'Kumbukumbu za Ukaguzi',social:'Mfuko wa Jamii',notifications:'Arifa',repayments:'Malipo ya Mikopo',accounting:'Hesabu',risk:'Hatari & Udanganyifu',settings:'Mipangilio',memberapps:'Maombi ya Uanachama',consents:'Miamvula Zangu (Udhamini)',outbox:'SMS Outbox (Simulation)',elections:'Uchaguzi wa Viongozi',integrations:'API, Gateway & Bei (Super Admin)'};
     document.getElementById('page-heading').textContent = titles[currentSection] || 'Dashibodi';
 
     // Super Admin (mmiliki) ana sehemu zake za jukwaa bila kikundi
-    const adminSections = ['dashboard','groups','members','memberapps','audit','integrations','notifications','outbox'];
+    const adminSections = ['dashboard','groups','members','memberapps','audit','integrations','notifications','outbox','extloans'];
     if (!currentGroupId && !(currentRole === 'admin' && adminSections.indexOf(currentSection) > -1) && ['dashboard','notifications','settings'].indexOf(currentSection) === -1) {
         mc.innerHTML = `<div class="fade-in bg-white rounded-xl p-8 border border-gray-100 text-center">
             <p class="text-4xl mb-3">🔒</p>
@@ -1146,6 +1194,7 @@ function renderSection() {
         audit: renderAudit, social: renderSocial, notifications: renderNotifications,
         repayments: renderRepayments, accounting: renderAccounting, risk: renderRisk, settings: renderSettings,
         memberapps: renderMemberApps, consents: renderConsents, outbox: renderOutbox,
+        extloans: renderExtLoans,
         elections: renderElections, integrations: () => currentRole === 'admin' ? renderIntegrations() : '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Sehemu ya Super Admin tu.</div>'
     };
     mc.innerHTML = (renderers[currentSection] || renderGroupDash)();
@@ -1360,6 +1409,7 @@ function renderGroupDash() {
             ${statCard('Mikopo Chelewa',overdue,'alert-triangle','red')}
             ${statCard('Faini & Adhabu',fmt(accounting().penalties),'gavel','amber')}
             ${statCard('Afya ya Fedha',health+'%','activity','emerald')}
+            ${extDebtOf(currentGroupId) > 0 ? statCard('Deni la Nje',fmt(extDebtOf(currentGroupId)),'landmark','red') : ''}
         </div>
         <div class="grid lg:grid-cols-2 gap-4">
             <div class="bg-white rounded-xl p-5 border border-gray-100">
@@ -2042,9 +2092,14 @@ function loanFormHtml(applicantId, cancelJs) {
     const opts = `<option value="">— Chagua —</option>` + others.map(m => `<option value="${m.id}">${m.name} — michango ${fmt(memberContribution(m))}</option>`).join('');
     return `
         <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Kiasi (${CUR.sym})</label>
-        <input id="loan-amount" type="number" value="300000" oninput="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        <input id="loan-amount" type="number" value="300000" oninput="updateLoanElig(); updateLoanMonthly()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
         <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Sababu</label>
         <select id="loan-reason" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"><option>Biashara</option><option>Elimu</option><option>Afya</option><option>Nyumba</option></select>
+        <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Miezi ya Malipo (kwa makubaliano)</label>
+        <div class="flex gap-2 mb-3">
+            <input id="loan-months" type="number" min="1" max="36" value="6" oninput="updateLoanMonthly()" class="w-24 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <div class="flex-1 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2.5 text-[11px] text-blue-700 flex items-center" id="loan-monthly-hint">—</div>
+        </div>
         <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mdhamini 1</label>
         <select id="loan-r1" onchange="updateLoanElig()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">${opts}</select>
         <label class="text-[11px] text-gray-500 uppercase tracking-wide block mb-1">Mdhamini 2</label>
@@ -2057,6 +2112,17 @@ function loanFormHtml(applicantId, cancelJs) {
 
 function loanRefereeIds() {
     return ['loan-r1', 'loan-r2', 'loan-r3'].map(id => document.getElementById(id) ? document.getElementById(id).value : '').filter(Boolean);
+}
+// Live hint ya malipo kwa mwezi kulingana na miezi iliyochaguliwa
+function updateLoanMonthly() {
+    const hint = document.getElementById('loan-monthly-hint');
+    if (!hint) return;
+    const amount = parseInt(document.getElementById('loan-amount').value, 10) || 0;
+    const months = parseInt(document.getElementById('loan-months').value, 10) || 0;
+    const rate = rulesOf(currentGroup()).interestPct;
+    hint.textContent = months > 0
+        ? 'Riba ' + rate + '% → jumla ' + fmt(Math.round(amount * (1 + rate / 100))) + ' • ~' + fmt(Math.round(amount * (1 + rate / 100) / months)) + '/mwezi'
+        : '—';
 }
 
 function updateLoanElig() {
@@ -2091,11 +2157,13 @@ function showLoanModal() {
     const amountEl = document.getElementById('loan-amount');
     amountEl.dataset.applicant = m.id;
     updateLoanElig();
+    updateLoanMonthly();
 }
 
 function submitLoanApplication(mid) {
     const amount = parseInt(document.getElementById('loan-amount').value, 10) || 0;
     const reason = document.getElementById('loan-reason').value;
+    const months = Math.min(36, Math.max(1, parseInt((document.getElementById('loan-months') || {}).value, 10) || 6));
     const refs = loanRefereeIds();
     const distinct = refs.length === 3 && new Set(refs).size === 3 && !refs.includes(mid);
     const {cap} = loanCapFor(mid, refs);
@@ -2106,7 +2174,7 @@ function submitLoanApplication(mid) {
     const ref = genTxId();
     const score = Math.min(100, Math.round(40 + m.shares * 2 + m.savings / 100000));
     state.loanApplications.unshift({
-        ref, memberId: mid, amount, reason, date: todayISO(), shares: m.shares, score,
+        ref, memberId: mid, amount, reason, months, date: todayISO(), shares: m.shares, score,
         referees: refs.map(rid => ({memberId: rid, contribution: memberContribution(memberById(rid)), consent: 'pending'})),
         status: 'awaiting_referees'
     });
@@ -2124,6 +2192,7 @@ function submitLoanApplication(mid) {
             <p><span class="text-gray-500">Ref:</span> <span class="font-mono">${ref}</span></p>
             <p><span class="text-gray-500">Mwombaji:</span> ${m.name}</p>
             <p><span class="text-gray-500">Kiasi:</span> ${fmt(amount)} • Sababu: ${reason}</p>
+            <p><span class="text-gray-500">Miezi ya malipo:</span> ${months} (makubaliano)</p>
             <p><span class="text-gray-500">Wadhamini:</span></p>
             ${refs.map(rid => `<p class="pl-3">• ${memberName(rid)} — <span class="text-amber-600 font-medium">inasubiri makubaliano</span></p>`).join('')}
         </div>
@@ -2210,7 +2279,7 @@ function renderApprovals() {
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <p class="font-medium text-gray-900 text-sm">${memberName(l.memberId)} — Mkopo ${fmt(l.amount)} <span class="text-[11px] text-gray-400 font-normal">• ${l.reason || '—'}</span></p>
-                    <p class="text-[11px] text-gray-500 mt-0.5">Ref: <span class="font-mono">${l.ref}</span> • ${fmtDate(l.date)} • Hisa: ${l.shares} • Alama: ${l.score}/100</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Ref: <span class="font-mono">${l.ref}</span> • ${fmtDate(l.date)} • Hisa: ${l.shares} • Alama: ${l.score}/100 • Miezi: ${l.months || 6}</p>
                     <p class="text-[11px] text-emerald-700 mt-1">${l.referees.map(r => '✓ ' + memberName(r.memberId)).join(' &nbsp; ')}</p>
                 </div>
                 <div class="flex gap-2 flex-shrink-0">
@@ -2318,15 +2387,15 @@ function approveLoan(ref, ok) {
     if (!app) return;
     if (ok) {
         app.status = 'approved';
-        const d = new Date(); d.setMonth(d.getMonth() + 6);
+        const d = new Date(); d.setMonth(d.getMonth() + (app.months || 6));
         const loanId = nextLoanId();
-        state.loans.unshift({id: loanId, memberId: app.memberId, amount: app.amount, balance: app.amount, rate: state.settings.rate, due: d.toISOString().slice(0,10),
+        state.loans.unshift({id: loanId, memberId: app.memberId, amount: app.amount, balance: app.amount, rate: state.settings.rate, due: d.toISOString().slice(0,10), months: app.months || 6,
             referees: app.referees.map(r => ({memberId: r.memberId, contribution: r.contribution}))});
         const member = memberById(app.memberId);
         if (member) member.loan += app.amount;
         recordDisbursement(loanId, app.memberId, app.amount);
-        addAudit('Ameidhinisha mkopo ' + loanId + ' — ' + memberName(app.memberId) + ' ' + fmt(app.amount));
-        notify('Mkopo umeidhinishwa', memberName(app.memberId) + ' — ' + fmt(app.amount) + ' (' + loanId + ')');
+        addAudit('Ameidhinisha mkopo ' + loanId + ' — ' + memberName(app.memberId) + ' ' + fmt(app.amount) + ' (miezi ' + (app.months || 6) + ')');
+        notify('Mkopo umeidhinishwa', memberName(app.memberId) + ' — ' + fmt(app.amount) + ' (' + loanId + ') • miezi ' + (app.months || 6));
     } else {
         app.status = 'rejected';
         addAudit('Amekataa ombi la mkopo ' + ref + ' — ' + memberName(app.memberId));
@@ -2661,11 +2730,20 @@ function runReminders() {
                 '💳 ' + g.name + ': ' + tone + '. Lipa usajili (' + n + ' × ' + fmt(subTier(n).perMember) + ' = ' + due + '/mwezi) kwenye Mipangilio → Lipa Usajili.', 'subscription');
         });
     });
+    // External-loan monthly nudge: remind borrowing group's leaders of the monthly payment
+    state.externalLoans.filter(x => x.status === 'active').forEach(x => {
+        const ym = today.getFullYear() + '-' + pad2(today.getMonth() + 1);
+        const t = extTotals(x);
+        state.members.filter(m => m.groupId === x.groupId && ['chairperson', 'treasurer'].indexOf(m.role) > -1).forEach(off => {
+            push('EXT-' + x.id + '-' + ym, off.id,
+                '🏦 Mkopo wa nje ' + x.id + ' (' + extSourceLabel(x) + '): malipo ya mwezi huu ' + fmt(t.monthly) + '. Salio: ' + fmt(x.balance) + '.', 'external-loan');
+        });
+    });
     if (changed) save();
 }
 
 function renderOutbox() {
-    const kindBadge = k => ({'loan-due':['bg-amber-50 text-amber-700','Kumbusho la Mkopo'],'overdue':['bg-red-50 text-red-600','Chelewa + Adhabu'],'contribution':['bg-emerald-50 text-emerald-700','Kumbusho la Mchango'],'referee-risk':['bg-red-50 text-red-600','Hatari ya Udhamini'],'subscription':['bg-blue-50 text-blue-700','Kumbusho la Usajili'],'broadcast':['bg-purple-50 text-purple-700','Ujumbe wa Mmiliki'],'system-alert':['bg-red-50 text-red-600','Huduma Imezima']}[k] || ['bg-gray-100 text-gray-500', k]);
+    const kindBadge = k => ({'loan-due':['bg-amber-50 text-amber-700','Kumbusho la Mkopo'],'overdue':['bg-red-50 text-red-600','Chelewa + Adhabu'],'contribution':['bg-emerald-50 text-emerald-700','Kumbusho la Mchango'],'referee-risk':['bg-red-50 text-red-600','Hatari ya Udhamini'],'subscription':['bg-blue-50 text-blue-700','Kumbusho la Usajili'],'broadcast':['bg-purple-50 text-purple-700','Ujumbe wa Mmiliki'],'system-alert':['bg-red-50 text-red-600','Huduma Imezima'],'external-loan':['bg-sky-50 text-sky-700','Mkopo wa Nje']}[k] || ['bg-gray-100 text-gray-500', k]);
     // Mmiliki anaona kila kitu (jukwaa nzima); kikundi kinaona chenye chake tu
     const rows = currentRole === 'admin' ? state.remindersLog : state.remindersLog.filter(r => r.groupId === currentGroupId);
     return `<div class="fade-in space-y-4">
@@ -2686,6 +2764,243 @@ function renderOutbox() {
         </div>
     </div>`;
 }
+
+// ================= EXTERNAL LOANS (Mikopo ya Nje) =================
+// Mwenyekiti TU anaza ombi — likiwa na riba na miezi iliyokubaliwa — na wanachama
+// hupiga kura (zaidi ya 70%) kabla ya kupelekwa kwa mdhamini: Super Admin (VOS),
+// Benki, au Kikundi kingine kwenye VOS.
+function extSourceLabel(x) {
+    if (x.source === 'vos') return 'Super Admin (VOS)';
+    if (x.source === 'bank') return 'Benki: ' + (x.bankName || '—');
+    return 'Kikundi: ' + ((groupById(x.sourceGroupId) || {}).name || '—');
+}
+function extTotals(x) { const total = Math.round(x.amount * (1 + x.interestPct / 100)); return {total, monthly: Math.round(total / x.months)}; }
+function extChip(x) {
+    const map = {
+        voting: ['bg-blue-50 text-blue-700', 'Kura inaendelea'],
+        pending_lender: ['bg-amber-50 text-amber-800', 'Inasubiri Mdhamini'],
+        active: ['bg-emerald-50 text-emerald-700', 'Hai — inalipwa'],
+        repaid: ['bg-gray-100 text-gray-500', 'Imelipwa kamili'],
+        declined: ['bg-red-50 text-red-700', 'Imekataliwa']
+    };
+    const c = map[x.status] || map.voting;
+    return `<span class="text-[11px] px-2 py-0.5 rounded-full font-medium ${c[0]}">${c[1]}</span>`;
+}
+function extLoanCard(x, ctx) {
+    const t = extTotals(x);
+    const gms = state.members.filter(m => m.groupId === x.groupId);
+    const need = Math.floor(gms.length * 0.7) + 1;
+    const yes = x.votes.filter(v => v.vote).length;
+    const myVote = x.votes.find(v => v.voter === currentMemberId);
+    const repaidTotal = (x.repayments || []).reduce((s, r) => s + r.amount, 0);
+    const isBorrowerOfficer = ['chairperson', 'treasurer'].indexOf(currentRole) > -1 && x.groupId === currentGroupId;
+    const isLenderOfficer = x.source === 'group' && x.sourceGroupId === currentGroupId && isOfficer();
+    return `<div class="bg-white rounded-xl p-5 border border-gray-100 border-l-4 ${x.status === 'active' ? 'border-l-emerald-500' : x.status === 'declined' ? 'border-l-red-400' : 'border-l-blue-400'}">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div><p class="font-semibold text-gray-900 text-sm">🏦 Mkopo wa Nje — ${extSourceLabel(x)}</p>
+            <p class="text-[11px] text-gray-500 mt-0.5"><span class="font-mono">${x.id}</span> • ${fmt(x.amount)} • riba ${x.interestPct}% • miezi ${x.months} • alipoanza: ${memberName(x.by)} • ${fmtDate(x.date)}</p></div>
+            ${extChip(x)}
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[12px] mb-3">
+            <div><p class="text-gray-400">Jumla ya Kulipa</p><p class="font-semibold text-gray-900">${fmt(t.total)}</p></div>
+            <div><p class="text-gray-400">Malipo/mwezi</p><p class="font-semibold text-gray-900">${fmt(t.monthly)}</p></div>
+            <div><p class="text-gray-400">Salio</p><p class="font-semibold ${x.status === 'active' ? 'text-red-600' : 'text-gray-900'}">${x.status === 'active' ? fmt(x.balance) : '—'}</p></div>
+            <div><p class="text-gray-400">Kusudia</p><p class="font-semibold text-gray-900 truncate" title="${x.purpose || ''}">${x.purpose || '—'}</p></div>
+        </div>
+        ${x.status === 'voting' ? `<div class="border-t border-gray-50 pt-3">
+            <p class="text-[12px] text-gray-600 mb-2">Kura ya wanachama: <strong>Ndiyo ${yes}/${need}</strong> (inahitaji zaidi ya 70% ya wanachama wote — ${gms.length}) ${myVote ? '<span class="text-[11px] text-emerald-600 font-medium">✓ umepiga kura (' + (myVote.vote ? 'Ndiyo' : 'Hapana') + ')</span>' : ''}</p>
+            ${myVote ? '' : `<div class="flex gap-2"><button onclick="voteExtLoan('${x.id}',true)" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition">Ndiyo, Toa Ombi</button><button onclick="voteExtLoan('${x.id}',false)" class="border border-red-200 text-red-600 px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-red-50 transition">Hapana</button></div>`}
+        </div>` : ''}
+        ${x.status === 'pending_lender' && x.source === 'bank' && isBorrowerOfficer ? `<div class="border-t border-gray-50 pt-3"><button onclick="confirmBankExtLoan('${x.id}')" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition">✓ Thibitisha — Imetolewa na Benki</button><p class="text-[10px] text-gray-400 mt-1.5">Baada ya kura kufaulu, thibitisha pale benki inapotuma pesa.</p></div>` : ''}
+        ${x.status === 'pending_lender' && x.source === 'group' && isLenderOfficer ? `<div class="border-t border-gray-50 pt-3 bg-amber-50/50 rounded-lg px-3 py-2">
+            <p class="text-[12px] text-gray-700 mb-2 font-medium">Kikundi chenu kimedhamini ombi hili — amua:</p>
+            <div class="flex gap-2"><button onclick="decideExtLoan('${x.id}',true)" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition">Kubali & Toa</button><button onclick="decideExtLoan('${x.id}',false)" class="border border-red-200 text-red-600 px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-red-50 transition">Kataa</button></div>
+        </div>` : ''}
+        ${x.status === 'active' ? `<div class="border-t border-gray-50 pt-3">
+            <div class="h-2 bg-gray-100 rounded-full overflow-hidden mb-2"><div class="h-2 bg-emerald-500 rounded-full" style="width:${Math.min(100, Math.round(100 * repaidTotal / t.total))}%"></div></div>
+            <p class="text-[11px] text-gray-500 mb-2">Amelipa ${fmt(repaidTotal)} ya ${fmt(t.total)} (${Math.round(100 * repaidTotal / t.total)}%)${(x.repayments || []).length ? ' • malipo ya mwisho ' + fmtDate(x.repayments[0].date) : ''}</p>
+            ${isBorrowerOfficer ? `<button onclick="showExtRepayModal('${x.id}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition">💳 Rekodi Malipo</button>` : ''}
+        </div>` : ''}
+    </div>`;
+}
+function renderExtLoans() {
+    if (currentRole === 'admin') {
+        const rows = state.externalLoans;
+        const pending = rows.filter(x => x.source === 'vos' && x.status === 'pending_lender');
+        return `<div class="fade-in space-y-4">
+            <p class="text-sm text-gray-500">Mikopo ya nje yote ya vikundi (${rows.length}) — maombo yanayomlenga <strong>Super Admin (VOS)</strong> yanakubaliwa hapa.</p>
+            ${pending.length ? `<div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-[12px] text-amber-900">⚠️ Maombi ${pending.length} ya VOS yanakusubiri uamuzi wako.</div>` : ''}
+            <div class="space-y-3">${rows.map(x => {
+                const t = extTotals(x);
+                const act = x.source === 'vos' && x.status === 'pending_lender'
+                    ? `<div class="border-t border-gray-50 pt-3 flex gap-2"><button onclick="decideExtLoan('${x.id}',true)" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition">Kubali & Toa</button><button onclick="decideExtLoan('${x.id}',false)" class="border border-red-200 text-red-600 px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-red-50 transition">Kataa</button></div>` : '';
+                return extAdminRow(x, t, act);
+            }).join('') || '<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna mikopo ya nje bado.</div>'}</div>
+        </div>`;
+    }
+    const mine = state.externalLoans.filter(x => x.groupId === currentGroupId);
+    const forUs = state.externalLoans.filter(x => x.source === 'group' && x.sourceGroupId === currentGroupId && x.status === 'pending_lender');
+    return `<div class="fade-in space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-gray-500">Maombi ya kikundi chako (${mine.length}) — Mwenyekiti anaanza, wanachama wote hupiga kura (&gt;70%).</p>
+            ${currentRole === 'chairperson' && !mine.some(x => x.status === 'voting') ? `<button onclick="showExtLoanModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Anza Ombi la Mkopo wa Nje</button>` : ''}
+        </div>
+        ${mine.map(x => extLoanCard(x)).join('') || `<div class="bg-white rounded-xl p-6 border border-gray-100 text-center text-sm text-gray-400">Hakuna maombi ya mkopo wa nje. ${currentRole === 'chairperson' ? 'Mwenyekiti anaweza kuanza ombi.' : 'Mwenyekiti atakapoanza ombi, mtapiga kura hapa.'}</div>`}
+        ${forUs.length ? `<h3 class="font-semibold text-gray-900 text-sm pt-2">📨 Maombi Kwenu (kikundi chenu kinatoa mkopo)</h3>
+        ${forUs.map(x => extLoanCard(x)).join('')}` : ''}
+    </div>`;
+}
+function extAdminRow(x, t, act) {
+    return `<div class="bg-white rounded-xl p-4 border border-gray-100">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div><p class="font-semibold text-gray-900 text-sm">${(groupById(x.groupId) || {}).name || x.groupId} ← ${extSourceLabel(x)}</p>
+            <p class="text-[11px] text-gray-500 mt-0.5"><span class="font-mono">${x.id}</span> • ${fmt(x.amount)} • riba ${x.interestPct}% • miezi ${x.months} • malipo/mwezi ${fmt(t.monthly)} • ${fmtDate(x.date)}</p></div>
+            ${extChip(x)}
+        </div>${act}
+    </div>`;
+}
+function showExtLoanModal() {
+    if (currentRole !== 'chairperson') { notify('Mwenyekiti tu', 'Ni Mwenyekiti anayeweza kuanza ombi la mkopo wa nje.'); return; }
+    const others = state.groups.filter(g => g.id !== currentGroupId);
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Ombi la Mkopo wa Nje</h3>
+        <p class="text-[11px] text-gray-400 mb-4">Utaanza kura ya wanachama (inahitaji zaidi ya 70% Ndiyo). Ikifaulu, ombi linapelekwa kwa mdhamini unaochagua.</p>
+        <form onsubmit="event.preventDefault(); submitExtLoan()">
+            <label class="text-[11px] text-gray-500 uppercase block mb-1">Chanzo cha Mkopo</label>
+            <select id="ext-source" onchange="extSourceChanged()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="vos">Super Admin (VOS)</option>
+                <option value="bank">Benki</option>
+                <option value="group">Kikundi Kingine (VOS)</option>
+            </select>
+            <div id="ext-bank-wrap" class="hidden mb-3"><label class="text-[11px] text-gray-500 uppercase block mb-1">Jina la Benki</label>
+            <input id="ext-bank" type="text" placeholder="mf. NMB / CRDB / NBC" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+            <div id="ext-group-wrap" class="hidden mb-3"><label class="text-[11px] text-gray-500 uppercase block mb-1">Kikundi Kinachotoa Mkopo</label>
+            <select id="ext-group" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">${others.map(g => `<option value="${g.id}">${g.name}</option>`).join('')}</select></div>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+                <div class="col-span-3"><label class="text-[11px] text-gray-500 uppercase block mb-1">Kiasi (${CUR.sym})</label>
+                <input id="ext-amount" type="number" min="1" required placeholder="mf. 2000000" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Riba (%)</label>
+                <input id="ext-interest" type="number" min="0" max="100" required value="8" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Miezi ya Malipo</label>
+                <input id="ext-months" type="number" min="1" max="60" required value="12" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                <div><label class="text-[11px] text-gray-500 uppercase block mb-1">Malipo/mwezi (est.)</label>
+                <input id="ext-monthly" type="text" disabled placeholder="—" class="w-full border border-gray-100 bg-gray-50 rounded-lg px-3 py-2.5 text-sm text-gray-500"></div>
+            </div>
+            <label class="text-[11px] text-gray-500 uppercase block mb-1">Kusudia la Mkopo</label>
+            <input id="ext-purpose" type="text" placeholder="mf. Kuongeza akiba ya biashara ya kikundi" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition">Anza Kura ya Wanachama</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+    ['ext-amount', 'ext-interest', 'ext-months'].forEach(id => document.getElementById(id).addEventListener('input', updateExtMonthly));
+}
+function extSourceChanged() {
+    const v = val('ext-source');
+    document.getElementById('ext-bank-wrap').classList.toggle('hidden', v !== 'bank');
+    document.getElementById('ext-group-wrap').classList.toggle('hidden', v !== 'group');
+}
+function updateExtMonthly() {
+    const a = Number(val('ext-amount')) || 0, r = Number(val('ext-interest')) || 0, m = Number(val('ext-months')) || 0;
+    document.getElementById('ext-monthly').value = m > 0 ? fmt(Math.round(a * (1 + r / 100) / m)) : '';
+}
+function submitExtLoan() {
+    if (currentRole !== 'chairperson') return;
+    const source = val('ext-source');
+    const amount = Number(val('ext-amount')), interestPct = Number(val('ext-interest')), months = Number(val('ext-months'));
+    if (!(amount > 0) || !(interestPct >= 0) || !(months >= 1 && months <= 60)) { notify('Taarifa zisizo sahihi', 'Weka kiasi, riba na miezi sahihi.'); return; }
+    if (source === 'bank' && val('ext-bank').length < 2) { notify('Jina la benki linahitajika', 'Weka jina la benki unayoomba.'); return; }
+    const id = 'EX-' + String(state.extCounter = (state.extCounter || 0) + 1).padStart(3, '0');
+    state.externalLoans.unshift({id, groupId: currentGroupId, source, sourceGroupId: source === 'group' ? val('ext-group') : null, bankName: source === 'bank' ? val('ext-bank') : null,
+        amount, interestPct, months, purpose: val('ext-purpose'), by: currentMemberId, date: todayISO(), votes: [], status: 'voting', balance: 0, repayments: []});
+    addAudit('Ameanza ombi la mkopo wa nje — ' + extSourceLabel(state.externalLoans[0]) + ' ' + fmt(amount) + ' (riba ' + interestPct + '%, miezi ' + months + ')');
+    notify('🏦 Kura ya mkopo wa nje', currentGroup().name + ': ' + fmt(amount) + ' kutoka ' + extSourceLabel(state.externalLoans[0]) + ' — pigeni kura (inahitaji >70%).', currentGroupId);
+    save();
+    closeModal();
+    navigateTo('extloans');
+}
+function voteExtLoan(id, vote) {
+    const x = state.externalLoans.find(e => e.id === id);
+    if (!x || x.status !== 'voting' || x.groupId !== currentGroupId) return;
+    if (x.votes.some(v => v.voter === currentMemberId)) return;
+    x.votes.push({voter: currentMemberId, vote: !!vote});
+    const total = state.members.filter(m => m.groupId === x.groupId).length;
+    const need = Math.floor(total * 0.7) + 1; // zaidi ya 70% ya wanachama wote
+    const yes = x.votes.filter(v => v.vote).length;
+    if (yes >= need) {
+        x.status = 'pending_lender';
+        const t = extTotals(x);
+        addAudit('Kura ya mkopo wa nje ' + x.id + ' imefaulu (' + yes + '/' + total + ') — imetumwa kwa ' + extSourceLabel(x));
+        notify('✅ Kura imefaulu', 'Ombi ' + x.id + ' limetumwa kwa ' + extSourceLabel(x) + ' — ' + fmt(t.monthly) + '/mwezi kwa miezi ' + x.months + '.', x.groupId);
+        if (x.source === 'vos') notify('🏦 Ombi la mkopo wa VOS', (groupById(x.groupId) || {}).name + ' limetoa ombi la ' + fmt(x.amount) + ' (riba ' + x.interestPct + '%, miezi ' + x.months + ').', 'PLATFORM');
+        if (x.source === 'group') notify('📨 Ombi la mkopo', (groupById(x.groupId) || {}).name + ' linaomba ' + fmt(x.amount) + ' kutoka kikundi chenu — kura imefaulu.', x.sourceGroupId);
+    } else {
+        notify('Kura imerekodiwa', 'Ombi ' + x.id + ': Ndiyo ' + yes + '/' + need + ' hadi sasa.', x.groupId);
+    }
+    save();
+    renderSection();
+}
+function activateExtLoan(x) {
+    const t = extTotals(x);
+    x.status = 'active';
+    x.balance = t.total;
+    x.activatedAt = todayISO();
+    addAudit('Mkopo wa nje ' + x.id + ' umetolewa na ' + extSourceLabel(x) + ' — ' + fmt(t.total) + ' (salio), ' + fmt(t.monthly) + '/mwezi');
+    notify('💰 Mkopo wa nje umepokelewa', (groupById(x.groupId) || {}).name + ' amepokea ' + fmt(x.amount) + ' kutoka ' + extSourceLabel(x) + '. Anza malipo — ' + fmt(t.monthly) + '/mwezi.', x.groupId);
+    if (x.source === 'group') notify('📨 Mkopo umetolewa', 'Mmetoa ' + fmt(x.amount) + ' kwa ' + (groupById(x.groupId) || {}).name + ' — ' + fmt(t.monthly) + '/mwezi kwa miezi ' + x.months + '.', x.sourceGroupId);
+    save();
+    renderSection();
+}
+function decideExtLoan(id, ok) {
+    const x = state.externalLoans.find(e => e.id === id);
+    if (!x || x.status !== 'pending_lender') return;
+    const allowed = currentRole === 'admin' ? x.source === 'vos' : (x.source === 'group' && x.sourceGroupId === currentGroupId && isOfficer());
+    if (!allowed) { notify('Hairuhusiwi', 'Msimamizi sahihi tu anaweza kuamua ombi hili.'); return; }
+    if (ok) activateExtLoan(x);
+    else {
+        x.status = 'declined';
+        addAudit('Mkopo wa nje ' + x.id + ' umekataliwa na ' + extSourceLabel(x));
+        notify('❌ Ombi limekataliwa', (groupById(x.groupId) || {}).name + ' — ombi ' + x.id + ' la ' + fmt(x.amount) + ' limekataliwa na ' + extSourceLabel(x) + '.', x.groupId);
+        save();
+        renderSection();
+    }
+}
+function confirmBankExtLoan(id) {
+    const x = state.externalLoans.find(e => e.id === id);
+    if (!x || x.status !== 'pending_lender' || x.source !== 'bank') return;
+    if (['chairperson', 'treasurer'].indexOf(currentRole) === -1 || x.groupId !== currentGroupId) return;
+    activateExtLoan(x);
+}
+function showExtRepayModal(id) {
+    const x = state.externalLoans.find(e => e.id === id);
+    if (!x || x.status !== 'active') return;
+    const t = extTotals(x);
+    openModal(`<h3 class="text-lg font-bold text-gray-900 mb-1">Rekodi Malipo — ${x.id}</h3>
+        <p class="text-[12px] text-gray-500 mb-4">${extSourceLabel(x)} • salio ${fmt(x.balance)} ya ${fmt(t.total)} • kilichopendekezwa ${fmt(t.monthly)}/mwezi</p>
+        <form onsubmit="event.preventDefault(); recordExtRepayment('${x.id}')">
+            <label class="text-[11px] text-gray-500 uppercase block mb-1">Kiasi (${CUR.sym})</label>
+            <input id="extrep-amount" type="number" min="1" max="${x.balance}" value="${Math.min(t.monthly, x.balance)}" required class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+            <div class="flex gap-2"><button type="submit" class="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition">Hifadhi Malipo</button><button type="button" onclick="closeModal()" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Ghairi</button></div>
+        </form>`);
+}
+function recordExtRepayment(id) {
+    const x = state.externalLoans.find(e => e.id === id);
+    if (!x || x.status !== 'active') return;
+    const amt = Number(val('extrep-amount'));
+    if (!(amt > 0) || amt > x.balance) { notify('Kiasi si sahihi', 'Weka kiasi kati ya 1 na ' + fmt(x.balance)); return; }
+    x.balance -= amt;
+    x.repayments = x.repayments || [];
+    x.repayments.unshift({date: todayISO(), amount: amt});
+    state.expenses.unshift({id: 'EXP-' + String(state.expCounter = (state.expCounter || 0) + 1).padStart(3, '0'), groupId: x.groupId, category: 'Malipo ya Mkopo ya Nje', desc: extSourceLabel(x) + ' — ' + x.id, amount: amt, date: todayISO()});
+    addAudit('Amelipa mkopo wa nje ' + x.id + ' — ' + fmt(amt) + ' (salio ' + fmt(x.balance) + ')');
+    if (x.balance <= 0) {
+        x.balance = 0;
+        x.status = 'repaid';
+        notify('🎉 Mkopo wa nje umelipwa kamili', x.id + ' — ' + extSourceLabel(x) + '. Deni la kikundi limewekwa wazi.', x.groupId);
+    } else {
+        notify('💳 Malipo yamerekodiwa', x.id + ' — ' + fmt(amt) + ', salio ' + fmt(x.balance), x.groupId);
+    }
+    save();
+    closeModal();
+    renderSection();
+}
+function extDebtOf(gid) { return state.externalLoans.filter(x => x.groupId === gid && x.status === 'active').reduce((s, x) => s + x.balance, 0); }
 
 // ================= MEETINGS =================
 function renderMeetings() {
@@ -3929,6 +4244,7 @@ async function initCloud() {
 document.addEventListener('DOMContentLoaded', function() {
     runReminders();
     renderPublicPricing();
+    startHeroTyping();
     const inv = location.hash.match(/invite=([A-Za-z0-9-]+)/);
     if (inv) {
         try { localStorage.setItem('vicoba-pending-invite', decodeURIComponent(inv[1]).toUpperCase()); } catch (e) {}
