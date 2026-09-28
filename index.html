@@ -34,7 +34,7 @@
         .stat-card-purple { border-left-color: #7c3aed; }
         /* Hero — "Vikoba OS hero section" (navy → bright blue) */
         .gradient-hero { background: linear-gradient(135deg, #0a1f44 0%, #0d2a5c 35%, #1258c8 72%, #1f6fe0 100%); }
-        .typed-cursor { display: inline-block; width: 3px; background: #f4772e; margin-left: 2px; animation: blink 0.85s step-end infinite; }
+        .typed-cursor { display: inline-block; width: 3px; background: currentColor; margin-left: 2px; animation: blink 0.85s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         .glass-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); }
         section[id] { scroll-margin-top: 72px; }
@@ -60,8 +60,8 @@
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="hero-eyebrow">Kwa VICOBA, Kikoba, SACCOS &amp; MFIs • Changia kutoka mtandao wowote</p>
-          <h1 id="hero-heading" class="hero-title">Mfumo Kamili wa<br>Kifedha kwa<span>ViCOBA na Kikoba</span></h1>
-          <p class="hero-description">Simamia akiba, mikopo, gawio, na ripoti za kikundi chako — kwa urahisi, uwazi, na usalama. Teknolojia ya kisasa kwa jamii za kifedha Tanzania.</p>
+          <h1 id="hero-heading" class="hero-title">Mfumo Kamili wa<br>Kifedha kwa <span><span id="hero-typed">ViCOBA</span><span class="typed-cursor" style="height:0.82em;vertical-align:-0.06em"></span></span></h1>
+          <p class="hero-description">Simamia akiba, mikopo, gawio, na ripoti za kikundi chako — kwa urahisi, uwazi, na usalama. Teknolojia ya kisasa kwa jamii za kifedha Africa.</p>
           <div class="hero-actions">
             <button onclick="showPage('login')" class="hero-primary">Anza Sasa — Bure</button>
             <button onclick="demoLogin('member')" class="hero-secondary"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 1.5v13L14 8z"/></svg>Angalia Demo</button>
