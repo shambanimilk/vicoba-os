@@ -3,7 +3,8 @@
 Mfumo kamili wa kifedha kwa VICOBA, Vikoba, SACCOS na MFIs za Tanzania — a complete
 community-finance operating system for Tanzanian savings & loan groups.
 
-Single-file web app (`index.html`) — no build step. Open it in any browser.
+Web app (`index.html`, with local branding assets in `assets/`) — no build step.
+Open it in any browser; keep the `assets/` folder alongside `index.html`.
 
 ## Features
 
@@ -36,10 +37,12 @@ Single-file web app (`index.html`) — no build step. Open it in any browser.
   (simulated SMS outbox).
 - **PDF reports**, **audit log**, **loan estimate & contribution-trend cards** on the
   member dashboard.
-- **New hero & theme** — the landing page matches the "Vikoba OS hero section" design
-  (navy→blue gradient, dot pattern, sparkles, orange CTAs, the 3D illustration), with a
-  typing-and-deleting animation cycling **ViCOBA ↔ Kikoba** in the headline; the app
-  sidebar uses the same gradient.
+- **Fintech hero & branding** — the landing page uses the supplied blue office
+  artwork, a navy-to-cyan background, a static **ViCOBA na Kikoba** headline and
+  coral calls to action. Text and buttons remain live HTML. The sidebar, dashboard
+  banners, controls, pricing and sign-in screens share the blue palette; financial
+  success and warning colours retain their meaning. Mobile layouts stack the
+  illustration below the copy, and reduced-motion preferences are respected.
 - **External loans (Mikopo ya Nje)** — the Mwenyekiti initiates a request with the
   **agreed interest rate and months of payment**, from **Super Admin (VOS)**, a
   **bank**, or **another group on VOS**. Members must pass it with **>70% of all
@@ -191,7 +194,9 @@ path is described in `docs/payments-integration-spec.md`.
 ## Project layout
 
 ```
-index.html                        # the entire app
+index.html                        # app markup and all application logic
+assets/brand.css                  # shared presentation layer
+assets/vicoba-hero-reference.png   # supplied artwork, clipped by the hero SVG
 docs/payments-integration-spec.md # real gateway/backend integration spec
 supabase/schema.sql               # database schema + RLS
 ```
