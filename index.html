@@ -35,6 +35,10 @@
         /* Hero — "Vikoba OS hero section" (navy → bright blue) */
         .gradient-hero { background: linear-gradient(135deg, #0a1f44 0%, #0d2a5c 35%, #1258c8 72%, #1f6fe0 100%); }
         .typed-cursor { display: inline-block; width: 3px; background: currentColor; margin-left: 2px; animation: blink 0.85s step-end infinite; }
+        /* brand.css huweka kila span ya headline kuwa block — neno linalochapishwa na
+           cursor zibaki mstari mmoja (mstari wa 3 wa brand) na cursor isogee na maneno */
+        #hero-typed { display: inline; }
+        #hero-heading .typed-cursor { display: inline-block; }
         @keyframes blink { 50% { opacity: 0; } }
         .glass-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); }
         section[id] { scroll-margin-top: 72px; }
